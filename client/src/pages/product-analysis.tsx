@@ -259,86 +259,43 @@ const ProductAnalysis = () => {
           {analysis && (
             <div className="mb-6">
               <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                <TabsList className="w-full bg-transparent border-b border-gray-200 rounded-none justify-start overflow-x-auto">
-                  {/* Row 1 - Primary Tabs */}
-                  <div className="flex w-full border-b border-gray-200">
-                    <TabsTrigger 
-                      value="overview" 
-                      className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:shadow-none rounded-none px-4 py-2"
-                    >
-                      Overview
-                    </TabsTrigger>
-                    <TabsTrigger 
-                      value="cost-breakdown" 
-                      className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:shadow-none rounded-none px-4 py-2"
-                    >
-                      Cost Breakdown
-                    </TabsTrigger>
-                    <TabsTrigger 
-                      value="alternative-routes" 
-                      className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:shadow-none rounded-none px-4 py-2"
-                    >
-                      Alternative Routes
-                    </TabsTrigger>
-                    <TabsTrigger 
-                      value="tariff-analysis" 
-                      className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:shadow-none rounded-none px-4 py-2"
-                    >
-                      Tariff Analysis
-                    </TabsTrigger>
-                    <TabsTrigger 
-                      value="regulations" 
-                      className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:shadow-none rounded-none px-4 py-2"
-                    >
-                      Regulations
-                    </TabsTrigger>
-                    <TabsTrigger 
-                      value="visualizations" 
-                      className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:shadow-none rounded-none px-4 py-2"
-                    >
-                      Visualizations
-                    </TabsTrigger>
-                  </div>
-                  
-                  {/* Row 2 - Secondary Tabs */}
-                  <div className="flex w-full">
-                    <TabsTrigger 
-                      value="exemptions" 
-                      className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:shadow-none rounded-none px-4 py-2"
-                    >
-                      Exemptions
-                    </TabsTrigger>
-                    <TabsTrigger 
-                      value="duty-drawback" 
-                      className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:shadow-none rounded-none px-4 py-2"
-                    >
-                      Duty Drawback
-                    </TabsTrigger>
-                    <TabsTrigger 
-                      value="special-programs" 
-                      className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:shadow-none rounded-none px-4 py-2"
-                    >
-                      Special Programs
-                    </TabsTrigger>
-                    <TabsTrigger 
-                      value="market-analysis" 
-                      className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:shadow-none rounded-none px-4 py-2"
-                    >
-                      Market Analysis
-                    </TabsTrigger>
-                    <TabsTrigger 
-                      value="trade-partners" 
-                      className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:shadow-none rounded-none px-4 py-2"
-                    >
-                      Trade Partners
-                    </TabsTrigger>
-                    <TabsTrigger 
-                      value="ai-predictions" 
-                      className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:shadow-none rounded-none px-4 py-2"
-                    >
-                      AI Predictions
-                    </TabsTrigger>
-                  </div>
+                <TabsList className="w-full bg-transparent border-b border-gray-200 rounded-none justify-start overflow-x-auto flex">
+                  <TabsTrigger 
+                    value="overview" 
+                    className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:shadow-none rounded-none px-4 py-2"
+                  >
+                    Overview
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="cost-breakdown" 
+                    className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:shadow-none rounded-none px-4 py-2"
+                  >
+                    Cost Breakdown
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="alternative-routes" 
+                    className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:shadow-none rounded-none px-4 py-2"
+                  >
+                    Alternative Routes
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="tariff-analysis" 
+                    className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:shadow-none rounded-none px-4 py-2"
+                  >
+                    Tariff Analysis
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="regulations" 
+                    className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:shadow-none rounded-none px-4 py-2"
+                  >
+                    Regulations
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="visualizations" 
+                    className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:shadow-none rounded-none px-4 py-2"
+                  >
+                    Visualizations
+                  </TabsTrigger>
                 </TabsList>
                 
                 <TabsContent value="overview" className="mt-6 px-0">
