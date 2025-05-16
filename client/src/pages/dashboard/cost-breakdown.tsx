@@ -591,4 +591,49 @@ const CostBreakdownDashboard = () => {
   );
 };
 
-export default CostBreakdownDashboard;
+// Wrap the component with the AI Copilot
+const CostBreakdownDashboardWithCopilot = () => {
+  const { data } = useQuery({ queryKey: ["/api/shipments/active"] });
+  
+  // Extract shipment details for the AI Copilot
+  const productDetailsForCopilot = {
+    name: data?.productDetails?.name || "Sample Product",
+    category: data?.productDetails?.category || "Electronics",
+    hsCode: data?.productDetails?.hsCode || "8517.62",
+    origin: data?.productDetails?.origin || "China", 
+    destination: data?.productDetails?.destination || "United States",
+    value: data?.productDetails?.value || 3500
+  };
+  
+  const shipmentDetailsForCopilot = {
+    transportMode: data?.transportMode || "air",
+    incoterm: data?.incoterm || "CIF",
+    weight: data?.weight || 150
+  };
+  
+  // Convert cost components to format expected by Copilot
+  const costComponentsForCopilot = {};
+  if (data?.components) {
+    data.components.forEach(component => {
+      costComponentsForCopilot[component.name] = {
+        amount: component.value,
+        description: component.name,
+        category: component.name.toLowerCase().includes('duty') ? 'customs' : 
+                  component.name.toLowerCase().includes('shipping') ? 'shipping' : 'other'
+      };
+    });
+  }
+  
+  return (
+    <>
+      <CostBreakdownDashboard />
+      <CopilotAssistant 
+        productDetails={productDetailsForCopilot}
+        shipmentDetails={shipmentDetailsForCopilot}
+        costComponents={costComponentsForCopilot}
+      />
+    </>
+  );
+};
+
+export default CostBreakdownDashboardWithCopilot;
