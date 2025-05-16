@@ -108,11 +108,11 @@ const SpecialPrograms: React.FC<SpecialProgramsProps> = ({
   const programs = mapProgramsToDetails(specialPrograms);
 
   // Set initial selected program when programs data loads
-  const [selectedProgram, setSelectedProgram] = useState<string | number | null>(null);
+  const [selectedProgram, setSelectedProgram] = useState<number | null>(null);
   
   useEffect(() => {
     if (programs && programs.length > 0 && !selectedProgram) {
-      setSelectedProgram(programs[0].id);
+      setSelectedProgram(typeof programs[0].id === 'number' ? programs[0].id : Number(programs[0].id));
     }
   }, [programs, selectedProgram]);
   
@@ -241,13 +241,13 @@ const SpecialPrograms: React.FC<SpecialProgramsProps> = ({
                   programs.map(program => (
                     <ProgramCard
                       key={program.id}
-                      id={program.id}
+                      id={program.id.toString()}
                       title={program.title}
                       description={program.description}
                       potentialSavings={program.potentialSavings}
                       badgeText={program.programType}
                       isSelected={program.id === selectedProgram}
-                      onClick={() => setSelectedProgram(program.id)}
+                      onClick={() => setSelectedProgram(typeof program.id === 'number' ? program.id : Number(program.id))}
                     />
                   ))
                 ) : (

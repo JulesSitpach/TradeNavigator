@@ -109,7 +109,7 @@ export type InsertAnalysisResult = z.infer<typeof insertAnalysisResultSchema>;
 
 export type TariffData = typeof tariffData.$inferSelect;
 
-// Types for special programs feature (not database tables yet)
+// Types for special programs feature (API interfaces)
 export interface Country {
   id: number;
   code: string;
@@ -134,15 +134,6 @@ export interface SpecialProgram {
   limitations?: string;
   programType?: string;
 }
-
-export type Country = typeof countries.$inferSelect;
-export type InsertCountry = z.infer<typeof insertCountrySchema>;
-
-export type SpecialProgram = typeof specialPrograms.$inferSelect;
-export type InsertSpecialProgram = z.infer<typeof insertSpecialProgramSchema>;
-
-export type CountryGroup = typeof countryGroups.$inferSelect;
-export type InsertCountryGroup = z.infer<typeof insertCountryGroupSchema>;
 
 // Subscription tiers
 export const subscriptionTiers = {
