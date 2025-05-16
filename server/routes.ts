@@ -71,6 +71,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
       },
     })
   );
+  
+  // Dashboard stats API endpoint
+  app.get("/api/dashboard/stats", isAuthenticated, async (req, res) => {
+    try {
+      // In production, you'd fetch real stats from storage
+      // For development, provide realistic sample data
+      const stats = {
+        totalProducts: 12,
+        activeShipments: 4,
+        monthlySavings: 3250,
+        marketsServed: 8
+      };
+      
+      res.json(stats);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: "Server error" });
+    }
+  });
 
   // ===== Authentication routes =====
   
@@ -183,7 +202,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get all products for the current user
   app.get("/api/products", isAuthenticated, async (req, res) => {
     try {
+      // For development, return sample products if no real ones exist
       const products = await storage.getProductsByUser(req.session.userId);
+      
+      if (process.env.NODE_ENV === 'development' && (!products || products.length === 0)) {
+        // Return sample products for development
+        return res.json([
+          {
+            id: 1,
+            userId: 1,
+            name: 'Organic Cotton T-Shirts',
+            description: 'Eco-friendly cotton apparel for sustainable fashion',
+            hsCode: '6109.10',
+            value: 1200,
+            weight: 120,
+            dimensions: '30x20x15',
+            countryOfOrigin: 'IN',
+            createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000)
+          },
+          {
+            id: 2,
+            userId: 1,
+            name: 'Premium Coffee Beans',
+            description: 'Single-origin coffee beans from Ethiopia',
+            hsCode: '0901.21',
+            value: 850,
+            weight: 25,
+            dimensions: '20x15x10',
+            countryOfOrigin: 'ET',
+            createdAt: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000)
+          },
+          {
+            id: 3,
+            userId: 1,
+            name: 'Smart Home Devices',
+            description: 'IoT-enabled home automation systems',
+            hsCode: '8517.62',
+            value: 3500,
+            weight: 75,
+            dimensions: '25x20x10',
+            countryOfOrigin: 'CN',
+            createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000)
+          }
+        ]);
+      }
+      
       res.json(products);
     } catch (err) {
       console.error(err);
@@ -302,6 +365,65 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/shipments", isAuthenticated, async (req, res) => {
     try {
       const shipments = await storage.getShipmentsByUser(req.session.userId);
+      
+      if (process.env.NODE_ENV === 'development' && (!shipments || shipments.length === 0)) {
+        // Return sample shipments for development
+        return res.json([
+          {
+            id: 1,
+            userId: 1,
+            productId: 1,
+            origin: 'IN',
+            destination: 'US',
+            transportMode: 'sea',
+            incoterm: 'FOB',
+            estimatedDeparture: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
+            estimatedArrival: new Date(Date.now() + 35 * 24 * 60 * 60 * 1000),
+            status: 'pending',
+            createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000)
+          },
+          {
+            id: 2,
+            userId: 1,
+            productId: 2,
+            origin: 'ET',
+            destination: 'DE',
+            transportMode: 'air',
+            incoterm: 'CIF',
+            estimatedDeparture: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
+            estimatedArrival: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000),
+            status: 'in_transit',
+            createdAt: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000)
+          },
+          {
+            id: 3,
+            userId: 1,
+            productId: 3,
+            origin: 'CN',
+            destination: 'CA',
+            transportMode: 'sea',
+            incoterm: 'DDP',
+            estimatedDeparture: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000),
+            estimatedArrival: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000),
+            status: 'in_transit',
+            createdAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000)
+          },
+          {
+            id: 4,
+            userId: 1,
+            productId: 1,
+            origin: 'IN',
+            destination: 'GB',
+            transportMode: 'air',
+            incoterm: 'EXW',
+            estimatedDeparture: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
+            estimatedArrival: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
+            status: 'in_transit',
+            createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+          }
+        ]);
+      }
+      
       res.json(shipments);
     } catch (err) {
       console.error(err);
