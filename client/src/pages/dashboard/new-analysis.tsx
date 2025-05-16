@@ -15,6 +15,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { apiRequest } from "@/lib/queryClient";
 
+
 // Form schema with validation
 const analysisFormSchema = z.object({
   productName: z.string().min(2, { message: "Product name must be at least 2 characters." }),

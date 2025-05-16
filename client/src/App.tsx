@@ -25,6 +25,7 @@ import SpecialPrograms from "@/pages/special-programs";
 import CostBreakdownDashboard from "@/pages/dashboard/cost-breakdown-complete";
 import AlternativeRoutesDashboard from "@/pages/dashboard/alternative-routes";
 import NewAnalysis from "@/pages/dashboard/new-analysis";
+import ProductInfoForm from "@/pages/dashboard/product-info-form";
 
 function PrivateRoute({ component: Component, ...rest }: { component: React.ComponentType<any>; path: string; exact?: boolean }) {
   // For development, we'll allow access to routes without authentication
