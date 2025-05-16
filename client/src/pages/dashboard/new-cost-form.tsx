@@ -65,36 +65,68 @@ const NewCostAnalysisForm = () => {
                   </div>
                 </div>
                 
-                <div className="form-field">
-                  <Label htmlFor="origin-country">Origin Country</Label>
-                  <Select>
-                    <SelectTrigger>
-                      <SelectValue placeholder="China" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="cn">China</SelectItem>
-                      <SelectItem value="us">United States</SelectItem>
-                      <SelectItem value="de">Germany</SelectItem>
-                      <SelectItem value="jp">Japan</SelectItem>
-                      <SelectItem value="vn">Vietnam</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div className="form-field">
-                  <Label htmlFor="destination-country">Destination Country</Label>
-                  <Select>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Australia - CPTPP member" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="au">Australia - CPTPP member</SelectItem>
-                      <SelectItem value="us">United States</SelectItem>
-                      <SelectItem value="ca">Canada - USMCA member</SelectItem>
-                      <SelectItem value="uk">United Kingdom</SelectItem>
-                      <SelectItem value="mx">Mexico - USMCA member</SelectItem>
-                    </SelectContent>
-                  </Select>
+                <div className="country-selectors">
+                  <div className="country-select">
+                    <Label htmlFor="origin-country">Origin Country</Label>
+                    <Select>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select a country" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="au">Australia</SelectItem>
+                        <SelectItem value="br">Brazil</SelectItem>
+                        <SelectItem value="ca">Canada</SelectItem>
+                        <SelectItem value="cn">China</SelectItem>
+                        <SelectItem value="co">Colombia</SelectItem>
+                        <SelectItem value="fr">France</SelectItem>
+                        <SelectItem value="de">Germany</SelectItem>
+                        <SelectItem value="in">India</SelectItem>
+                        <SelectItem value="id">Indonesia</SelectItem>
+                        <SelectItem value="jp">Japan</SelectItem>
+                        <SelectItem value="my">Malaysia</SelectItem>
+                        <SelectItem value="mx">Mexico</SelectItem>
+                        <SelectItem value="pe">Peru</SelectItem>
+                        <SelectItem value="sg">Singapore</SelectItem>
+                        <SelectItem value="kr">South Korea</SelectItem>
+                        <SelectItem value="th">Thailand</SelectItem>
+                        <SelectItem value="uk">United Kingdom</SelectItem>
+                        <SelectItem value="us">United States</SelectItem>
+                        <SelectItem value="vn">Vietnam</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="country-select">
+                    <Label htmlFor="destination-country">Destination Country</Label>
+                    <Select>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select a country" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="au">Australia - CPTPP member</SelectItem>
+                        <SelectItem value="br">Brazil</SelectItem>
+                        <SelectItem value="ca">Canada - CPTPP & USMCA member</SelectItem>
+                        <SelectItem value="cl">Chile - CPTPP member</SelectItem>
+                        <SelectItem value="cn">China</SelectItem>
+                        <SelectItem value="co">Colombia</SelectItem>
+                        <SelectItem value="fr">France</SelectItem>
+                        <SelectItem value="de">Germany</SelectItem>
+                        <SelectItem value="in">India</SelectItem>
+                        <SelectItem value="id">Indonesia</SelectItem>
+                        <SelectItem value="jp">Japan - CPTPP member</SelectItem>
+                        <SelectItem value="my">Malaysia - CPTPP member</SelectItem>
+                        <SelectItem value="mx">Mexico - CPTPP & USMCA member</SelectItem>
+                        <SelectItem value="nz">New Zealand - CPTPP member</SelectItem>
+                        <SelectItem value="pe">Peru - CPTPP member</SelectItem>
+                        <SelectItem value="sg">Singapore - CPTPP member</SelectItem>
+                        <SelectItem value="kr">South Korea</SelectItem>
+                        <SelectItem value="th">Thailand</SelectItem>
+                        <SelectItem value="uk">United Kingdom</SelectItem>
+                        <SelectItem value="us">United States - USMCA member</SelectItem>
+                        <SelectItem value="vn">Vietnam - CPTPP member</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
                 
                 <div className="form-field">
@@ -119,7 +151,7 @@ const NewCostAnalysisForm = () => {
                 <div className="form-field">
                   <Label htmlFor="transport-mode">Transport Mode</Label>
                   <Select>
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full">
                       <SelectValue placeholder="Air Freight" />
                     </SelectTrigger>
                     <SelectContent>
@@ -132,9 +164,11 @@ const NewCostAnalysisForm = () => {
                 </div>
                 
                 <div className="form-field">
-                  <Label htmlFor="shipment-type">Shipment Type</Label>
+                  <Label htmlFor="shipment-type">
+                    Shipment Type <span className="text-xs text-amber-600">Required</span>
+                  </Label>
                   <Select>
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full">
                       <SelectValue placeholder="Less than Container Load (LCL)" />
                     </SelectTrigger>
                     <SelectContent>
@@ -146,9 +180,11 @@ const NewCostAnalysisForm = () => {
                 </div>
                 
                 <div className="form-field">
-                  <Label htmlFor="package-type">Package Type</Label>
+                  <Label htmlFor="package-type">
+                    Package Type <span className="text-xs text-amber-600">Required</span>
+                  </Label>
                   <Select>
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full">
                       <SelectValue placeholder="Cardboard Box" />
                     </SelectTrigger>
                     <SelectContent>

@@ -79,6 +79,19 @@ body {
   margin-top: var(--spacing-m);
 }
 
+/* Country selections styling */
+.country-selectors {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-l);
+  width: 100%;
+  margin-bottom: var(--spacing-m);
+}
+
+.country-select {
+  width: 100%;
+}
+
 .field-group {
   margin-bottom: var(--spacing-m);
 }
