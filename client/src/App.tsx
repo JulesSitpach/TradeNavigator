@@ -23,11 +23,12 @@ import SpecialPrograms from "@/pages/special-programs";
 import SpecialProgramsRedesigned from "@/pages/dashboard/special-programs-redesigned";
 
 // Dashboard pages
-import CostBreakdownDashboard from "@/pages/dashboard/cost-breakdown-complete";
+import CostBreakdownDashboard from "@/pages/dashboard/cost-breakdown";
+import CostBreakdownComplete from "@/pages/dashboard/cost-breakdown-complete";
 import AlternativeRoutesDashboard from "@/pages/dashboard/alternative-routes";
 import NewAnalysis from "@/pages/dashboard/new-analysis";
 import ProductInfoForm from "@/pages/dashboard/product-info-form";
-import NewCostAnalysisForm from "@/pages/dashboard/new-cost-analysis-form";
+import NewCostForm from "@/pages/dashboard/new-cost-form";
 
 function PrivateRoute({ component: Component, ...rest }: { component: React.ComponentType<any>; path: string; exact?: boolean }) {
   // For development, we'll allow access to routes without authentication
@@ -86,6 +87,7 @@ function Router() {
       {/* Dashboard Flexible Tabs Routes */}
       <PrivateRoute exact path="/dashboard/overview" component={Dashboard} />
       <PrivateRoute exact path="/dashboard/cost-breakdown" component={CostBreakdownDashboard} />
+      <PrivateRoute exact path="/dashboard/cost-breakdown-complete" component={CostBreakdownComplete} />
       <PrivateRoute exact path="/dashboard/alternative-routes" component={AlternativeRoutesDashboard} />
       <PrivateRoute exact path="/dashboard/tariff-analysis" component={Dashboard} />
       <PrivateRoute exact path="/dashboard/regulations" component={Dashboard} />
@@ -99,7 +101,7 @@ function Router() {
       <PrivateRoute exact path="/dashboard/ai-predictions" component={Dashboard} />
       <PrivateRoute exact path="/dashboard/new-analysis" component={NewAnalysis} />
       <PrivateRoute exact path="/dashboard/product-info" component={ProductInfoForm} />
-      <PrivateRoute exact path="/dashboard/new-cost-form" component={NewCostAnalysisForm} />
+      <PrivateRoute exact path="/dashboard/new-cost-form" component={NewCostForm} />
       
       {/* Fallback to 404 */}
       <Route component={NotFound} />

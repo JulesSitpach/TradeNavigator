@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import PageHeader from "@/components/common/PageHeader";
 import "../../styles/cost-breakdown-form.css";
 
-const NewCostAnalysisForm = () => {
+const NewCostForm = () => {
   const [currency, setCurrency] = useState("USD");
   const [weightUnit, setWeightUnit] = useState("kg");
   const [dimensionUnit, setDimensionUnit] = useState("cm");
@@ -283,4 +283,4 @@ const NewCostAnalysisForm = () => {
   );
 };
 
-export default NewCostAnalysisForm;
+export default NewCostForm;

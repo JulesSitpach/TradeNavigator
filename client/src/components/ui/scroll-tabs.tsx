@@ -1,102 +1,106 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import "../../styles/cost-breakdown-form.css";
 
 interface ScrollTabsProps {
   children: React.ReactNode;
   className?: string;
 }
 
-export const ScrollableTabs: React.FC<ScrollTabsProps> = ({ 
-  children,
-  className,
-  ...props
-}) => {
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [showLeftArrow, setShowLeftArrow] = useState(false);
-  const [showRightArrow, setShowRightArrow] = useState(false);
-  
-  // Check if scrolling is needed
-  const checkScrollability = () => {
-    if (scrollContainerRef.current) {
-      const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
-      setShowLeftArrow(scrollLeft > 0);
-      setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 1); // -1 for rounding errors
-    }
+const ScrollTabs: React.FC<ScrollTabsProps> = ({ children, className = '' }) => {
+  const tabsContainerRef = useRef<HTMLDivElement>(null);
+  const [showLeftScroll, setShowLeftScroll] = useState(false);
+  const [showRightScroll, setShowRightScroll] = useState(false);
+
+  // Function to check if tabs are overflowing and update scroll button visibility
+  const checkTabOverflow = () => {
+    const tabsContainer = tabsContainerRef.current;
+    if (!tabsContainer) return;
+    
+    const hasOverflow = tabsContainer.scrollWidth > tabsContainer.clientWidth;
+    const atLeftEdge = tabsContainer.scrollLeft === 0;
+    const atRightEdge = Math.abs(
+      tabsContainer.scrollWidth - tabsContainer.clientWidth - tabsContainer.scrollLeft
+    ) < 1;
+    
+    setShowLeftScroll(hasOverflow && !atLeftEdge);
+    setShowRightScroll(hasOverflow && !atRightEdge);
   };
-  
-  // Scroll left
+
+  // Scroll handlers
   const scrollLeft = () => {
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollBy({ left: -150, behavior: 'smooth' });
-    }
+    if (!tabsContainerRef.current) return;
+    tabsContainerRef.current.scrollBy({ left: -200, behavior: 'smooth' });
   };
-  
-  // Scroll right
+
   const scrollRight = () => {
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollBy({ left: 150, behavior: 'smooth' });
-    }
+    if (!tabsContainerRef.current) return;
+    tabsContainerRef.current.scrollBy({ left: 200, behavior: 'smooth' });
   };
-  
+
+  // Check for overflow on mount and window resize
   useEffect(() => {
-    // Check initially
-    checkScrollability();
+    checkTabOverflow();
     
-    // Check on resize
     const handleResize = () => {
-      checkScrollability();
-    };
-    
-    // Handle scroll events
-    const handleScroll = () => {
-      checkScrollability();
+      checkTabOverflow();
     };
     
     window.addEventListener('resize', handleResize);
     
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.addEventListener('scroll', handleScroll);
-    }
-    
     return () => {
       window.removeEventListener('resize', handleResize);
-      if (scrollContainerRef.current) {
-        scrollContainerRef.current.removeEventListener('scroll', handleScroll);
-      }
+    };
+  }, []);
+
+  // Listen for scroll events to update button visibility
+  useEffect(() => {
+    const tabsContainer = tabsContainerRef.current;
+    if (!tabsContainer) return;
+    
+    const handleScroll = () => {
+      checkTabOverflow();
+    };
+    
+    tabsContainer.addEventListener('scroll', handleScroll);
+    
+    return () => {
+      tabsContainer.removeEventListener('scroll', handleScroll);
     };
   }, []);
 
   return (
-    <div className="relative flex items-center">
-      {showLeftArrow && (
-        <button 
+    <div className="relative">
+      {showLeftScroll && (
+        <Button 
+          className="scroll-tab-button left"
+          variant="ghost" 
+          size="sm"
           onClick={scrollLeft}
-          className="scroll-tab-button left-0"
-          aria-label="Scroll tabs left"
         >
-          <ChevronLeft className="h-4 w-4" />
-        </button>
+          <ChevronLeft size={16} />
+        </Button>
       )}
       
       <div 
-        ref={scrollContainerRef}
-        className={cn("scrollable-tabs-container", className)}
-        {...props}
+        ref={tabsContainerRef}
+        className={`scrollable-tabs-container ${className}`}
       >
         {children}
       </div>
       
-      {showRightArrow && (
-        <button 
+      {showRightScroll && (
+        <Button 
+          className="scroll-tab-button right"
+          variant="ghost" 
+          size="sm"
           onClick={scrollRight}
-          className="scroll-tab-button right-0"
-          aria-label="Scroll tabs right"
         >
-          <ChevronRight className="h-4 w-4" />
-        </button>
+          <ChevronRight size={16} />
+        </Button>
       )}
     </div>
   );
 };
+
+export default ScrollTabs;
