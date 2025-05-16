@@ -1,15 +1,37 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import PageHeader from "@/components/common/PageHeader";
 import { LanguageContext } from "@/contexts/LanguageContext";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useQuery } from "@tanstack/react-query";
 import { FaDownload, FaBox, FaShip, FaFileInvoice, FaPercent } from "react-icons/fa";
-import { FaCircleInfo } from "react-icons/fa6";
+import { FaCircleInfo, FaMagnifyingGlass } from "react-icons/fa6";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import CopilotAssistant from "@/components/ai/CopilotAssistant";
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import HSCodeAssistant from "@/components/ai/HSCodeAssistant";
 
 // Sample data structure for cost breakdown - to be used when no data is available
 const sampleData = {
