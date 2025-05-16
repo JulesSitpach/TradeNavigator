@@ -446,3 +446,50 @@ body {
   display: flex;
   justify-content: flex-end;
 }
+
+/* Scrollable Tabs */
+.scrollable-tabs-container {
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+  position: relative;
+  width: 100%;
+  padding: 0 var(--spacing-xs);
+}
+
+.scrollable-tabs-container::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+.scroll-tab-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: var(--white);
+  border: 1px solid var(--medium-gray);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  cursor: pointer;
+  color: var(--primary-blue);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: all 0.15s ease-out;
+}
+
+.scroll-tab-button:hover {
+  background-color: var(--light-blue);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.scroll-tab-button.left {
+  left: -12px;
+}
+
+.scroll-tab-button.right {
+  right: -12px;
+}
