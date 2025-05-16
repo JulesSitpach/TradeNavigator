@@ -12,6 +12,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const ProductAnalysis = () => {
   const [location, setLocation] = useLocation();
@@ -26,6 +27,7 @@ const ProductAnalysis = () => {
   
   const [isNewProductDialogOpen, setIsNewProductDialogOpen] = useState(false);
   const [selectedShippingOption, setSelectedShippingOption] = useState<string | undefined>(undefined);
+  const [activeTab, setActiveTab] = useState("overview");
 
   // Fetch product if productId is provided
   const { data: product } = useQuery({
@@ -254,25 +256,191 @@ const ProductAnalysis = () => {
         
         {/* Middle & Right Columns - Results & Visualizations */}
         <div className="lg:col-span-2">
-          <CostBreakdown 
-            data={analysis} 
-            isLoading={isAnalysisLoading || createAnalysisMutation.isPending} 
-            onRecalculate={handleRecalculate}
-            onExport={handleExport}
-          />
+          {analysis && (
+            <div className="mb-6">
+              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                <TabsList className="w-full bg-transparent border-b border-gray-200 rounded-none justify-start">
+                  <TabsTrigger 
+                    value="overview" 
+                    className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:shadow-none rounded-none px-4 py-2"
+                  >
+                    Overview
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="cost-breakdown" 
+                    className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:shadow-none rounded-none px-4 py-2"
+                  >
+                    Cost Breakdown
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="alternative-routes" 
+                    className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:shadow-none rounded-none px-4 py-2"
+                  >
+                    Alternative Routes
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="tariff-analysis" 
+                    className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:shadow-none rounded-none px-4 py-2"
+                  >
+                    Tariff Analysis
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="regulations" 
+                    className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:shadow-none rounded-none px-4 py-2"
+                  >
+                    Regulations
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="visualizations" 
+                    className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:shadow-none rounded-none px-4 py-2"
+                  >
+                    Visualizations
+                  </TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="overview" className="mt-6 px-0">
+                  <div className="space-y-6">
+                    <CostBreakdown 
+                      data={analysis} 
+                      isLoading={isAnalysisLoading || createAnalysisMutation.isPending} 
+                      onRecalculate={handleRecalculate}
+                      onExport={handleExport}
+                    />
+                    
+                    <ShippingOptions 
+                      options={shippingOptions} 
+                      isLoading={isAnalysisLoading || createAnalysisMutation.isPending}
+                      onSelectOption={setSelectedShippingOption}
+                      selectedOptionId={selectedShippingOption}
+                      currency={analysis?.currency}
+                    />
+                  </div>
+                </TabsContent>
+                
+                <TabsContent value="cost-breakdown" className="mt-6 px-0">
+                  <CostBreakdown 
+                    data={analysis} 
+                    isLoading={isAnalysisLoading || createAnalysisMutation.isPending} 
+                    onRecalculate={handleRecalculate}
+                    onExport={handleExport}
+                    detailed={true}
+                  />
+                </TabsContent>
+                
+                <TabsContent value="alternative-routes" className="mt-6 px-0">
+                  <div className="bg-white rounded-lg shadow-sm border border-neutral-200 p-6">
+                    <h2 className="text-lg font-medium text-neutral-900 mb-4">Alternative Routes</h2>
+                    <p className="text-neutral-600">Compare different shipping routes and methods for your product.</p>
+                    
+                    <ShippingOptions 
+                      options={shippingOptions} 
+                      isLoading={isAnalysisLoading || createAnalysisMutation.isPending}
+                      onSelectOption={setSelectedShippingOption}
+                      selectedOptionId={selectedShippingOption}
+                      currency={analysis?.currency}
+                      detailed={true}
+                    />
+                  </div>
+                </TabsContent>
+                
+                <TabsContent value="tariff-analysis" className="mt-6 px-0">
+                  <TariffInformation 
+                    data={tariffData} 
+                    isLoading={isAnalysisLoading || createAnalysisMutation.isPending}
+                    detailed={true}
+                  />
+                </TabsContent>
+                
+                <TabsContent value="regulations" className="mt-6 px-0">
+                  <div className="bg-white rounded-lg shadow-sm border border-neutral-200 p-6">
+                    <h2 className="text-lg font-medium text-neutral-900 mb-4">Regulatory Requirements</h2>
+                    <p className="text-neutral-600 mb-4">Important regulatory information for {product?.name} in {shipment?.destinationCountry}.</p>
+                    
+                    <div className="space-y-6">
+                      <div className="border border-gray-200 rounded-lg p-4">
+                        <h3 className="font-medium text-neutral-900 mb-2">Import Requirements</h3>
+                        <ul className="list-disc list-inside text-sm text-neutral-600 space-y-2">
+                          <li>Certificate of Origin required</li>
+                          <li>Commercial Invoice with detailed product description</li>
+                          <li>Packing List with contents, weights and dimensions</li>
+                          <li>Importer Security Filing (ISF) for ocean shipments</li>
+                        </ul>
+                      </div>
+                      
+                      <div className="border border-gray-200 rounded-lg p-4">
+                        <h3 className="font-medium text-neutral-900 mb-2">Compliance</h3>
+                        <ul className="list-disc list-inside text-sm text-neutral-600 space-y-2">
+                          <li>Product must comply with local safety standards</li>
+                          <li>Labeling requirements: Country of origin marking required</li>
+                          <li>Environmental regulations: Packaging must be recyclable</li>
+                        </ul>
+                      </div>
+                      
+                      <div className="border border-gray-200 rounded-lg p-4">
+                        <h3 className="font-medium text-neutral-900 mb-2">Special Permits</h3>
+                        <ul className="list-disc list-inside text-sm text-neutral-600 space-y-2">
+                          <li>No special permits required for this product category</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </TabsContent>
+                
+                <TabsContent value="visualizations" className="mt-6 px-0">
+                  <div className="bg-white rounded-lg shadow-sm border border-neutral-200 p-6">
+                    <h2 className="text-lg font-medium text-neutral-900 mb-4">Trade Visualizations</h2>
+                    <p className="text-neutral-600 mb-6">Visual insights for your trade route and product category.</p>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="bg-gray-100 rounded-lg p-4 h-64 flex items-center justify-center">
+                        <div className="text-center">
+                          <p className="text-neutral-500 mb-2">Trade Route Map</p>
+                          <p className="text-sm text-neutral-400">Visualization will appear here</p>
+                        </div>
+                      </div>
+                      
+                      <div className="bg-gray-100 rounded-lg p-4 h-64 flex items-center justify-center">
+                        <div className="text-center">
+                          <p className="text-neutral-500 mb-2">Cost Comparison Chart</p>
+                          <p className="text-sm text-neutral-400">Visualization will appear here</p>
+                        </div>
+                      </div>
+                      
+                      <div className="bg-gray-100 rounded-lg p-4 h-64 flex items-center justify-center">
+                        <div className="text-center">
+                          <p className="text-neutral-500 mb-2">Market Trends</p>
+                          <p className="text-sm text-neutral-400">Visualization will appear here</p>
+                        </div>
+                      </div>
+                      
+                      <div className="bg-gray-100 rounded-lg p-4 h-64 flex items-center justify-center">
+                        <div className="text-center">
+                          <p className="text-neutral-500 mb-2">Transit Time Analysis</p>
+                          <p className="text-sm text-neutral-400">Visualization will appear here</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </TabsContent>
+              </Tabs>
+            </div>
+          )}
           
-          <TariffInformation 
-            data={tariffData} 
-            isLoading={isAnalysisLoading || createAnalysisMutation.isPending} 
-          />
-          
-          <ShippingOptions 
-            options={shippingOptions} 
-            isLoading={isAnalysisLoading || createAnalysisMutation.isPending}
-            onSelectOption={setSelectedShippingOption}
-            selectedOptionId={selectedShippingOption}
-            currency={analysis?.currency}
-          />
+          {/* Show when no analysis is available */}
+          {!analysis && (
+            <div className="bg-white rounded-lg shadow-sm border border-neutral-200 p-6 text-center">
+              <h2 className="text-lg font-medium text-neutral-900 mb-2">No Analysis Data</h2>
+              <p className="text-neutral-600 mb-6">Select a product and create a shipment to generate an analysis.</p>
+              
+              {!productId && (
+                <p className="text-sm text-neutral-500">First, select a product from the list on the left or create a new one.</p>
+              )}
+              
+              {productId && !shipmentId && (
+                <p className="text-sm text-neutral-500">Now, fill out the shipment information to calculate costs and generate analysis.</p>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </>
