@@ -1,95 +1,96 @@
 import axios from 'axios';
 import hsCodeMappings from './hsCodeMappings';
 
-// Common product category to HS code mappings for quick lookups
-// This helps provide results when the API can't be reached
-const fallbackHsCodes: Record<string, string> = {
-  electronics: '8471.30',
-  textiles: '6109.10',
-  automotive: '8708.99',
-  food: '2106.90',
-  chemicals: '3824.99',
-  machinery: '8479.89',
-  furniture: '9403.20',
-  toys: '9503.00'
-};
-
-interface HSCodeResult {
+interface HSCodeSuggestion {
   hsCode: string;
   confidence: number;
+  description?: string;
   alternativeCodes?: string[];
   source: 'AI' | 'Mapping' | 'Fallback';
 }
 
 /**
- * Service to help classify products into HS codes using OpenAI
+ * Service for AI-powered HS code classification and suggestions
  */
-const hsCodeAIService = {
+class HSCodeAIService {
   /**
-   * Classifies a product based on description and category
+   * Classify a product description to get HS code suggestions
    */
-  async classifyProduct(description: string, category: string): Promise<HSCodeResult> {
-    // First check if we have a direct mapping
-    const mappingResult = this.checkMappings(description);
-    if (mappingResult) {
-      return mappingResult;
-    }
-    
+  async classifyProduct(productDescription: string, category: string): Promise<HSCodeSuggestion> {
     try {
-      // Try to use the AI service
+      if (!productDescription) {
+        return this.getHSCodeFromCategory(category);
+      }
+
+      // Try using the AI classification endpoint
       const response = await axios.post('/api/ai/classify-product', {
-        description,
+        productDescription,
         category
       });
+
+      const result = response.data;
+
+      // If we got AI results, return them with source marked as 'AI'
+      if (result && result.hsCode) {
+        return {
+          hsCode: result.hsCode,
+          confidence: result.confidence || 0.8,
+          description: result.description,
+          alternativeCodes: result.alternativeCodes || [],
+          source: 'AI'
+        };
+      }
       
-      return {
-        hsCode: response.data.hsCode,
-        confidence: response.data.confidence,
-        alternativeCodes: response.data.alternativeCodes,
-        source: 'AI'
-      };
+      // If AI fails, try to look up by category
+      return this.getHSCodeFromCategory(category);
     } catch (error) {
-      console.warn('AI classification failed, using fallback', error);
-      // Use category-based fallback if AI classification fails
-      return this.getFallbackResult(category);
+      console.error('Error classifying product:', error);
+      
+      // If API call fails, fall back to mapping lookup
+      return this.getHSCodeFromCategory(category);
     }
-  },
-  
+  }
+
   /**
-   * Checks if we have a direct mapping for the product description
+   * Get HS code suggestion based on product category
    */
-  checkMappings(description: string): HSCodeResult | null {
-    const lowerDesc = description.toLowerCase();
-    
-    // Check for keywords in the description
-    const mapping = Object.entries(hsCodeMappings).find(([keyword]) => 
-      lowerDesc.includes(keyword.toLowerCase())
-    );
-    
-    if (mapping) {
-      const [keyword, data] = mapping;
-      return {
-        hsCode: data.code,
-        confidence: 0.85,
-        alternativeCodes: data.alternatives || [],
-        source: 'Mapping'
-      };
+  private getHSCodeFromCategory(category: string): HSCodeSuggestion {
+    if (!category || !hsCodeMappings[category]) {
+      return this.getFallbackHSCode();
     }
+
+    const categoryMappings = hsCodeMappings[category];
     
-    return null;
-  },
-  
-  /**
-   * Provides a fallback HS code based on product category
-   */
-  getFallbackResult(category: string): HSCodeResult {
-    const hsCode = fallbackHsCodes[category] || '0000.00';
+    // Pick the most appropriate code (first one for now)
+    const primarySuggestion = categoryMappings[0];
+    
+    // Get 2-3 alternatives from the same category
+    const alternativeCodes = categoryMappings
+      .slice(1, 4)
+      .map(item => item.code);
+
     return {
-      hsCode,
-      confidence: 0.6,
+      hsCode: primarySuggestion.code,
+      confidence: 0.85, // High confidence since it's from our official mappings
+      description: primarySuggestion.description,
+      alternativeCodes,
+      source: 'Mapping'
+    };
+  }
+
+  /**
+   * Get fallback HS code if no other method works
+   */
+  private getFallbackHSCode(): HSCodeSuggestion {
+    // Fallback to a generic Electronics HS code when everything else fails
+    return {
+      hsCode: "8471.30.00",
+      confidence: 0.6, // Lower confidence for fallback
+      description: "Portable automatic data processing machines, weighing not more than 10 kg",
+      alternativeCodes: ["8471.41.00", "8471.50.00", "8471.60.00"],
       source: 'Fallback'
     };
   }
-};
+}
 
-export default hsCodeAIService;
+export default new HSCodeAIService();
