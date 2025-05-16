@@ -296,6 +296,42 @@ const ProductAnalysis = () => {
                   >
                     Visualizations
                   </TabsTrigger>
+                  <TabsTrigger 
+                    value="exemptions" 
+                    className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:shadow-none rounded-none px-4 py-2"
+                  >
+                    Exemptions
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="duty-drawback" 
+                    className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:shadow-none rounded-none px-4 py-2"
+                  >
+                    Duty Drawback
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="special-programs" 
+                    className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:shadow-none rounded-none px-4 py-2"
+                  >
+                    Special Programs
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="market-analysis" 
+                    className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:shadow-none rounded-none px-4 py-2"
+                  >
+                    Market Analysis
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="trade-partners" 
+                    className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:shadow-none rounded-none px-4 py-2"
+                  >
+                    Trade Partners
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="ai-predictions" 
+                    className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-blue-600 data-[state=active]:shadow-none rounded-none px-4 py-2"
+                  >
+                    AI Predictions
+                  </TabsTrigger>
                 </TabsList>
                 
                 <TabsContent value="overview" className="mt-6 px-0">
