@@ -26,6 +26,7 @@ import SpecialProgramsRedesigned from "@/pages/dashboard/special-programs-redesi
 import CostBreakdownDashboard from "@/pages/dashboard/cost-breakdown";
 import CostBreakdownComplete from "@/pages/dashboard/cost-breakdown-complete";
 import CostBreakdownNew from "@/pages/dashboard/cost-breakdown-new";
+import CostBreakdownCalculator from "@/pages/dashboard/cost-breakdown-calculator";
 import AlternativeRoutesDashboard from "@/pages/dashboard/alternative-routes";
 import NewAnalysis from "@/pages/dashboard/new-analysis";
 import ProductInfoForm from "@/pages/dashboard/product-info-form";
@@ -90,6 +91,7 @@ function Router() {
       <PrivateRoute exact path="/dashboard/cost-breakdown" component={CostBreakdownNew} />
       <PrivateRoute exact path="/dashboard/cost-breakdown-original" component={CostBreakdownDashboard} />
       <PrivateRoute exact path="/dashboard/cost-breakdown-complete" component={CostBreakdownComplete} />
+      <PrivateRoute exact path="/dashboard/cost-breakdown-calculator" component={CostBreakdownCalculator} />
       <PrivateRoute exact path="/dashboard/alternative-routes" component={AlternativeRoutesDashboard} />
       <PrivateRoute exact path="/dashboard/tariff-analysis" component={Dashboard} />
       <PrivateRoute exact path="/dashboard/regulations" component={Dashboard} />
