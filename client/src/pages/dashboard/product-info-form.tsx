@@ -238,16 +238,27 @@ const ProductInfoForm = () => {
                         className="ml-2" 
                         variant="outline"
                         onClick={handleHsCodeLookup}
+                        disabled={isLookingUpHsCode}
                       >
-                        <FaSearch className="mr-1" size={14} />
-                        Lookup
+                        {isLookingUpHsCode ? (
+                          <>
+                            <Loader2 className="mr-1 h-4 w-4 animate-spin" />
+                            Looking up...
+                          </>
+                        ) : (
+                          <>
+                            <FaSearch className="mr-1" size={14} />
+                            AI Lookup
+                          </>
+                        )}
                       </Button>
                     </div>
                     <p className="text-xs text-gray-500 mt-1">
-                      Enter a product description to enable HS code suggestions
+                      Enter product description and category to get AI-powered HS code suggestions
                     </p>
-                    <p className="text-xs text-blue-600 cursor-pointer mt-1" onClick={handleHsCodeLookup}>
-                      Click the pilot icon to see HS code suggestions
+                    <p className="text-xs text-blue-600 cursor-pointer mt-1 flex items-center" onClick={handleHsCodeLookup}>
+                      <AlertCircle className="h-3 w-3 mr-1" />
+                      Click "AI Lookup" for intelligent classification assistance
                     </p>
                   </div>
                 </div>
