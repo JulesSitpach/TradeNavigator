@@ -1,133 +1,117 @@
 .copilot-assistant {
-  background-color: #f5f7fa;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  overflow: hidden;
+  position: fixed;
+  width: 340px;
+  max-width: calc(100vw - 2rem);
+  z-index: 50;
   transition: all 0.3s ease;
-  max-height: 500px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  background-color: #f5f7fb;
 }
 
-.copilot-assistant.collapsed {
-  max-height: 60px;
+.copilot-assistant.top-right {
+  top: 1rem;
+  right: 1rem;
 }
 
-.copilot-assistant-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 16px;
-  background-color: #4b6bfb;
+.copilot-assistant.bottom-right {
+  bottom: 1rem;
+  right: 1rem;
+}
+
+.copilot-assistant.top-left {
+  top: 1rem;
+  left: 1rem;
+}
+
+.copilot-assistant.bottom-left {
+  bottom: 1rem;
+  left: 1rem;
+}
+
+.copilot-bubble {
+  position: fixed;
+  z-index: 50;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  background-color: var(--color-primary);
   color: white;
-  cursor: pointer;
+  transition: transform 0.2s ease;
 }
 
-.copilot-assistant-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-weight: 600;
+.copilot-bubble:hover {
+  transform: scale(1.05);
 }
 
-.copilot-assistant-content {
-  padding: 16px;
-  max-height: 440px;
+.copilot-bubble.top-right {
+  top: 1rem;
+  right: 1rem;
+}
+
+.copilot-bubble.bottom-right {
+  bottom: 1rem;
+  right: 1rem;
+}
+
+.copilot-bubble.top-left {
+  top: 1rem;
+  left: 1rem;
+}
+
+.copilot-bubble.bottom-left {
+  bottom: 1rem;
+  left: 1rem;
+}
+
+.copilot-message {
+  max-height: 300px;
   overflow-y: auto;
+  padding-right: 8px;
 }
 
-.copilot-assistant-content p {
-  margin-bottom: 12px;
-  line-height: 1.5;
+.copilot-message::-webkit-scrollbar {
+  width: 4px;
 }
 
-.copilot-assistant-content ul {
-  padding-left: 20px;
-  margin-bottom: 16px;
+.copilot-message::-webkit-scrollbar-track {
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 3px;
 }
 
-.copilot-assistant-content li {
-  margin-bottom: 8px;
+.copilot-message::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
 }
 
-.copilot-assistant-message {
-  margin-bottom: 16px;
-  padding: 10px 14px;
-  background-color: #ffffff;
-  border-radius: 6px;
-  border-left: 3px solid #4b6bfb;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-}
-
-.copilot-assistant-info {
+.loading-dots {
   display: flex;
-  gap: 8px;
-  padding: 10px;
-  background-color: rgba(75, 107, 251, 0.05);
-  border-radius: 6px;
-  margin-bottom: 12px;
-}
-
-.copilot-assistant-action {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 14px;
-  color: #4b6bfb;
-  cursor: pointer;
-  padding: 6px 10px;
-  border-radius: 4px;
-  transition: background-color 0.2s;
-  font-weight: 500;
-}
-
-.copilot-assistant-action:hover {
-  background-color: rgba(75, 107, 251, 0.1);
-}
-
-.copilot-assistant-suggestions {
-  margin-top: 16px;
-}
-
-.copilot-assistant-badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 4px 8px;
-  background-color: rgba(75, 107, 251, 0.1);
-  color: #4b6bfb;
-  border-radius: 4px;
-  font-size: 12px;
-  margin-right: 8px;
-  margin-bottom: 8px;
-}
-
-.loading-animation {
-  display: flex;
-  align-items: center;
   justify-content: center;
-  padding: 20px 0;
+  gap: 6px;
 }
 
-.loading-animation span {
+.loading-dots span {
   width: 8px;
   height: 8px;
-  margin: 0 3px;
-  background-color: #4b6bfb;
   border-radius: 50%;
-  display: inline-block;
+  background-color: var(--color-primary);
+  opacity: 0.6;
   animation: loading 1.4s infinite ease-in-out both;
 }
 
-.loading-animation span:nth-child(1) {
+.loading-dots span:nth-child(1) {
   animation-delay: -0.32s;
 }
 
-.loading-animation span:nth-child(2) {
+.loading-dots span:nth-child(2) {
   animation-delay: -0.16s;
 }
 
 @keyframes loading {
-  0%, 80%, 100% { 
+  0%, 80%, 100% {
     transform: scale(0);
-  } 40% { 
-    transform: scale(1.0);
+  }
+  40% {
+    transform: scale(1);
   }
 }
