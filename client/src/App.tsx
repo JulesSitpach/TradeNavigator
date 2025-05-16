@@ -20,6 +20,7 @@ import Reports from "@/pages/reports";
 import Profile from "@/pages/profile";
 import Subscription from "@/pages/subscription";
 import SpecialPrograms from "@/pages/special-programs";
+import SpecialProgramsRedesigned from "@/pages/dashboard/special-programs-redesigned";
 
 // Dashboard pages
 import CostBreakdownDashboard from "@/pages/dashboard/cost-breakdown-complete";
@@ -92,6 +93,7 @@ function Router() {
       <PrivateRoute exact path="/dashboard/exemptions" component={Dashboard} />
       <PrivateRoute exact path="/dashboard/duty-drawback" component={Dashboard} />
       <PrivateRoute exact path="/dashboard/special-programs" component={SpecialPrograms} />
+      <PrivateRoute exact path="/dashboard/special-programs-redesigned" component={SpecialProgramsRedesigned} />
       <PrivateRoute exact path="/dashboard/market-analysis" component={MarketAnalysis} />
       <PrivateRoute exact path="/dashboard/trade-partners" component={Dashboard} />
       <PrivateRoute exact path="/dashboard/ai-predictions" component={Dashboard} />

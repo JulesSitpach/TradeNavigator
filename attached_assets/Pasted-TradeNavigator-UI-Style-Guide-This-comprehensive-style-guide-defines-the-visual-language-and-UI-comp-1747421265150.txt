@@ -1,0 +1,277 @@
+TradeNavigator UI Style Guide
+This comprehensive style guide defines the visual language and UI components for the TradeNavigator platform, incorporating elements from the Cost Breakdown Dashboard and Special Programs interfaces.
+Color Palette
+Primary Colors
+
+Primary Blue (#1e88e5): Main brand color, used for primary action buttons, key UI elements
+Deep Blue (#0d47a1): Used for section headers and program cards (like Foreign Trade Zone Program)
+Light Blue (#e3f2fd): Background for filled form fields and subtle highlights
+
+Secondary Colors
+
+Success Green (#4caf50): For success messages and positive indicators
+Warning Amber (#ffc107): For partially eligible status and warning indicators
+Alert Red (#f44336): For errors and critical notifications
+Program Pastels: Soft, distinctive colors for program tags
+
+Light Teal (#b2dfdb): For Trade Zone programs
+Light Purple (#d1c4e9): For Duty Drawback programs
+Light Blue (#bbdefb): For Duty Deferral programs
+
+
+
+Neutral Colors
+
+White (#ffffff): Primary background
+Light Gray (#f5f5f5): Section backgrounds, dividers
+Medium Gray (#e0e0e0): Borders, dividers
+Dark Gray (#757575): Secondary text
+Black (#212121): Primary text
+
+Typography
+Font Family
+
+Primary: Roboto or system sans-serif
+
+Text Styles
+
+Page Title: 22px, Bold (700), #212121
+Section Headers: 18px, Semi-bold (600), #0d47a1
+Field Labels: 14px, Medium (500), #212121
+Input Text: 14px, Regular (400), #212121
+Helper Text: 12px, Regular (400), #757575
+Button Text: 14px, Medium (500), #ffffff (on dark backgrounds)
+Card Title: 16px, Medium (500), #0d47a1
+Card Description: 13px, Regular (400), #212121
+Values/Metrics: 16px, Semi-bold (600), #212121 (for importance)
+Potential Savings: 18px, Bold (700), #4caf50 (green for emphasis)
+
+Spacing System
+
+XS: 4px
+S: 8px
+M: 16px (base spacing unit)
+L: 24px
+XL: 32px
+XXL: 48px
+
+Application
+
+Field padding: S (8px) vertical, M (16px) horizontal
+Section padding: L (24px)
+Between field groups: M (16px)
+Between sections: XL (32px)
+Card padding: M (16px)
+
+Components
+Form Fields
+Text Input
+
+Height: 40px
+Border radius: 4px
+Border: 1px solid #e0e0e0
+Background (empty): #ffffff
+Background (filled): #e3f2fd (light blue)
+Padding: 8px 16px
+Focus state: 2px border #1e88e5, subtle box-shadow
+
+Dropdown Select
+
+Styling matches text input
+Right-aligned caret icon
+Selected state: Light blue background (#e3f2fd)
+Dropdown menu: White background, subtle shadow
+
+Toggle Buttons (Units)
+
+Height: 36px
+Border radius: 4px
+Selected state: #1e88e5 background, white text
+Unselected state: White background, dark gray text
+Border: 1px solid #e0e0e0
+
+Buttons
+Primary Action Button
+
+Background: #1e88e5 (Primary Blue)
+Text: White
+Border radius: 4px
+Padding: 12px 24px
+Hover: Darken by 10%
+Font weight: Medium (500)
+
+Secondary Button
+
+Background: White
+Border: 1px solid #1e88e5
+Text color: #1e88e5
+Same dimensions as primary
+
+Icon Button
+
+Size: 36px × 36px
+Border radius: 4px
+Background: Transparent
+Hover: Light gray background (#f5f5f5)
+
+Cards & Containers
+Program Card
+
+Background: White
+Border radius: 4px
+Border: 1px solid #e0e0e0
+Box shadow: 0 2px 4px rgba(0,0,0,0.05)
+Padding: 16px
+Hover state: Subtle shadow increase
+
+Program Tag
+
+Border radius: 16px
+Padding: 4px 12px
+Text: 12px, Medium (500)
+Background colors: Program-specific pastels
+
+Information Panel
+
+Background: #f5f5f5
+Border-left: 4px solid #1e88e5
+Padding: 16px
+Border radius: 0 4px 4px 0
+
+Results Container
+
+Background: White
+Border: 1px solid #e0e0e0
+Border radius: 4px
+Padding: 24px
+Section dividers: 1px solid #e0e0e0
+
+Status Indicators
+Eligibility Status
+
+Fully Eligible: Green circle with checkmark
+Partially Eligible: Amber circle with exclamation
+Not Eligible: Gray circle with x-mark
+Status text matches corresponding color
+
+Value Metrics
+
+Large numbers: 24px, Semi-bold (600)
+Currency symbols: Slightly smaller (20px)
+Positive values (savings): Green
+Percentage indicators: Smaller (14px), lighter weight
+
+Navigation
+Main Navigation
+
+Background: #0d47a1 (Deep Blue)
+Text: White
+Active item: Light blue left border, lighter background
+
+Breadcrumb
+
+Text: 12px, Regular
+Separator: Gray chevron icon
+Current page: Semi-bold
+
+Back Button
+
+Text: 14px, Blue
+Left arrow icon
+No background
+
+Layout Patterns
+Form Layout
+
+Two-column grid for desktop
+Full width fields for mobile
+Logical grouping of related fields
+Clear section separation
+Right-aligned action buttons
+
+Results Display
+
+Clear visual hierarchy with prominent values
+Use of cards to separate different programs/options
+Consistent alignment of labels and values
+Data visualization (when applicable) above detailed breakdown
+
+Program Information
+
+Left sidebar for program selection
+Main content area for program details
+Consistent positioning of savings amounts
+Clear eligibility status indicators
+
+Responsive Behavior
+Breakpoints
+
+Mobile: 0-599px
+Tablet: 600-959px
+Desktop: 960px+
+
+Adaptations
+
+Single column forms on mobile
+Stacked cards on mobile
+Collapsed navigation on smaller screens
+Adjusted padding and margins for mobile (smaller)
+
+Data Visualization
+Styling
+
+Chart colors should use the primary palette
+Labels: 12px, Regular
+Values: 14px, Medium
+Tooltips: White background, 1px gray border, 8px padding
+
+Charts
+
+Bar charts: Horizontal for comparing values
+Pie/donut charts: For showing proportion of costs
+Line charts: For trends over time
+
+Motion & Interaction
+Transitions
+
+Duration: 150-200ms
+Easing: Ease-out for natural feel
+Subtle scaling (1.02-1.05) for hover states
+
+Feedback
+
+Button press: Slight darkening
+Form validation: Immediate color feedback
+Success actions: Subtle flash of green or success icon
+
+Best Practices
+
+Maintain consistent spacing and alignment
+Use color purposefully - blue for interaction, green for positive outcomes
+Keep text readable - maintain proper contrast
+Make interactive elements obvious
+Provide clear visual feedback for user actions
+Group related information logically
+Use progressive disclosure for complex information
+Ensure proper contrast for accessibility
+Make error states clear and actionable
+Maintain consistency across all platform sections
+
+Application Examples
+Product & Shipping Form
+
+Use two clear sections with proper spacing
+Apply consistent field styling
+Right-align the action button
+Use unit toggles consistently
+Provide clear field validation
+
+Special Programs Display
+
+Use cards for program options
+Display potential savings prominently in green
+Use appropriate program tags
+Show eligibility status clearly
+Maintain consistent information hierarchy
+
+This style guide should be applied across all aspects of the TradeNavigator platform to ensure a cohesive, professional, and user-friendly experience.
