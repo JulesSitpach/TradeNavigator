@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { Info, Calculator } from "lucide-react";
 import PageHeader from '@/components/common/PageHeader';
+import HSCodeAssistant from '@/components/ai/HSCodeAssistant';
 import '../../styles/cost-breakdown-form.css';
 
 // Import country data for dropdown options
@@ -146,6 +147,11 @@ const ProductInfoForm: React.FC = () => {
       });
     }
   };
+  
+  // Handle HS code selection from the AI assistant
+  const handleHsCodeSelection = (code: string) => {
+    handleInputChange('hsCode', code);
+  };
 
   const validateForm = (): boolean => {
     const newErrors: Partial<FormData> = {};
@@ -261,6 +267,15 @@ const ProductInfoForm: React.FC = () => {
                     placeholder="e.g. 8471.30"
                   />
                   <span className="form-hint">Our AI can suggest codes if you don't know it</span>
+                  
+                  {/* HS Code AI Assistant - only shows suggestions when product description and category are provided */}
+                  {formData.productName && formData.category && (
+                    <HSCodeAssistant 
+                      productDescription={formData.productName}
+                      category={formData.category}
+                      onSelectHSCode={handleHsCodeSelection}
+                    />
+                  )}
                 </div>
               </div>
 

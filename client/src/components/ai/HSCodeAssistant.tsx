@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import hsCodeAIService from '@/services/hsCodeAIService';
+import './HSCodeAssistant.css';
 
 interface HSCodeAssistantProps {
   productDescription: string;
@@ -110,10 +111,10 @@ const HSCodeAssistant: React.FC<HSCodeAssistantProps> = ({
                 </div>
               </div>
               <Badge variant={
-                hsCodeSuggestion.confidence > 0.9 ? "success" :
+                hsCodeSuggestion.confidence > 0.9 ? "default" :
                 hsCodeSuggestion.confidence > 0.7 ? "default" :
                 "secondary"
-              } className="text-xs">
+              } className={`text-xs ${hsCodeSuggestion.confidence > 0.9 ? 'bg-green-100 text-green-800 hover:bg-green-200' : ''}`}>
                 {Math.round(hsCodeSuggestion.confidence * 100)}% match
               </Badge>
             </div>
