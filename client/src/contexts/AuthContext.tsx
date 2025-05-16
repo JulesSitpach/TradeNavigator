@@ -44,7 +44,20 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-  const [user, setUser] = useState<User | null>(null);
+  // For development, provide a mock user
+  const [user, setUser] = useState<User | null>(() => {
+    if (process.env.NODE_ENV === 'development') {
+      return {
+        id: 1,
+        username: 'DemoUser',
+        email: 'demo@example.com',
+        companyName: 'Trade Solutions Inc.',
+        subscriptionTier: 'global',
+        language: 'en'
+      };
+    }
+    return null;
+  });
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [_, navigate] = useLocation();

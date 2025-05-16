@@ -31,11 +31,11 @@ const TopNavigation = () => {
 
   const NavLink = ({ href, label, active }: { href: string; label: string; active?: boolean }) => (
     <Link href={href}>
-      <a className={`text-sm font-medium px-3 py-2 rounded-md transition-colors ${
+      <span className={`text-sm font-medium px-3 py-2 rounded-md transition-colors ${
         active ? 'text-blue-600' : 'text-gray-700 hover:text-blue-600'
-      }`}>
+      } cursor-pointer`}>
         {label}
-      </a>
+      </span>
     </Link>
   );
 

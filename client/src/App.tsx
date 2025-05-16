@@ -21,6 +21,9 @@ import Subscription from "@/pages/subscription";
 import SpecialPrograms from "@/pages/special-programs";
 
 function PrivateRoute({ component: Component, ...rest }) {
+  // For development, we'll allow access to routes without authentication
+  const isDevelopment = process.env.NODE_ENV === 'development';
+  
   return (
     <Route
       {...rest}
