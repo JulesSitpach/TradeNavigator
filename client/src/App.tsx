@@ -24,6 +24,7 @@ import SpecialPrograms from "@/pages/special-programs";
 // Dashboard pages
 import CostBreakdownDashboard from "@/pages/dashboard/cost-breakdown";
 import AlternativeRoutesDashboard from "@/pages/dashboard/alternative-routes";
+import NewAnalysis from "@/pages/dashboard/new-analysis";
 
 function PrivateRoute({ component: Component, ...rest }: { component: React.ComponentType<any>; path: string; exact?: boolean }) {
   // For development, we'll allow access to routes without authentication
@@ -92,6 +93,7 @@ function Router() {
       <PrivateRoute exact path="/dashboard/market-analysis" component={MarketAnalysis} />
       <PrivateRoute exact path="/dashboard/trade-partners" component={Dashboard} />
       <PrivateRoute exact path="/dashboard/ai-predictions" component={Dashboard} />
+      <PrivateRoute exact path="/dashboard/new-analysis" component={NewAnalysis} />
       
       {/* Fallback to 404 */}
       <Route component={NotFound} />
