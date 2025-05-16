@@ -22,7 +22,7 @@ import Subscription from "@/pages/subscription";
 import SpecialPrograms from "@/pages/special-programs";
 
 // Dashboard pages
-import CostBreakdownDashboard from "@/pages/dashboard/cost-breakdown";
+import CostBreakdownDashboard from "@/pages/dashboard/cost-breakdown-fixed";
 import AlternativeRoutesDashboard from "@/pages/dashboard/alternative-routes";
 import NewAnalysis from "@/pages/dashboard/new-analysis";
 
