@@ -1,0 +1,50 @@
+# Form Redesign Guidelines for Cost Breakdown Dashboard
+
+Here are the key recommendations to transform Form 1 into a more aesthetically pleasing interface like Form 2:
+
+## Color Scheme Improvements
+- Implement a consistent blue color palette (#1e88e5 for primary actions)
+- Use light blue (#e3f2fd) as background color for filled form fields
+- Apply subtle gray borders (#e0e0e0) to form elements for definition without heaviness
+- Maintain white backgrounds for sections with subtle gray section dividers
+
+## Layout Enhancements
+- Increase whitespace between form fields (minimum 16px vertical spacing)
+- Improve horizontal alignment of related fields (create proper grid structure)
+- Group related fields more logically (e.g., all dimensions fields should align)
+- Create consistent field widths within each section
+- Reduce the height of text areas to match other form elements
+
+## Visual Hierarchy Refinements
+- Apply subtle background color (#f5f5f5) to section headers
+- Increase section header font weight (600) and size (18px)
+- Create more distinct separation between Product Details and Shipping Details
+- Use lighter color for helper text (#757575) and smaller font size (12px)
+
+## Input Field Styling
+- Apply consistent corner radius (4px) to all form elements
+- Use consistent padding within fields (12px horizontal, 8px vertical)
+- Add subtle box-shadow on focus state
+- Style dropdowns consistently with a right-aligned caret icon
+- Implement hover states for interactive elements
+
+## Interactive Element Improvements
+- Create more distinct unit toggles (kg/lb, cm/in) with selected state clearly highlighted
+- Make the HS code validation indicator more subtle yet clear (green checkmark)
+- Move the "Lookup" button inline with its field
+- Style the primary action button ("Calculate Cost Analysis") with higher contrast blue background, white text, and proper padding
+
+## Action Button Treatment
+- Position the "Calculate Cost Analysis" button at bottom right
+- Increase button size (padding: 12px 24px)
+- Apply rounded corners (4px)
+- Add subtle hover effect (darken by 10%)
+- Use white text (#ffffff) on blue background (#1e88e5)
+
+## Specific Field Improvements
+- Simplify HS Code lookup with inline validation
+- Reorganize dimension fields into a single row with proper alignment
+- Make unit toggle buttons (kg/lb, cm/in) more prominent and touch-friendly
+- Improve dropdown styling with consistent appearance and behavior
+
+These changes will transform Form 1 to match the more professional, clean aesthetic of Form 2 while maintaining all the necessary functionality.
