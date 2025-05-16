@@ -1548,6 +1548,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // AI product classification endpoint
+  app.post('/api/ai/classify-product', async (req, res) => {
+    try {
+      const { description, category } = req.body;
+      
+      if (!description || !category) {
+        return res.status(400).json({ 
+          message: 'Product description and category are required' 
+        });
+      }
+      
+      const result = await openaiService.getHSCodeSuggestion(description);
+      
+      // Add category-specific alternative codes
+      let alternativeCodes = [];
+      
+      if (category === 'electronics') {
+        alternativeCodes = ['8471.41', '8517.12', '8518.30'];
+      } else if (category === 'textiles') {
+        alternativeCodes = ['6109.90', '6204.43', '6110.20'];
+      } else if (category === 'automotive') {
+        alternativeCodes = ['8708.29', '8708.30', '8407.34'];
+      } else if (category === 'food') {
+        alternativeCodes = ['2101.11', '2106.90', '0901.90'];
+      } else if (category === 'chemicals') {
+        alternativeCodes = ['3824.99', '2933.99', '3402.90'];
+      } else if (category === 'machinery') {
+        alternativeCodes = ['8479.89', '8422.30', '8428.90'];
+      }
+      
+      res.json({
+        hsCode: result.hsCode,
+        confidence: result.confidence,
+        alternativeCodes: alternativeCodes,
+        description: result.description
+      });
+    } catch (error) {
+      console.error('Error classifying product:', error);
+      res.status(500).json({ 
+        message: 'Failed to classify product', 
+        error: error.message 
+      });
+    }
+  });
+
   // Create HTTP server
   const httpServer = createServer(app);
 
