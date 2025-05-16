@@ -52,9 +52,9 @@ const TopNavigation = () => {
           <div className="flex items-center">
             <div className="flex-shrink-0">
               <Link href="/">
-                <a className="flex items-center">
+                <span className="flex items-center cursor-pointer">
                   <span className="text-xl font-bold text-blue-600">Trade<span className="text-gray-900">Navigator</span></span>
-                </a>
+                </span>
               </Link>
             </div>
             <nav className="hidden md:ml-8 md:flex md:space-x-4">
@@ -135,66 +135,40 @@ const TopNavigation = () => {
         <div className="px-4 sm:px-6 lg:px-8 border-t border-gray-200">
           <div className="flex overflow-x-auto py-2 space-x-6">
             <Link href="/dashboard">
-              <a className={`whitespace-nowrap text-sm font-medium pb-3 ${isActive('/dashboard') ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500 hover:text-gray-700'}`}>
+              <span className={`whitespace-nowrap text-sm font-medium pb-3 cursor-pointer ${isActive('/dashboard') ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500 hover:text-gray-700'}`}>
                 Overview
-              </a>
+              </span>
             </Link>
             <Link href="/dashboard/cost-breakdown">
-              <a className={`whitespace-nowrap text-sm font-medium pb-3 ${isActive('/dashboard/cost-breakdown') ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500 hover:text-gray-700'}`}>
+              <span className={`whitespace-nowrap text-sm font-medium pb-3 cursor-pointer ${isActive('/dashboard/cost-breakdown') ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500 hover:text-gray-700'}`}>
                 Cost Breakdown
-              </a>
+              </span>
             </Link>
             <Link href="/dashboard/alternative-routes">
-              <a className={`whitespace-nowrap text-sm font-medium pb-3 ${isActive('/dashboard/alternative-routes') ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500 hover:text-gray-700'}`}>
+              <span className={`whitespace-nowrap text-sm font-medium pb-3 cursor-pointer ${isActive('/dashboard/alternative-routes') ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500 hover:text-gray-700'}`}>
                 Alternative Routes
-              </a>
+              </span>
             </Link>
             <Link href="/dashboard/tariff-analysis">
-              <a className={`whitespace-nowrap text-sm font-medium pb-3 ${isActive('/dashboard/tariff-analysis') ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500 hover:text-gray-700'}`}>
+              <span className={`whitespace-nowrap text-sm font-medium pb-3 cursor-pointer ${isActive('/dashboard/tariff-analysis') ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500 hover:text-gray-700'}`}>
                 Tariff Analysis
-              </a>
+              </span>
             </Link>
             <Link href="/dashboard/regulations">
-              <a className={`whitespace-nowrap text-sm font-medium pb-3 ${isActive('/dashboard/regulations') ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500 hover:text-gray-700'}`}>
+              <span className={`whitespace-nowrap text-sm font-medium pb-3 cursor-pointer ${isActive('/dashboard/regulations') ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500 hover:text-gray-700'}`}>
                 Regulations
-              </a>
+              </span>
             </Link>
             <Link href="/dashboard/visualizations">
-              <a className={`whitespace-nowrap text-sm font-medium pb-3 ${isActive('/dashboard/visualizations') ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500 hover:text-gray-700'}`}>
+              <span className={`whitespace-nowrap text-sm font-medium pb-3 cursor-pointer ${isActive('/dashboard/visualizations') ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500 hover:text-gray-700'}`}>
                 Visualizations
-              </a>
+              </span>
             </Link>
           </div>
         </div>
       )}
 
-      {/* Additional tabs for other pages if needed */}
-      {location.startsWith('/product-analysis') && (
-        <div className="px-4 sm:px-6 lg:px-8 border-t border-gray-200">
-          <div className="flex overflow-x-auto py-2 space-x-6">
-            <Link href="/product-analysis/exemptions">
-              <a className={`whitespace-nowrap text-sm font-medium pb-3 ${isActive('/product-analysis/exemptions') ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500 hover:text-gray-700'}`}>
-                Exemptions
-              </a>
-            </Link>
-            <Link href="/product-analysis/duty-drawback">
-              <a className={`whitespace-nowrap text-sm font-medium pb-3 ${isActive('/product-analysis/duty-drawback') ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500 hover:text-gray-700'}`}>
-                Duty Drawback
-              </a>
-            </Link>
-            <Link href="/product-analysis/special-programs">
-              <a className={`whitespace-nowrap text-sm font-medium pb-3 ${isActive('/product-analysis/special-programs') ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500 hover:text-gray-700'}`}>
-                Special Programs
-              </a>
-            </Link>
-            <Link href="/product-analysis/market-analysis">
-              <a className={`whitespace-nowrap text-sm font-medium pb-3 ${isActive('/product-analysis/market-analysis') ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500 hover:text-gray-700'}`}>
-                Market Analysis
-              </a>
-            </Link>
-          </div>
-        </div>
-      )}
+      {/* Product analysis page uses its own tabs via Tabs component */}
     </header>
   );
 };
