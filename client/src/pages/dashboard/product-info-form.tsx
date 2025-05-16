@@ -175,12 +175,31 @@ const ProductInfoForm = () => {
                         <SelectValue placeholder="Select a country" />
                       </SelectTrigger>
                       <SelectContent>
+                        {/* Major Manufacturing Origins */}
                         <SelectItem value="cn">China</SelectItem>
-                        <SelectItem value="in">India</SelectItem>
                         <SelectItem value="vn">Vietnam</SelectItem>
-                        <SelectItem value="bd">Bangladesh</SelectItem>
+                        <SelectItem value="in">India</SelectItem>
+                        <SelectItem value="mx">Mexico</SelectItem>
+                        <SelectItem value="my">Malaysia</SelectItem>
                         <SelectItem value="th">Thailand</SelectItem>
                         <SelectItem value="id">Indonesia</SelectItem>
+                        <SelectItem value="bd">Bangladesh</SelectItem>
+                        <SelectItem value="kr">South Korea</SelectItem>
+                        <SelectItem value="tw">Taiwan</SelectItem>
+                        <SelectItem value="jp">Japan</SelectItem>
+                        
+                        {/* South American Origins */}
+                        <SelectItem value="br">Brazil</SelectItem>
+                        <SelectItem value="co">Colombia</SelectItem>
+                        <SelectItem value="cl">Chile</SelectItem>
+                        <SelectItem value="ar">Argentina</SelectItem>
+                        <SelectItem value="pe">Peru</SelectItem>
+                        
+                        {/* Central American Origins */}
+                        <SelectItem value="pa">Panama</SelectItem>
+                        <SelectItem value="cr">Costa Rica</SelectItem>
+                        <SelectItem value="do">Dominican Republic</SelectItem>
+                        <SelectItem value="gt">Guatemala</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -197,12 +216,36 @@ const ProductInfoForm = () => {
                         <SelectValue placeholder="Select a country" />
                       </SelectTrigger>
                       <SelectContent>
+                        {/* Major Import Destinations */}
                         <SelectItem value="us">United States</SelectItem>
                         <SelectItem value="ca">Canada</SelectItem>
                         <SelectItem value="eu">European Union</SelectItem>
+                        <SelectItem value="de">Germany</SelectItem>
+                        <SelectItem value="fr">France</SelectItem>
+                        <SelectItem value="it">Italy</SelectItem>
+                        <SelectItem value="nl">Netherlands</SelectItem>
+                        <SelectItem value="es">Spain</SelectItem>
                         <SelectItem value="uk">United Kingdom</SelectItem>
                         <SelectItem value="au">Australia</SelectItem>
                         <SelectItem value="jp">Japan</SelectItem>
+                        <SelectItem value="kr">South Korea</SelectItem>
+                        <SelectItem value="sg">Singapore</SelectItem>
+                        <SelectItem value="br">Brazil</SelectItem>
+                        <SelectItem value="ae">UAE</SelectItem>
+                        <SelectItem value="sa">Saudi Arabia</SelectItem>
+                        
+                        {/* South American Destinations */}
+                        <SelectItem value="co">Colombia</SelectItem>
+                        <SelectItem value="cl">Chile</SelectItem>
+                        <SelectItem value="ar">Argentina</SelectItem>
+                        <SelectItem value="pe">Peru</SelectItem>
+                        
+                        {/* Central American Destinations */}
+                        <SelectItem value="mx">Mexico</SelectItem>
+                        <SelectItem value="pa">Panama</SelectItem>
+                        <SelectItem value="cr">Costa Rica</SelectItem>
+                        <SelectItem value="do">Dominican Republic</SelectItem>
+                        <SelectItem value="gt">Guatemala</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
