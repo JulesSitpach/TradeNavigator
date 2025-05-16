@@ -9,6 +9,7 @@ import { FaCircleInfo } from "react-icons/fa6";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import CopilotAssistant from "@/components/ai/CopilotAssistant";
 
 // Sample data structure for cost breakdown - to be used when no data is available
 const sampleData = {
