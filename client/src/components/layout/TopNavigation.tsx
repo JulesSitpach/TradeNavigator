@@ -11,12 +11,13 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { FaBell, FaChevronDown, FaChevronUp, FaLanguage } from 'react-icons/fa6';
+import { FaBell, FaChevronDown, FaChevronUp, FaLanguage, FaEllipsisH } from 'react-icons/fa6';
 
 const TopNavigation = () => {
   const { language, setLanguage } = useContext(LanguageContext);
   const { user, logout } = useContext(AuthContext);
   const [location] = useLocation();
+  const [showMoreMenu, setShowMoreMenu] = useState(false);
 
   const languageLabels = {
     en: 'English',
@@ -28,6 +29,33 @@ const TopNavigation = () => {
     if (!name) return 'U';
     return name.split(' ').map(n => n[0]).join('').toUpperCase();
   };
+
+  const primaryNavItems = [
+    { href: "/", label: "Home" },
+    { href: "/dashboard", label: "Dashboard" },
+    { href: "/special-programs", label: "Special Programs" },
+    { href: "/subscription", label: "Pricing" }
+  ];
+
+  // Define main feature navigation items
+  const featureNavItems = [
+    { href: "/overview", label: "Overview" },
+    { href: "/cost-breakdown", label: "Cost Breakdown" },
+    { href: "/alternative-routes", label: "Alternative Routes" },
+    { href: "/tariff-analysis", label: "Tariff Analysis" },
+    { href: "/regulations", label: "Regulations" },
+    { href: "/visualizations", label: "Visualizations" },
+    { href: "/exemptions", label: "Exemptions" },
+    { href: "/duty-drawback", label: "Duty Drawback" }
+  ];
+
+  // More dropdown items
+  const moreNavItems = [
+    { href: "/special-programs", label: "Special Programs" },
+    { href: "/market-analysis", label: "Market Analysis" },
+    { href: "/trade-partners", label: "Trade Partners" },
+    { href: "/ai-predictions", label: "AI Predictions" }
+  ];
 
   const NavLink = ({ href, label, active }: { href: string; label: string; active?: boolean }) => (
     <Link href={href}>
@@ -58,10 +86,14 @@ const TopNavigation = () => {
               </Link>
             </div>
             <nav className="hidden md:ml-8 md:flex md:space-x-4">
-              <NavLink href="/" label="Home" active={isActive('/')} />
-              <NavLink href="/dashboard" label="Dashboard" active={isActive('/dashboard')} />
-              <NavLink href="/special-programs" label="Special Programs" active={isActive('/special-programs')} />
-              <NavLink href="/subscription" label="Pricing" active={isActive('/subscription')} />
+              {primaryNavItems.map(item => (
+                <NavLink 
+                  key={item.href}
+                  href={item.href} 
+                  label={item.label} 
+                  active={isActive(item.href)} 
+                />
+              ))}
             </nav>
           </div>
 
@@ -130,45 +162,39 @@ const TopNavigation = () => {
         </div>
       </div>
 
-      {/* Secondary navigation - tabs */}
-      {location.startsWith('/dashboard') && (
-        <div className="px-4 sm:px-6 lg:px-8 border-t border-gray-200">
-          <div className="flex overflow-x-auto py-2 space-x-6">
-            <Link href="/dashboard">
-              <span className={`whitespace-nowrap text-sm font-medium pb-3 cursor-pointer ${isActive('/dashboard') ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500 hover:text-gray-700'}`}>
-                Overview
+      {/* Global features navigation - always visible on all pages */}
+      <div className="px-4 sm:px-6 lg:px-8 border-t border-gray-200">
+        <div className="flex overflow-x-auto py-2 space-x-4">
+          {featureNavItems.map(item => (
+            <Link key={item.href} href={item.href}>
+              <span className={`whitespace-nowrap text-sm font-medium pb-3 cursor-pointer ${
+                isActive(item.href) ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500 hover:text-gray-700'
+              }`}>
+                {item.label}
               </span>
             </Link>
-            <Link href="/dashboard/cost-breakdown">
-              <span className={`whitespace-nowrap text-sm font-medium pb-3 cursor-pointer ${isActive('/dashboard/cost-breakdown') ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500 hover:text-gray-700'}`}>
-                Cost Breakdown
+          ))}
+          
+          {/* More dropdown */}
+          <DropdownMenu open={showMoreMenu} onOpenChange={setShowMoreMenu}>
+            <DropdownMenuTrigger asChild>
+              <span className="whitespace-nowrap text-sm font-medium pb-3 cursor-pointer text-gray-500 hover:text-gray-700 flex items-center">
+                More
+                <FaChevronDown className="ml-1 text-xs" />
               </span>
-            </Link>
-            <Link href="/dashboard/alternative-routes">
-              <span className={`whitespace-nowrap text-sm font-medium pb-3 cursor-pointer ${isActive('/dashboard/alternative-routes') ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500 hover:text-gray-700'}`}>
-                Alternative Routes
-              </span>
-            </Link>
-            <Link href="/dashboard/tariff-analysis">
-              <span className={`whitespace-nowrap text-sm font-medium pb-3 cursor-pointer ${isActive('/dashboard/tariff-analysis') ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500 hover:text-gray-700'}`}>
-                Tariff Analysis
-              </span>
-            </Link>
-            <Link href="/dashboard/regulations">
-              <span className={`whitespace-nowrap text-sm font-medium pb-3 cursor-pointer ${isActive('/dashboard/regulations') ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500 hover:text-gray-700'}`}>
-                Regulations
-              </span>
-            </Link>
-            <Link href="/dashboard/visualizations">
-              <span className={`whitespace-nowrap text-sm font-medium pb-3 cursor-pointer ${isActive('/dashboard/visualizations') ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500 hover:text-gray-700'}`}>
-                Visualizations
-              </span>
-            </Link>
-          </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {moreNavItems.map(item => (
+                <Link key={item.href} href={item.href}>
+                  <DropdownMenuItem className={isActive(item.href) ? "text-blue-600 font-medium" : ""}>
+                    {item.label}
+                  </DropdownMenuItem>
+                </Link>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
-      )}
-
-      {/* Product analysis page uses its own tabs via Tabs component */}
+      </div>
     </header>
   );
 };
