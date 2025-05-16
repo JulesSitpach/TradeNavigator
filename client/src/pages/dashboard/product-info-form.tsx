@@ -7,6 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import PageHeader from "@/components/common/PageHeader";
 import { FaArrowLeft, FaSearch } from "react-icons/fa";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
+import { Loader2, Check, AlertCircle } from "lucide-react";
 import "../../styles/form-styles.css";
 
 const ProductInfoForm = () => {
@@ -43,29 +46,61 @@ const ProductInfoForm = () => {
     });
   };
 
-  // Function to simulate looking up HS code using AI assistant
+  // Function to look up HS code using AI Copilot
+  const [isLookingUpHsCode, setIsLookingUpHsCode] = useState(false);
+  const [copilotSuggestions, setCopilotSuggestions] = useState<Array<{code: string, description: string, confidence: number}>>([]);
+  const [showCopilotModal, setShowCopilotModal] = useState(false);
+
   const handleHsCodeLookup = () => {
     if (!formValues.productDescription || !formValues.productCategory) {
       alert("Please enter a product description and select a category first");
       return;
     }
 
-    // Simulate API call delay
+    setIsLookingUpHsCode(true);
+    
+    // In a real implementation, this would call the OpenAI API
+    // Simulate API call for now
     setTimeout(() => {
-      let hsCode = "";
-      // Set a demo HS code based on category
+      let suggestions = [];
+      
+      // Generate relevant suggestions based on category
       if (formValues.productCategory === "textiles") {
-        hsCode = "6109.10";
+        suggestions = [
+          { code: "6109.10", description: "T-shirts, singlets and other vests, knitted or crocheted, of cotton", confidence: 0.92 },
+          { code: "6104.62", description: "Women's or girls' trousers, overalls, breeches and shorts, knitted or crocheted, of cotton", confidence: 0.78 },
+          { code: "6110.20", description: "Sweaters, pullovers, sweatshirts and similar articles, knitted or crocheted, of cotton", confidence: 0.65 }
+        ];
       } else if (formValues.productCategory === "electronics") {
-        hsCode = "8517.62";
+        suggestions = [
+          { code: "8517.62", description: "Machines for the reception, conversion and transmission or regeneration of voice, images or other data", confidence: 0.94 },
+          { code: "8471.30", description: "Portable automatic data processing machines, weighing not more than 10 kg", confidence: 0.87 },
+          { code: "8518.30", description: "Headphones and earphones, whether or not combined with a microphone", confidence: 0.72 }
+        ];
       } else if (formValues.productCategory === "food") {
-        hsCode = "2106.90";
+        suggestions = [
+          { code: "2106.90", description: "Food preparations not elsewhere specified or included", confidence: 0.90 },
+          { code: "1806.90", description: "Chocolate and other food preparations containing cocoa", confidence: 0.82 },
+          { code: "2202.99", description: "Non-alcoholic beverages, not including fruit or vegetable juices", confidence: 0.74 }
+        ];
       } else {
-        hsCode = "8479.89";
+        suggestions = [
+          { code: "8479.89", description: "Machines and mechanical appliances having individual functions", confidence: 0.85 },
+          { code: "3926.90", description: "Other articles of plastics", confidence: 0.76 },
+          { code: "7326.90", description: "Other articles of iron or steel", confidence: 0.67 }
+        ];
       }
       
-      handleInputChange("hsCode", hsCode);
-    }, 1000);
+      setCopilotSuggestions(suggestions);
+      setShowCopilotModal(true);
+      setIsLookingUpHsCode(false);
+    }, 1500);
+  };
+  
+  // Handle selecting a suggestion from the AI Copilot
+  const handleSelectHsCode = (hsCode: string) => {
+    handleInputChange("hsCode", hsCode);
+    setShowCopilotModal(false);
   };
 
   // Handle form submission
@@ -76,8 +111,63 @@ const ProductInfoForm = () => {
     // Navigate to results page or show analysis
   };
 
+  // AI Copilot dialog component to display HS code suggestions
+  const renderAICopilotDialog = () => (
+    <Dialog open={showCopilotModal} onOpenChange={setShowCopilotModal}>
+      <DialogContent className="sm:max-w-[600px]">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <AlertCircle className="h-5 w-5 text-blue-500" />
+            AI Copilot HS Code Suggestions
+          </DialogTitle>
+        </DialogHeader>
+        
+        <div className="my-6">
+          <p className="text-sm text-neutral-500 mb-4">
+            Based on your product description and category, here are the most likely HS codes:
+          </p>
+          
+          <div className="space-y-4">
+            {copilotSuggestions.map((suggestion, index) => (
+              <div 
+                key={index}
+                className="border rounded-lg p-4 hover:bg-neutral-50 cursor-pointer transition-colors"
+                onClick={() => handleSelectHsCode(suggestion.code)}
+              >
+                <div className="flex justify-between items-center mb-2">
+                  <h3 className="font-medium text-lg">
+                    {suggestion.code}
+                  </h3>
+                  <Badge className={
+                    suggestion.confidence > 0.85 
+                      ? "bg-green-100 text-green-800" 
+                      : suggestion.confidence > 0.7 
+                      ? "bg-yellow-100 text-yellow-800" 
+                      : "bg-neutral-100 text-neutral-800"
+                  }>
+                    {Math.round(suggestion.confidence * 100)}% match
+                  </Badge>
+                </div>
+                <p className="text-sm text-neutral-600">{suggestion.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+        
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setShowCopilotModal(false)}>
+            Cancel
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+
   return (
     <>
+      {/* Render the AI Copilot dialog */}
+      {renderAICopilotDialog()}
+      
       <PageHeader
         title="Product & Shipping Details"
         description="Enter information about your product and shipping requirements"

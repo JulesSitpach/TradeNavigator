@@ -1,0 +1,85 @@
+How the AI Copilot Functions in the Cost Breakdown Dashboard
+
+The Cost Breakdown Dashboard incorporates an AI copilot feature that helps users understand and optimize their international shipping costs. Here's how it functions:
+
+Core Capabilities
+
+Contextual Assistance
+
+Analyzes the current product details
+Provides real-time guidance based on the specific shipment scenario
+Offers contextually relevant tips based on product category
+
+Cost Optimization Suggestions
+
+Identifies potential cost-saving opportunities
+Suggests alternative shipping methods to reduce costs
+Recommends optimal timing for shipments to avoid peak season surcharges
+
+Regulatory Guidance
+
+Highlights country-specific requirements
+Warns about potential regulatory issues with electronics shipments
+Explains documentation needed for clearing customs
+
+Trade Agreement Analysis
+
+Checks for applicable agreements between countries
+Calculates potential duty savings from preferential treatment
+Walks users through certificate of origin requirements
+
+Decision Support
+
+Helps interpret complex duty calculations
+Explains why certain costs apply to this specific shipment
+Answers questions about shipping alternatives
+User Interaction Method
+
+The copilot appears in several ways throughout the dashboard:
+
+Interactive Chat Interface
+
+Allows users to ask specific questions about their shipment
+Provides natural language responses explaining complex trade concepts
+Maintains conversation context throughout the session
+
+Inline Suggestions
+
+Appears next to cost components with optimization tips
+Highlights unusual or potentially incorrect information
+Suggests refinements to product information for better results
+
+Proactive Alerts
+
+Notifies about potential compliance issues
+Alerts users to unusually high costs that might indicate errors
+Warns about upcoming regulatory changes that could affect costs
+
+Educational Support
+
+Explains industry terminology in plain language
+Provides context for why certain fees apply
+Breaks down complex calculations into understandable steps
+Technical Implementation
+
+The copilot feature uses several advanced technologies:
+
+AI Model Integration
+
+Processes shipment details to generate relevant insights
+Uses product classification to provide industry-specific guidance
+Learns from common patterns to improve recommendations
+
+Trade Database Connection
+
+References up-to-date tariff information
+Checks current trade agreements and regulatory requirements
+Verifies HS code classifications for accuracy
+
+Context Awareness
+
+Maintains state across the different sections of the dashboard
+Remembers previous questions and answers
+Adapts guidance based on user's expertise level
+
+This AI-powered assistance makes the Cost Breakdown Dashboard more valuable, especially for small-to-medium businesses that may not have in-house trade expertise, helping them navigate the complexities of international shipping with confidence.
