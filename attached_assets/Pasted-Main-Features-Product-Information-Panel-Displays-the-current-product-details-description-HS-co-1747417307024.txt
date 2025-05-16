@@ -1,0 +1,48 @@
+Main Features
+Product Information Panel
+
+Displays the current product details (description, HS code, category)
+Shows origin and destination countries
+Indicates product value and quantity
+Landed Cost Calculation
+
+Breaks down the total landed cost into component parts
+Shows product value, shipping costs, insurance, duties, taxes, and other fees
+Calculates the final landed cost per unit and in total
+Duty Rate Information
+
+Displays the applicable duty rate based on HS code, origin, and destination
+Shows any applicable trade agreements or preferential rates
+Explains how the duty amount was calculated
+Tax Calculation
+
+Calculates VAT, GST, or sales tax based on destination country
+Shows tax rates and amounts
+Explains taxation thresholds and exemptions if applicable
+Shipping Cost Analysis
+
+Compares different shipping methods (air, sea, rail, road)
+Shows estimated transit times and costs for each method
+Highlights the recommended shipping method based on cost/time preferences
+Additional Fees Breakdown
+
+Lists customs processing fees
+Shows documentation and filing fees
+Includes handling, insurance, and other miscellaneous charges
+Visualization Elements
+
+Pie chart showing the proportion of each cost component
+Bar chart comparing different shipping methods
+Cost trend analysis over time for recurring shipments
+Cost Optimization Tips
+
+Provides actionable recommendations to reduce costs
+Suggests potential duty savings strategies
+Highlights areas where costs could be optimized
+Key Benefits for SMBs
+Complete Transparency: Shows every cost component with no hidden fees
+Predictable Budgeting: Allows businesses to accurately forecast the total landed cost
+Cost Comparison: Enables side-by-side comparison of different shipping scenarios
+Decision Support: Helps make informed decisions about product sourcing and shipping
+Educational Element: Explains complex duty and tax calculations in simple terms
+The Cost Breakdown Dashboard serves as the foundation for the other specialized dashboards, providing the core data that powers the Tariff Analysis, Regulations, and Alternative Routes views. It helps small and medium businesses understand their true cost of international trade and make data-driven decisions about their shipping strategies.
