@@ -90,7 +90,7 @@ export function TopNavigation() {
       </div>
 
       {/* Product Analysis Navigation - Simple flexible tabs that wrap naturally */}
-      {location.startsWith('/dashboard/') && (
+      {(location === '/dashboard' || location.startsWith('/dashboard/')) && (
         <div className="flexible-tabs" ref={tabsRef}>
           <Link href="/dashboard/overview">Overview</Link>
           <Link href="/dashboard/cost-breakdown">Cost Breakdown</Link>

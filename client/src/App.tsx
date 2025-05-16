@@ -75,6 +75,20 @@ function Router() {
       <PrivateRoute exact path="/subscription" component={Subscription} />
       <PrivateRoute exact path="/special-programs" component={SpecialPrograms} />
       
+      {/* Dashboard Flexible Tabs Routes */}
+      <PrivateRoute exact path="/dashboard/overview" component={Dashboard} />
+      <PrivateRoute exact path="/dashboard/cost-breakdown" component={Dashboard} />
+      <PrivateRoute exact path="/dashboard/alternative-routes" component={Dashboard} />
+      <PrivateRoute exact path="/dashboard/tariff-analysis" component={Dashboard} />
+      <PrivateRoute exact path="/dashboard/regulations" component={Dashboard} />
+      <PrivateRoute exact path="/dashboard/visualizations" component={Dashboard} />
+      <PrivateRoute exact path="/dashboard/exemptions" component={Dashboard} />
+      <PrivateRoute exact path="/dashboard/duty-drawback" component={Dashboard} />
+      <PrivateRoute exact path="/dashboard/special-programs" component={SpecialPrograms} />
+      <PrivateRoute exact path="/dashboard/market-analysis" component={MarketAnalysis} />
+      <PrivateRoute exact path="/dashboard/trade-partners" component={Dashboard} />
+      <PrivateRoute exact path="/dashboard/ai-predictions" component={Dashboard} />
+      
       {/* Fallback to 404 */}
       <Route component={NotFound} />
     </Switch>
