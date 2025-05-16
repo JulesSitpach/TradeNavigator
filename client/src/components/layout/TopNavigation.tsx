@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { FaBell, FaChevronDown, FaChevronUp, FaLanguage, FaEllipsisH } from 'react-icons/fa6';
+import { FaBell, FaChevronDown, FaChevronUp, FaLanguage } from 'react-icons/fa6';
 
 const TopNavigation = () => {
   const { language, setLanguage } = useContext(LanguageContext);
@@ -164,11 +164,11 @@ const TopNavigation = () => {
 
       {/* Global features navigation - always visible on all pages */}
       <div className="px-4 sm:px-6 lg:px-8 border-t border-gray-200">
-        <div className="flex overflow-x-auto py-2 space-x-4">
+        <div className="flex overflow-x-auto py-2 space-x-4 relative">
           {featureNavItems.map(item => (
             <Link key={item.href} href={item.href}>
               <span className={`whitespace-nowrap text-sm font-medium pb-3 cursor-pointer ${
-                isActive(item.href) ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500 hover:text-gray-700'
+                isActive(item.href) ? 'text-blue-600 border-b-2 border-blue-600 font-semibold' : 'text-gray-500 hover:text-gray-700'
               }`}>
                 {item.label}
               </span>
@@ -183,7 +183,7 @@ const TopNavigation = () => {
                 <FaChevronDown className="ml-1 text-xs" />
               </span>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent align="end" className="w-48">
               {moreNavItems.map(item => (
                 <Link key={item.href} href={item.href}>
                   <DropdownMenuItem className={isActive(item.href) ? "text-blue-600 font-medium" : ""}>
@@ -193,6 +193,9 @@ const TopNavigation = () => {
               ))}
             </DropdownMenuContent>
           </DropdownMenu>
+          
+          {/* Responsive enhancements - show shadow indicator for horizontal scroll */}
+          <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white to-transparent pointer-events-none hidden md:block"></div>
         </div>
       </div>
     </header>
