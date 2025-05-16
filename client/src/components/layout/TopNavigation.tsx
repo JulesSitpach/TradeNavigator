@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'wouter';
 import { LanguageContext } from '@/contexts/LanguageContext';
 import { AuthContext } from '@/contexts/AuthContext';
@@ -11,13 +11,14 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { FaBell, FaChevronDown, FaChevronUp, FaLanguage } from 'react-icons/fa6';
+import { FaBell, FaChevronDown, FaChevronUp, FaLanguage, FaChevronLeft, FaChevronRight } from 'react-icons/fa6';
 
 const TopNavigation = () => {
   const { language, setLanguage } = useContext(LanguageContext);
   const { user, logout } = useContext(AuthContext);
   const [location] = useLocation();
-  const [showMoreMenu, setShowMoreMenu] = useState(false);
+  const tabsContainerRef = useRef<HTMLUListElement>(null);
+  const tabNavigationRef = useRef<HTMLDivElement>(null);
 
   const languageLabels = {
     en: 'English',
@@ -30,75 +31,111 @@ const TopNavigation = () => {
     return name.split(' ').map(n => n[0]).join('').toUpperCase();
   };
 
-  const primaryNavItems = [
-    { href: "/", label: "Home" },
+  // Define items exactly as in the provided HTML structure
+  const primaryMenuItems = [
+    { href: "/home", label: "Home" },
     { href: "/dashboard", label: "Dashboard" },
     { href: "/special-programs", label: "Special Programs" },
-    { href: "/subscription", label: "Pricing" }
+    { href: "/pricing", label: "Pricing" }
   ];
 
-  // Define main feature navigation items
-  const featureNavItems = [
-    { href: "/overview", label: "Overview" },
-    { href: "/cost-breakdown", label: "Cost Breakdown" },
-    { href: "/alternative-routes", label: "Alternative Routes" },
-    { href: "/tariff-analysis", label: "Tariff Analysis" },
-    { href: "/regulations", label: "Regulations" },
-    { href: "/visualizations", label: "Visualizations" },
-    { href: "/exemptions", label: "Exemptions" },
-    { href: "/duty-drawback", label: "Duty Drawback" }
+  const tabNavigationItems = [
+    { href: "/dashboard/overview", label: "Overview" },
+    { href: "/dashboard/cost-breakdown", label: "Cost Breakdown" },
+    { href: "/dashboard/alternative-routes", label: "Alternative Routes" },
+    { href: "/dashboard/tariff-analysis", label: "Tariff Analysis" },
+    { href: "/dashboard/regulations", label: "Regulations" },
+    { href: "/dashboard/visualizations", label: "Visualizations" },
+    { href: "/dashboard/exemptions", label: "Exemptions" },
+    { href: "/dashboard/duty-drawback", label: "Duty Drawback" },
+    { href: "/dashboard/special-programs", label: "Special Programs" },
+    { href: "/dashboard/market-analysis", label: "Market Analysis" },
+    { href: "/dashboard/trade-partners", label: "Trade Partners" },
+    { href: "/dashboard/ai-predictions", label: "AI Predictions" }
   ];
-
-  // More dropdown items
-  const moreNavItems = [
-    { href: "/special-programs", label: "Special Programs" },
-    { href: "/market-analysis", label: "Market Analysis" },
-    { href: "/trade-partners", label: "Trade Partners" },
-    { href: "/ai-predictions", label: "AI Predictions" }
-  ];
-
-  const NavLink = ({ href, label, active }: { href: string; label: string; active?: boolean }) => (
-    <Link href={href}>
-      <span className={`text-sm font-medium px-3 py-2 rounded-md transition-colors ${
-        active ? 'text-blue-600' : 'text-gray-700 hover:text-blue-600'
-      } cursor-pointer`}>
-        {label}
-      </span>
-    </Link>
-  );
 
   const isActive = (path: string) => {
     return location === path;
   };
 
+  // Check if tabs are overflowing
+  const checkTabOverflow = () => {
+    const tabsContainer = tabsContainerRef.current;
+    const tabNavigation = tabNavigationRef.current;
+    
+    if (tabsContainer && tabNavigation) {
+      const isOverflowing = tabsContainer.scrollWidth > tabsContainer.clientWidth;
+      
+      if (isOverflowing) {
+        tabNavigation.classList.add('has-overflow');
+      } else {
+        tabNavigation.classList.remove('has-overflow');
+      }
+    }
+  };
+
+  // Scroll tabs left
+  const scrollTabsLeft = () => {
+    if (tabsContainerRef.current) {
+      tabsContainerRef.current.scrollBy({ left: -200, behavior: 'smooth' });
+    }
+  };
+
+  // Scroll tabs right
+  const scrollTabsRight = () => {
+    if (tabsContainerRef.current) {
+      tabsContainerRef.current.scrollBy({ left: 200, behavior: 'smooth' });
+    }
+  };
+
+  useEffect(() => {
+    // Check for overflow when component mounts or window resizes
+    checkTabOverflow();
+    
+    const handleResize = () => {
+      checkTabOverflow();
+    };
+    
+    window.addEventListener('resize', handleResize);
+    
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
   return (
-    <header className="bg-white border-b border-gray-200">
-      {/* Main navigation */}
-      <div className="px-4 sm:px-6 lg:px-8">
+    <nav className="main-navigation bg-white border-b border-gray-200">
+      {/* Primary Navigation */}
+      <div className="primary-nav px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Logo and primary nav */}
+          {/* Logo */}
           <div className="flex items-center">
-            <div className="flex-shrink-0">
+            <div className="logo flex-shrink-0">
               <Link href="/">
                 <span className="flex items-center cursor-pointer">
                   <span className="text-xl font-bold text-blue-600">Trade<span className="text-gray-900">Navigator</span></span>
                 </span>
               </Link>
             </div>
-            <nav className="hidden md:ml-8 md:flex md:space-x-4">
-              {primaryNavItems.map(item => (
-                <NavLink 
-                  key={item.href}
-                  href={item.href} 
-                  label={item.label} 
-                  active={isActive(item.href)} 
-                />
+            
+            {/* Primary Menu */}
+            <ul className="primary-menu hidden md:ml-8 md:flex md:space-x-4">
+              {primaryMenuItems.map(item => (
+                <li key={item.href}>
+                  <Link href={item.href}>
+                    <span className={`text-sm font-medium px-3 py-2 rounded-md transition-colors ${
+                      isActive(item.href) ? 'text-blue-600 active' : 'text-gray-700 hover:text-blue-600'
+                    } cursor-pointer block`}>
+                      {item.label}
+                    </span>
+                  </Link>
+                </li>
               ))}
-            </nav>
+            </ul>
           </div>
 
-          {/* Right side navigation items */}
-          <div className="flex items-center space-x-4">
+          {/* User Controls */}
+          <div className="user-controls flex items-center space-x-4">
             {/* Language selector */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -162,43 +199,37 @@ const TopNavigation = () => {
         </div>
       </div>
 
-      {/* Global features navigation - always visible on all pages */}
-      <div className="px-4 sm:px-6 lg:px-8 border-t border-gray-200">
-        <div className="flex overflow-x-auto py-2 space-x-4 relative">
-          {featureNavItems.map(item => (
-            <Link key={item.href} href={item.href}>
-              <span className={`whitespace-nowrap text-sm font-medium pb-3 cursor-pointer ${
-                isActive(item.href) ? 'text-blue-600 border-b-2 border-blue-600 font-semibold' : 'text-gray-500 hover:text-gray-700'
-              }`}>
-                {item.label}
-              </span>
-            </Link>
+      {/* Tab Navigation */}
+      <div ref={tabNavigationRef} className="tab-navigation px-4 sm:px-6 lg:px-8 border-t border-gray-200 relative">
+        <button 
+          className="tab-scroll-left" 
+          onClick={scrollTabsLeft} 
+          aria-label="Scroll tabs left">
+          <FaChevronLeft />
+        </button>
+        
+        <ul ref={tabsContainerRef} className="tabs-container flex overflow-x-auto py-2 space-x-4 list-none m-0 p-0">
+          {tabNavigationItems.map(item => (
+            <li key={item.href} className="flex-0-0-auto">
+              <Link href={item.href}>
+                <span className={`whitespace-nowrap text-sm font-medium pb-3 cursor-pointer block px-3 py-2 ${
+                  isActive(item.href) ? 'text-blue-600 border-b-2 border-blue-600 active' : 'text-gray-500 hover:text-gray-700'
+                }`}>
+                  {item.label}
+                </span>
+              </Link>
+            </li>
           ))}
-          
-          {/* More dropdown */}
-          <DropdownMenu open={showMoreMenu} onOpenChange={setShowMoreMenu}>
-            <DropdownMenuTrigger asChild>
-              <span className="whitespace-nowrap text-sm font-medium pb-3 cursor-pointer text-gray-500 hover:text-gray-700 flex items-center">
-                More
-                <FaChevronDown className="ml-1 text-xs" />
-              </span>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
-              {moreNavItems.map(item => (
-                <Link key={item.href} href={item.href}>
-                  <DropdownMenuItem className={isActive(item.href) ? "text-blue-600 font-medium" : ""}>
-                    {item.label}
-                  </DropdownMenuItem>
-                </Link>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-          
-          {/* Responsive enhancements - show shadow indicator for horizontal scroll */}
-          <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white to-transparent pointer-events-none hidden md:block"></div>
-        </div>
+        </ul>
+        
+        <button 
+          className="tab-scroll-right" 
+          onClick={scrollTabsRight} 
+          aria-label="Scroll tabs right">
+          <FaChevronRight />
+        </button>
       </div>
-    </header>
+    </nav>
   );
 };
 

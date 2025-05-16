@@ -1,0 +1,70 @@
+// Function to check if tabs are overflowing
+function checkTabOverflow() {
+  const tabsContainer = document.querySelector('.tabs-container');
+  const isOverflowing = tabsContainer.scrollWidth > tabsContainer.clientWidth;
+  
+  // Add visual indicator that there are more tabs to scroll
+  if (isOverflowing) {
+    document.querySelector('.tab-navigation').classList.add('has-overflow');
+  } else {
+    document.querySelector('.tab-navigation').classList.remove('has-overflow');
+  }
+}
+
+// Add scroll buttons if needed
+function initScrollButtons() {
+  const tabNav = document.querySelector('.tab-navigation');
+  
+  // Add scroll buttons to DOM if they don't exist
+  if (!document.querySelector('.tab-scroll-left')) {
+    const leftButton = document.createElement('button');
+    leftButton.className = 'tab-scroll-left';
+    leftButton.innerHTML = '&lsaquo;';
+    leftButton.setAttribute('aria-label', 'Scroll tabs left');
+    
+    const rightButton = document.createElement('button');
+    rightButton.className = 'tab-scroll-right';
+    rightButton.innerHTML = '&rsaquo;';
+    rightButton.setAttribute('aria-label', 'Scroll tabs right');
+    
+    tabNav.appendChild(leftButton);
+    tabNav.appendChild(rightButton);
+    
+    // Add event listeners
+    leftButton.addEventListener('click', () => {
+      document.querySelector('.tabs-container').scrollBy({ left: -200, behavior: 'smooth' });
+    });
+    
+    rightButton.addEventListener('click', () => {
+      document.querySelector('.tabs-container').scrollBy({ left: 200, behavior: 'smooth' });
+    });
+  }
+}
+
+// Initialize and add window resize listener
+window.addEventListener('load', () => {
+  checkTabOverflow();
+  initScrollButtons();
+  
+  // Update on window resize
+  window.addEventListener('resize', () => {
+    checkTabOverflow();
+  });
+});
+
+// Add active class to current tab based on URL
+function setActiveTab() {
+  const currentPath = window.location.pathname;
+  const tabs = document.querySelectorAll('.tabs-container a');
+  
+  tabs.forEach(tab => {
+    if (tab.getAttribute('href') === currentPath) {
+      tab.classList.add('active');
+    } else {
+      tab.classList.remove('active');
+    }
+  });
+}
+
+// Run when page loads
+setActiveTab();

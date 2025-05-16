@@ -1,0 +1,141 @@
+/* Base Styles */
+.tab-navigation {
+  width: 100%;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+  position: relative;
+}
+
+.tabs-container {
+  display: flex;
+  flex-wrap: nowrap;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow-x: auto;
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.tabs-container::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari, Opera */
+}
+
+.tabs-container li {
+  flex: 0 0 auto;
+}
+
+.tabs-container a, .tabs-container span {
+  display: block;
+  padding: 0.75rem 1rem;
+  color: #495057;
+  text-decoration: none;
+  white-space: nowrap;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.tabs-container a:hover, .tabs-container span:hover {
+  color: #0d6efd;
+  background-color: rgba(13, 110, 253, 0.05);
+}
+
+.tabs-container a.active, .tabs-container span.active {
+  color: #0d6efd;
+  border-bottom-color: #0d6efd;
+}
+
+/* Scroll button styles */
+.tab-scroll-left,
+.tab-scroll-right {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: white;
+  border: 1px solid #dee2e6;
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 10;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.tab-scroll-left {
+  left: 8px;
+}
+
+.tab-scroll-right {
+  right: 8px;
+}
+
+.has-overflow .tab-scroll-left,
+.has-overflow .tab-scroll-right {
+  display: flex;
+}
+
+/* Add fading effect on edges when scrollable */
+.has-overflow .tabs-container::before,
+.has-overflow .tabs-container::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 40px;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.has-overflow .tabs-container::before {
+  left: 0;
+  background: linear-gradient(to right, rgba(248, 249, 250, 1), rgba(248, 249, 250, 0));
+}
+
+.has-overflow .tabs-container::after {
+  right: 0;
+  background: linear-gradient(to left, rgba(248, 249, 250, 1), rgba(248, 249, 250, 0));
+}
+
+/* Responsive Behavior */
+@media (min-width: 1200px) {
+  /* On larger screens, ensure tabs are all visible */
+  .tabs-container {
+    justify-content: flex-start;
+  }
+  
+  .tabs-container li {
+    flex: 0 1 auto;
+  }
+}
+
+@media (max-width: 1199px) {
+  /* On medium screens, allow horizontal scrolling */
+  .tabs-container {
+    justify-content: flex-start;
+    padding-bottom: 5px; /* Space for invisible scrollbar */
+  }
+}
+
+@media (max-width: 768px) {
+  /* On mobile devices, make tabs more compact */
+  .tabs-container a, .tabs-container span {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.9rem;
+  }
+  
+  .tab-scroll-left,
+  .tab-scroll-right {
+    width: 25px;
+    height: 25px;
+    font-size: 1rem;
+  }
+}
+
+/* Fix for flexbox issue */
+.flex-0-0-auto {
+  flex: 0 0 auto;
+}
