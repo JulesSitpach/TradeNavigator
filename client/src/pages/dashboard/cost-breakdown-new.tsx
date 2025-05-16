@@ -1,253 +1,788 @@
-import { useContext } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import PageHeader from "@/components/common/PageHeader";
-import { LanguageContext } from "@/contexts/LanguageContext";
+import { useQuery } from "@tanstack/react-query";
+import { FaCircleInfo, FaMagnifyingGlass } from "react-icons/fa6";
+import CopilotAssistant from "@/components/ai/CopilotAssistant";
 import { Button } from "@/components/ui/button";
-import { Link } from "wouter";
-import { FaDownload, FaPlus, FaBox, FaShip, FaMoneyBill } from "react-icons/fa";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import HSCodeAssistant from "@/components/ai/HSCodeAssistant";
 
-const CostBreakdownDashboard = () => {
-  const { t } = useContext(LanguageContext);
+// Form schema for product information
+const productInfoFormSchema = z.object({
+  productDescription: z.string().min(5, "Product description is required"),
+  productCategory: z.string().min(1, "Product category is required"),
+  hsCode: z.string().min(4, "HS Code is required"),
+  originCountry: z.string().min(1, "Origin country is required"),
+  destinationCountry: z.string().min(1, "Destination country is required"),
+  productValue: z.coerce.number().min(0, "Product value must be a positive number"),
+  quantity: z.coerce.number().min(1, "Quantity must be at least 1"),
+  weight: z.coerce.number().min(0, "Weight must be a positive number"),
+  transportMode: z.string().min(1, "Transport mode is required"),
+  shipmentType: z.string().min(1, "Shipment type is required"),
+  packageType: z.string().min(1, "Package type is required"),
+  length: z.coerce.number().min(0, "Length must be a positive number"),
+  width: z.coerce.number().min(0, "Width must be a positive number"),
+  height: z.coerce.number().min(0, "Height must be a positive number"),
+});
 
-  // Simplified data structure for the dashboard - for demonstration purposes
-  const data = {
-    productName: "Organic Cotton T-Shirts",
-    hsCode: "6109.10.00",
-    originCountry: "India",
-    destinationCountry: "United States",
-    quantity: 500,
-    unitCost: 5,
-    productValue: 2500,
-    dutyRate: 15,
-    dutyAmount: 375,
-    freightCost: 850,
-    insuranceCost: 125,
-    documentationFees: 200,
-    customsClearance: 175,
-    totalLandedCost: 4225,
-    currency: "USD"
+type ProductInfoFormValues = z.infer<typeof productInfoFormSchema>;
+
+// Product categories for dropdown
+const productCategories = [
+  { label: "Electronics", value: "Electronics" },
+  { label: "Textiles & Apparel", value: "Textiles & Apparel" },
+  { label: "Chemicals", value: "Chemicals" },
+  { label: "Machinery", value: "Machinery" },
+  { label: "Food & Beverages", value: "Food & Beverages" },
+  { label: "Pharmaceuticals", value: "Pharmaceuticals" },
+  { label: "Automotive", value: "Automotive" },
+  { label: "Furniture", value: "Furniture" },
+  { label: "Toys & Games", value: "Toys & Games" },
+];
+
+// Sample country list for dropdowns
+const countries = [
+  { label: "Canada - CPTPP member", value: "Canada" },
+  { label: "China", value: "China" },
+  { label: "Germany", value: "Germany" },
+  { label: "India", value: "India" },
+  { label: "Japan - CPTPP member", value: "Japan" },
+  { label: "Mexico - CPTPP member", value: "Mexico" },
+  { label: "South Korea", value: "South Korea" },
+  { label: "United Kingdom", value: "United Kingdom" },
+  { label: "United States", value: "United States" },
+  { label: "Vietnam - CPTPP member", value: "Vietnam" },
+];
+
+// Transport modes for dropdown
+const transportModes = [
+  { label: "Air Freight", value: "Air Freight" },
+  { label: "Sea Freight", value: "Sea Freight" },
+  { label: "Rail Freight", value: "Rail Freight" },
+  { label: "Road Transport", value: "Road Transport" },
+];
+
+// Shipment types for dropdown
+const shipmentTypes = [
+  { label: "Less than Container Load (LCL)", value: "LCL" },
+  { label: "Full Container Load (FCL)", value: "FCL" },
+  { label: "Express Parcel", value: "Express" },
+  { label: "Bulk Cargo", value: "Bulk" },
+];
+
+// Package types for dropdown
+const packageTypes = [
+  { label: "Cardboard Box", value: "Cardboard Box" },
+  { label: "Wooden Crate", value: "Wooden Crate" },
+  { label: "Pallet", value: "Pallet" },
+  { label: "Drum", value: "Drum" },
+  { label: "Bag", value: "Bag" },
+];
+
+// Product Information Form Component
+const ProductInformationForm = ({ onCalculate }: { onCalculate: () => void }) => {
+  const [showHSAssistant, setShowHSAssistant] = useState(false);
+  
+  // Initialize form with default values
+  const form = useForm<ProductInfoFormValues>({
+    resolver: zodResolver(productInfoFormSchema),
+    defaultValues: {
+      productDescription: "",
+      productCategory: "",
+      hsCode: "",
+      originCountry: "",
+      destinationCountry: "",
+      productValue: 0,
+      quantity: 1,
+      weight: 0,
+      transportMode: "",
+      shipmentType: "",
+      packageType: "",
+      length: 0,
+      width: 0,
+      height: 0,
+    },
+  });
+  
+  const onSubmit = (values: ProductInfoFormValues) => {
+    console.log("Form values:", values);
+    // Here we would send the data to the server for analysis
+    onCalculate();
   };
+  
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <div className="space-y-4">
+          <h3 className="font-medium text-lg">Product Details</h3>
+          
+          {/* Product Description */}
+          <FormField
+            control={form.control}
+            name="productDescription"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Product Description</FormLabel>
+                <FormControl>
+                  <Input placeholder="e.g. High-performance laptop, 13-inch display, 32GB RAM, 1TB SSD" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
+          {/* Product Category */}
+          <FormField
+            control={form.control}
+            name="productCategory"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Product Category <span className="text-xs text-blue-600">(Select first for better HS code results)</span></FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a category" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {productCategories.map((category) => (
+                      <SelectItem key={category.value} value={category.value}>
+                        {category.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
+          {/* HS Code with AI Assistant */}
+          <FormField
+            control={form.control}
+            name="hsCode"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>HS Code</FormLabel>
+                <div className="flex items-center space-x-2">
+                  <FormControl>
+                    <Input placeholder="e.g. 8471.30" {...field} />
+                  </FormControl>
+                  <Button 
+                    type="button" 
+                    size="icon"
+                    variant="outline"
+                    className="border-green-500 text-green-500"
+                    onClick={() => setShowHSAssistant(!showHSAssistant)}
+                  >
+                    <FaMagnifyingGlass className="h-4 w-4" />
+                  </Button>
+                </div>
+                {showHSAssistant && (
+                  <HSCodeAssistant
+                    productDescription={form.getValues("productDescription")}
+                    category={form.getValues("productCategory")}
+                    onSelectHSCode={(code) => {
+                      form.setValue("hsCode", code);
+                      setShowHSAssistant(false);
+                    }}
+                  />
+                )}
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
+          {/* Origin Country */}
+          <FormField
+            control={form.control}
+            name="originCountry"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Origin Country</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select origin country" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {countries.map((country) => (
+                      <SelectItem key={country.value} value={country.value}>
+                        {country.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
+          {/* Destination Country */}
+          <FormField
+            control={form.control}
+            name="destinationCountry"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Destination Country</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select destination country" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {countries.map((country) => (
+                      <SelectItem key={country.value} value={country.value}>
+                        {country.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
+          {/* Product Value */}
+          <FormField
+            control={form.control}
+            name="productValue"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Product Value (in USD)</FormLabel>
+                <FormControl>
+                  <div className="relative">
+                    <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">$</span>
+                    <Input className="pl-8" type="number" placeholder="0.00" {...field} />
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+        
+        <div className="space-y-4">
+          <h3 className="font-medium text-lg">Shipping Details</h3>
+          
+          {/* Quantity */}
+          <FormField
+            control={form.control}
+            name="quantity"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Quantity</FormLabel>
+                <FormControl>
+                  <Input type="number" placeholder="1" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
+          {/* Transport Mode */}
+          <FormField
+            control={form.control}
+            name="transportMode"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Transport Mode</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select transport mode" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {transportModes.map((mode) => (
+                      <SelectItem key={mode.value} value={mode.value}>
+                        {mode.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
+          {/* Shipment Type */}
+          <FormField
+            control={form.control}
+            name="shipmentType"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Shipment Type</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select shipment type" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {shipmentTypes.map((type) => (
+                      <SelectItem key={type.value} value={type.value}>
+                        {type.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
+          {/* Package Type */}
+          <FormField
+            control={form.control}
+            name="packageType"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Package Type</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select package type" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {packageTypes.map((type) => (
+                      <SelectItem key={type.value} value={type.value}>
+                        {type.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
+          {/* Weight */}
+          <FormField
+            control={form.control}
+            name="weight"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Weight (kg)</FormLabel>
+                <FormControl>
+                  <Input type="number" placeholder="0.0" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
+          {/* Package Dimensions */}
+          <div>
+            <FormLabel>Package Dimensions (cm)</FormLabel>
+            <div className="grid grid-cols-3 gap-2 mt-1">
+              <FormField
+                control={form.control}
+                name="length"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input type="number" placeholder="Length" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="width"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input type="number" placeholder="Width" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="height"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input type="number" placeholder="Height" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </div>
+        </div>
+        
+        <Button type="submit" className="w-full">Calculate</Button>
+      </form>
+    </Form>
+  );
+};
 
-  // Format currency with proper symbols
-  const formatCurrency = (amount: number, curr = data.currency) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: curr
-    }).format(amount);
+// Cost Breakdown Table Component
+const CostBreakdownTable = () => {
+  return (
+    <Card className="bg-white shadow-sm border border-neutral-200">
+      <CardHeader className="border-b border-neutral-200 px-5 py-4">
+        <CardTitle className="text-lg font-medium text-neutral-900">
+          Detailed Cost Breakdown
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="p-0">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-neutral-50 text-xs font-semibold uppercase text-neutral-500">
+              <tr>
+                <th className="whitespace-nowrap px-5 py-3 text-left">
+                  Cost Component
+                </th>
+                <th className="whitespace-nowrap px-5 py-3 text-right">
+                  Amount (USD)
+                </th>
+                <th className="whitespace-nowrap px-5 py-3 text-right">
+                  % of Total
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-neutral-200">
+              <tr>
+                <td className="whitespace-nowrap px-5 py-4 text-left">
+                  <div className="font-medium text-neutral-900">Product Value</div>
+                </td>
+                <td className="whitespace-nowrap px-5 py-4 text-right">
+                  $20,000
+                </td>
+                <td className="whitespace-nowrap px-5 py-4 text-right">
+                  52.3%
+                </td>
+              </tr>
+              <tr>
+                <td className="whitespace-nowrap px-5 py-4 text-left">
+                  <div className="font-medium text-neutral-900">Import Duty (12.8%)</div>
+                </td>
+                <td className="whitespace-nowrap px-5 py-4 text-right">
+                  $2,560
+                </td>
+                <td className="whitespace-nowrap px-5 py-4 text-right">
+                  6.7%
+                </td>
+              </tr>
+              <tr>
+                <td className="whitespace-nowrap px-5 py-4 text-left">
+                  <div className="font-medium text-neutral-900">Freight Cost</div>
+                </td>
+                <td className="whitespace-nowrap px-5 py-4 text-right">
+                  $12,452
+                </td>
+                <td className="whitespace-nowrap px-5 py-4 text-right">
+                  32.6%
+                </td>
+              </tr>
+              <tr>
+                <td className="whitespace-nowrap px-5 py-4 text-left">
+                  <div className="font-medium text-neutral-900">Insurance</div>
+                </td>
+                <td className="whitespace-nowrap px-5 py-4 text-right">
+                  $300
+                </td>
+                <td className="whitespace-nowrap px-5 py-4 text-right">
+                  0.8%
+                </td>
+              </tr>
+              <tr>
+                <td className="whitespace-nowrap px-5 py-4 text-left">
+                  <div className="font-medium text-neutral-900">Documentation Fees</div>
+                </td>
+                <td className="whitespace-nowrap px-5 py-4 text-right">
+                  $69
+                </td>
+                <td className="whitespace-nowrap px-5 py-4 text-right">
+                  0.2%
+                </td>
+              </tr>
+              <tr>
+                <td className="whitespace-nowrap px-5 py-4 text-left">
+                  <div className="font-medium text-neutral-900">Customs Clearance</div>
+                </td>
+                <td className="whitespace-nowrap px-5 py-4 text-right">
+                  $1,600
+                </td>
+                <td className="whitespace-nowrap px-5 py-4 text-right">
+                  4.2%
+                </td>
+              </tr>
+              <tr>
+                <td className="whitespace-nowrap px-5 py-4 text-left">
+                  <div className="font-medium text-neutral-900">Inland Transportation</div>
+                </td>
+                <td className="whitespace-nowrap px-5 py-4 text-right">
+                  $1,075
+                </td>
+                <td className="whitespace-nowrap px-5 py-4 text-right">
+                  2.8%
+                </td>
+              </tr>
+              <tr>
+                <td className="whitespace-nowrap px-5 py-4 text-left">
+                  <div className="font-medium text-neutral-900">Warehousing</div>
+                </td>
+                <td className="whitespace-nowrap px-5 py-4 text-right">
+                  $50
+                </td>
+                <td className="whitespace-nowrap px-5 py-4 text-right">
+                  0.1%
+                </td>
+              </tr>
+              <tr>
+                <td className="whitespace-nowrap px-5 py-4 text-left">
+                  <div className="font-medium text-neutral-900">Other Taxes and Fees</div>
+                </td>
+                <td className="whitespace-nowrap px-5 py-4 text-right">
+                  $145
+                </td>
+                <td className="whitespace-nowrap px-5 py-4 text-right">
+                  0.4%
+                </td>
+              </tr>
+              <tr className="bg-neutral-50 font-semibold">
+                <td className="whitespace-nowrap px-5 py-4 text-left">
+                  <div className="font-semibold text-neutral-900">Total Landed Cost</div>
+                </td>
+                <td className="whitespace-nowrap px-5 py-4 text-right text-primary-700">
+                  $38,251
+                </td>
+                <td className="whitespace-nowrap px-5 py-4 text-right">
+                  100%
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
+// Cost Breakdown Dashboard - Main Component
+const CostBreakdownDashboard = () => {
+  const [showResults, setShowResults] = useState(false);
+
+  const { data } = useQuery({
+    queryKey: ['/api/cost-breakdown'],
+  });
+  
+  // Prepare data for Copilot from API response
+  const productDetailsForCopilot = {
+    name: data?.productDetails?.name || "Sample Product",
+    category: data?.productDetails?.category || "Electronics",
+    hsCode: data?.productDetails?.hsCode || "8517.62",
+    origin: data?.productDetails?.origin || "China", 
+    destination: data?.productDetails?.destination || "United States",
+    value: data?.productDetails?.value || 3500
+  };
+  
+  const shipmentDetailsForCopilot = {
+    transportMode: data?.transportMode || "air",
+    incoterm: data?.incoterm || "CIF",
+    weight: data?.weight || 150
+  };
+  
+  // Convert cost components to format expected by Copilot
+  const costComponentsForCopilot = {};
+  if (data?.components) {
+    data.components.forEach(component => {
+      costComponentsForCopilot[component.name] = {
+        amount: component.value,
+        description: component.name,
+        category: component.name.toLowerCase().includes('duty') ? 'customs' : 
+                 component.name.toLowerCase().includes('shipping') ? 'shipping' : 'other'
+      };
+    });
+  }
+  
+  const handleCalculate = () => {
+    setShowResults(true);
+    // Scroll to results section after calculation
+    setTimeout(() => {
+      const resultsElement = document.getElementById('cost-breakdown-results');
+      if (resultsElement) {
+        resultsElement.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 100);
   };
   
   return (
     <>
       <PageHeader
-        title="Cost Breakdown Analysis"
-        description="Analyze your landed costs and identify optimization opportunities"
+        title="Trade Cost Breakdown"
+        description="Calculate and analyze all costs associated with your international shipments"
         actions={[
           {
-            label: "Export Data",
-            icon: <FaDownload />,
-            onClick: () => console.log("Export cost breakdown"),
-            variant: "outline"
-          },
-          {
             label: "New Analysis",
-            icon: <FaPlus />,
-            href: "/dashboard/new-analysis",
+            icon: <FaCircleInfo />,
+            onClick: () => setShowResults(false),
             variant: "default"
           }
         ]}
       />
-
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <Card className="bg-white shadow-sm">
-          <CardContent className="p-6">
-            <div className="flex items-start">
-              <div className="mr-3 mt-1 bg-blue-100 rounded-full p-2">
-                <FaBox className="text-blue-600" />
-              </div>
-              <div>
-                <div className="text-sm text-gray-500 mb-1">Product Value</div>
-                <div className="text-2xl font-bold text-gray-900">
-                  {formatCurrency(data.productValue)}
-                </div>
-                <div className="text-sm text-gray-500 mt-1">
-                  {data.quantity} units × {formatCurrency(data.unitCost)}
-                </div>
-              </div>
-            </div>
+      
+      <div className="flex flex-col space-y-6 mt-6">
+        <Card className="bg-white shadow-sm border border-neutral-200">
+          <CardHeader className="border-b border-neutral-200 px-5 py-4">
+            <CardTitle className="text-lg font-medium text-neutral-900">
+              Information Form
+            </CardTitle>
+            <p className="text-sm text-neutral-500 mt-1">
+              Enter product and shipping details to calculate your trade costs
+            </p>
+          </CardHeader>
+          <CardContent className="p-5">
+            <ProductInformationForm onCalculate={handleCalculate} />
           </CardContent>
         </Card>
         
-        <Card className="bg-white shadow-sm">
-          <CardContent className="p-6">
-            <div className="flex items-start">
-              <div className="mr-3 mt-1 bg-green-100 rounded-full p-2">
-                <FaShip className="text-green-600" />
-              </div>
-              <div>
-                <div className="text-sm text-gray-500 mb-1">Total Landed Cost</div>
-                <div className="text-2xl font-bold text-gray-900">
-                  {formatCurrency(data.totalLandedCost)}
-                </div>
-                <div className="text-sm text-gray-500 mt-1">
-                  {formatCurrency(data.totalLandedCost / data.quantity)} per unit
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card className="bg-white shadow-sm">
-          <CardContent className="p-6">
-            <div className="flex items-start">
-              <div className="mr-3 mt-1 bg-orange-100 rounded-full p-2">
-                <FaMoneyBill className="text-orange-600" />
-              </div>
-              <div>
-                <div className="text-sm text-gray-500 mb-1">Additional Costs</div>
-                <div className="text-2xl font-bold text-gray-900">
-                  {formatCurrency(data.totalLandedCost - data.productValue)}
-                </div>
-                <div className="text-sm text-gray-500 mt-1">
-                  {Math.round(((data.totalLandedCost - data.productValue) / data.productValue) * 100)}% of product value
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Tabs for different views */}
-      <Tabs defaultValue="summary" className="mb-6">
-        <TabsList className="bg-white border border-gray-200 p-1">
-          <TabsTrigger value="summary">Summary</TabsTrigger>
-          <TabsTrigger value="details">Detailed View</TabsTrigger>
-          <TabsTrigger value="comparison">Cost Comparison</TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="summary" className="mt-4">
-          <Card className="bg-white shadow-sm">
-            <CardContent className="p-0">
-              <div className="text-xs text-gray-500 p-4 bg-gray-50">
-                <p>The Trade Cost Summary shows detailed costs per item, total freight charges, and estimated duties. All values are shown in {data.currency}.</p>
-              </div>
-
-              <table className="w-full">
-                <tbody className="divide-y divide-gray-200 text-sm">
-                  <tr>
-                    <td className="px-6 py-4 text-gray-700 font-medium">Product Name</td>
-                    <td className="px-6 py-4 text-gray-900">{data.productName}</td>
-                  </tr>
-                  <tr>
-                    <td className="px-6 py-4 text-gray-700 font-medium">HS Code</td>
-                    <td className="px-6 py-4 text-gray-900">
-                      {data.hsCode} 
-                      <Badge className="ml-2 bg-blue-50 text-blue-700">GSP Eligible</Badge>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="px-6 py-4 text-gray-700 font-medium">Origin</td>
-                    <td className="px-6 py-4 text-gray-900">{data.originCountry}</td>
-                  </tr>
-                  <tr>
-                    <td className="px-6 py-4 text-gray-700 font-medium">Destination</td>
-                    <td className="px-6 py-4 text-gray-900">{data.destinationCountry}</td>
-                  </tr>
-                  <tr>
-                    <td className="px-6 py-4 text-gray-700 font-medium">Quantity</td>
-                    <td className="px-6 py-4 text-gray-900">{data.quantity} units</td>
-                  </tr>
-                  <tr>
-                    <td className="px-6 py-4 text-gray-700 font-medium">Product Value</td>
-                    <td className="px-6 py-4 text-gray-900">{formatCurrency(data.productValue)}</td>
-                  </tr>
-                  <tr>
-                    <td className="px-6 py-4 text-gray-700 font-medium">Freight Cost</td>
-                    <td className="px-6 py-4 text-gray-900">{formatCurrency(data.freightCost)}</td>
-                  </tr>
-                  <tr>
-                    <td className="px-6 py-4 text-gray-700 font-medium">Duties ({data.dutyRate}%)</td>
-                    <td className="px-6 py-4 text-gray-900">{formatCurrency(data.dutyAmount)}</td>
-                  </tr>
-                  <tr>
-                    <td className="px-6 py-4 text-gray-700 font-medium">Insurance</td>
-                    <td className="px-6 py-4 text-gray-900">{formatCurrency(data.insuranceCost)}</td>
-                  </tr>
-                  <tr>
-                    <td className="px-6 py-4 text-gray-700 font-medium">Documentation Fees</td>
-                    <td className="px-6 py-4 text-gray-900">{formatCurrency(data.documentationFees)}</td>
-                  </tr>
-                  <tr>
-                    <td className="px-6 py-4 text-gray-700 font-medium">Customs Clearance</td>
-                    <td className="px-6 py-4 text-gray-900">{formatCurrency(data.customsClearance)}</td>
-                  </tr>
-                  <tr className="bg-gray-50 font-semibold">
-                    <td className="px-6 py-4 text-gray-800">Total Landed Cost</td>
-                    <td className="px-6 py-4 text-gray-900">{formatCurrency(data.totalLandedCost)}</td>
-                  </tr>
-                  <tr className="bg-gray-50 text-sm font-medium">
-                    <td className="px-6 py-4 text-gray-800">Cost per Unit</td>
-                    <td className="px-6 py-4 text-gray-900">{formatCurrency(data.totalLandedCost / data.quantity)}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </CardContent>
-          </Card>
-        </TabsContent>
-        
-        <TabsContent value="details" className="mt-4">
-          <Card className="bg-white shadow-sm">
-            <CardContent className="p-6">
-              <Skeleton className="h-[400px] w-full" />
-            </CardContent>
-          </Card>
-        </TabsContent>
-        
-        <TabsContent value="comparison" className="mt-4">
-          <Card className="bg-white shadow-sm">
-            <CardContent className="p-6">
-              <Skeleton className="h-[400px] w-full" />
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
-
-      {/* Optimization Recommendations */}
-      <Card className="bg-white shadow-sm mb-6">
-        <CardContent className="p-6">
-          <h3 className="text-lg font-medium mb-4">Optimization Recommendations</h3>
-          <div className="space-y-4">
-            <div className="p-4 border border-green-200 rounded-md bg-green-50">
-              <h4 className="font-medium text-green-800 mb-1">Duty Savings Opportunity</h4>
-              <p className="text-sm text-green-700 mb-2">
-                Your product may qualify for preferential duty rates under GSP. Apply for certification to save up to {formatCurrency(data.dutyAmount * 0.6)}.
-              </p>
-              <Button size="sm" variant="outline" className="text-xs">Learn more</Button>
-            </div>
+        {showResults && (
+          <div id="cost-breakdown-results">
+            <CostBreakdownTable />
             
-            <div className="p-4 border border-blue-200 rounded-md bg-blue-50">
-              <h4 className="font-medium text-blue-800 mb-1">Shipping Cost Reduction</h4>
-              <p className="text-sm text-blue-700 mb-2">
-                Consolidating shipments could reduce your freight costs by approximately 15% ({formatCurrency(data.freightCost * 0.15)}).
-              </p>
-              <Button size="sm" variant="outline" className="text-xs">Explore options</Button>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+              <Card className="bg-white shadow-sm border border-neutral-200">
+                <CardHeader className="px-4 py-3 border-b border-neutral-200">
+                  <CardTitle className="text-md font-medium">Cost Summary</CardTitle>
+                </CardHeader>
+                <CardContent className="p-4">
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-sm text-neutral-600">Product Value:</span>
+                      <span className="text-sm font-medium">$20,000</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm text-neutral-600">Total Duties:</span>
+                      <span className="text-sm font-medium">$2,560</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm text-neutral-600">Total Shipping:</span>
+                      <span className="text-sm font-medium">$12,452</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm text-neutral-600">Other Costs:</span>
+                      <span className="text-sm font-medium">$3,239</span>
+                    </div>
+                    <div className="border-t border-neutral-200 pt-2 mt-2">
+                      <div className="flex justify-between font-semibold">
+                        <span>Total Landed Cost:</span>
+                        <span className="text-primary-700">$38,251</span>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card className="bg-white shadow-sm border border-neutral-200">
+                <CardHeader className="px-4 py-3 border-b border-neutral-200">
+                  <CardTitle className="text-md font-medium">Regulatory Requirements</CardTitle>
+                </CardHeader>
+                <CardContent className="p-4">
+                  <ul className="space-y-2 text-sm">
+                    <li className="flex items-start">
+                      <span className="inline-block w-2 h-2 rounded-full bg-blue-500 mt-1.5 mr-2"></span>
+                      <span>Certificate of Origin required</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="inline-block w-2 h-2 rounded-full bg-blue-500 mt-1.5 mr-2"></span>
+                      <span>FCC certification needed</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="inline-block w-2 h-2 rounded-full bg-blue-500 mt-1.5 mr-2"></span>
+                      <span>RoHS compliance declaration</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="inline-block w-2 h-2 rounded-full bg-blue-500 mt-1.5 mr-2"></span>
+                      <span>Country of origin labeling</span>
+                    </li>
+                  </ul>
+                </CardContent>
+              </Card>
+              
+              <Card className="bg-white shadow-sm border border-neutral-200">
+                <CardHeader className="px-4 py-3 border-b border-neutral-200">
+                  <CardTitle className="text-md font-medium">Optimization Tips</CardTitle>
+                </CardHeader>
+                <CardContent className="p-4">
+                  <ul className="space-y-2 text-sm">
+                    <li className="flex items-start">
+                      <span className="inline-block w-2 h-2 rounded-full bg-green-500 mt-1.5 mr-2"></span>
+                      <span>Consider using sea freight to save 80%</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="inline-block w-2 h-2 rounded-full bg-green-500 mt-1.5 mr-2"></span>
+                      <span>Apply for duty drawback potential savings: $1,200</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="inline-block w-2 h-2 rounded-full bg-green-500 mt-1.5 mr-2"></span>
+                      <span>Use Foreign Trade Zone to defer duties</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="inline-block w-2 h-2 rounded-full bg-green-500 mt-1.5 mr-2"></span>
+                      <span>Consolidate shipments to reduce documentation fees</span>
+                    </li>
+                  </ul>
+                </CardContent>
+              </Card>
             </div>
           </div>
-        </CardContent>
-      </Card>
-
-      {/* Actions */}
-      <div className="flex justify-end gap-3 mb-8">
-        <Button variant="outline">
-          Save Analysis
-        </Button>
-        <Button asChild>
-          <Link href="/dashboard/new-analysis">New Analysis</Link>
-        </Button>
+        )}
       </div>
+      
+      {/* Floating AI Copilot Assistant */}
+      <CopilotAssistant 
+        productDetails={productDetailsForCopilot}
+        shipmentDetails={shipmentDetailsForCopilot}
+        costComponents={costComponentsForCopilot}
+      />
     </>
   );
 };
