@@ -1,25 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import hsCodeAIService from '../../services/hsCodeAIService';
-import './CopilotAssistant.scss';
+import { Bot, X, ChevronUp, ChevronDown, Lightbulb, Info } from 'lucide-react';
+import './CopilotAssistant.css';
 
+// Interface for product details
 interface ProductDetails {
-  name: string;
-  category: string;
-  hsCode: string;
-  origin: string;
-  destination: string;
-  value: number;
+  name?: string;
+  category?: string;
+  hsCode?: string;
+  origin?: string;
+  destination?: string;
+  value?: number;
   quantity?: number;
 }
 
+// Interface for shipment details
 interface ShipmentDetails {
-  transportMode: string;
-  incoterm: string;
-  weight: number;
+  transportMode?: string;
+  incoterm?: string;
+  weight?: number;
   packageType?: string;
   shipmentType?: string;
 }
 
+// Interface for cost components
 interface CostComponent {
   name: string;
   amount: number;
@@ -28,6 +31,7 @@ interface CostComponent {
   type: 'duty' | 'tax' | 'fee' | 'shipping' | 'other';
 }
 
+// Props for the CopilotAssistant component
 interface CopilotAssistantProps {
   productDescription?: string;
   category?: string;
@@ -43,200 +47,207 @@ interface CopilotAssistantProps {
 }
 
 const CopilotAssistant: React.FC<CopilotAssistantProps> = ({
-  productDescription = "",
-  category = "",
-  hsCode = "",
-  originCountry = "",
-  destinationCountry = "",
-  transportMode = "",
-  incoterm = "",
-  costComponents = [],
-  totalCost = 0,
+  productDescription,
+  category,
+  hsCode,
+  originCountry,
+  destinationCountry,
+  transportMode,
+  incoterm,
+  costComponents,
+  totalCost,
   onHsCodeSuggestion,
   onAnalysisComplete
 }) => {
-  const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<any>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [insights, setInsights] = useState<string[]>([]);
   const [recommendations, setRecommendations] = useState<string[]>([]);
-  
+
+  // Toggle collapse state
+  const toggleCollapse = () => {
+    setIsCollapsed(!isCollapsed);
+  };
+
+  // Generate insights based on props
   useEffect(() => {
-    // Generate context-aware recommendations based on available data
-    generateRecommendations();
-  }, [
-    productDescription, 
-    category, 
-    hsCode, 
-    originCountry, 
-    destinationCountry, 
-    transportMode, 
-    incoterm, 
-    totalCost
-  ]);
-  
-  const generateRecommendations = () => {
-    const newRecommendations: string[] = [];
-    
-    // Add recommendations based on data context
-    if (hsCode && destinationCountry) {
-      newRecommendations.push(`Check tariff rates for ${hsCode} in ${destinationCountry} for potential duty savings.`);
+    if (productDescription || category || hsCode) {
+      generateInsights();
     }
+  }, [productDescription, category, hsCode, originCountry, destinationCountry, transportMode, incoterm, costComponents]);
+
+  // Simulated API call to generate insights
+  const generateInsights = async () => {
+    setIsLoading(true);
     
-    if (transportMode && originCountry && destinationCountry) {
-      newRecommendations.push(`Consider alternative shipping routes from ${originCountry} to ${destinationCountry}.`);
-    }
-    
-    if (incoterm === 'exw' || incoterm === 'fob') {
-      newRecommendations.push(`Current terms (${incoterm.toUpperCase()}) make you responsible for most shipping costs and risks.`);
-    }
-    
-    // Add CPTPP recommendation when relevant
-    const cptppCountries = ['CA', 'JP', 'AU', 'VN', 'SG', 'MY', 'NZ'];
-    if (cptppCountries.includes(originCountry) && cptppCountries.includes(destinationCountry)) {
-      newRecommendations.push('You may qualify for CPTPP preferential duty rates. Contact trade specialist for details.');
-    }
-    
-    // Add recommendations based on cost components
-    if (costComponents && costComponents.length > 0) {
-      const dutyComponents = costComponents.filter(c => c.type === 'duty');
-      if (dutyComponents.length > 0 && dutyComponents.some(d => d.percentage > 5)) {
-        newRecommendations.push('Consider tariff classification optimization to potentially reduce duty rates.');
+    // Simulate API delay
+    setTimeout(() => {
+      const newInsights = [];
+      const newRecommendations = [];
+      
+      // Product classification insights
+      if (productDescription && category) {
+        newInsights.push(`Product '${productDescription}' identified as ${category}.`);
+        
+        if (hsCode) {
+          newInsights.push(`HS Code ${hsCode} assigned with high confidence.`);
+          
+          // Add HS code specific insights
+          if (hsCode.startsWith('61') || hsCode.startsWith('62')) {
+            newInsights.push('Product is classified as apparel/clothing, which typically has higher duties in many countries.');
+            newRecommendations.push('Consider sourcing from countries with textile trade agreements to reduce duties.');
+          } else if (hsCode.startsWith('85')) {
+            newInsights.push('Product is classified as electronics, which may have specific certification requirements.');
+            newRecommendations.push('Check for required electronics certifications like CE, UL, or FCC.');
+          }
+        } else {
+          newRecommendations.push('Add an HS code to get more accurate duty calculations.');
+        }
       }
       
-      const highestComponent = [...costComponents].sort((a, b) => b.percentage - a.percentage)[0];
-      if (highestComponent) {
-        newRecommendations.push(`${highestComponent.name} represents your highest cost component (${highestComponent.percentage.toFixed(1)}%). Focus on optimizing this area.`);
-      }
-    }
-    
-    setRecommendations(newRecommendations.length > 0 ? newRecommendations : [
-      'Enter more shipment details to receive personalized recommendations.',
-      'Choose product category and description for HS code suggestions.',
-      'Compare different transport modes to optimize costs.'
-    ]);
-  };
-  
-  const analyzeProduct = async () => {
-    if (!productDescription || !category) {
-      setError("Please provide both product description and category");
-      return;
-    }
-    
-    setLoading(true);
-    setError(null);
-    
-    try {
-      const classificationResult = await hsCodeAIService.classifyProduct(
-        productDescription,
-        category
-      );
-      
-      setResult(classificationResult);
-      
-      // Notify parent component if callback provided
-      if (onHsCodeSuggestion) {
-        onHsCodeSuggestion(classificationResult.hsCode);
+      // Route-specific insights
+      if (originCountry && destinationCountry) {
+        newInsights.push(`Analyzing trade route from ${originCountry} to ${destinationCountry}.`);
+        
+        // Check for preferential trade agreements
+        if ((originCountry === 'US' && destinationCountry === 'MX') || 
+            (originCountry === 'MX' && destinationCountry === 'US')) {
+          newInsights.push('USMCA preferential trade agreement may apply.');
+          newRecommendations.push('Verify USMCA eligibility to potentially reduce or eliminate duties.');
+        } else if ((originCountry === 'UK' && destinationCountry.startsWith('EU')) || 
+                  (originCountry.startsWith('EU') && destinationCountry === 'UK')) {
+          newInsights.push('UK-EU Trade and Cooperation Agreement may apply.');
+          newRecommendations.push('Check for reduced duty rates under the UK-EU agreement.');
+        }
       }
       
-      if (onAnalysisComplete) {
-        onAnalysisComplete(classificationResult);
+      // Transportation insights
+      if (transportMode) {
+        const formattedMode = transportMode.includes('ocean') ? 'Ocean freight' : 
+                             transportMode === 'air' ? 'Air freight' : 
+                             transportMode.charAt(0).toUpperCase() + transportMode.slice(1);
+        
+        newInsights.push(`${formattedMode} selected as transport method.`);
+        
+        if (transportMode === 'air' && totalCost && totalCost > 5000) {
+          newRecommendations.push('Consider ocean freight for high-value, non-urgent shipments to reduce costs.');
+        } else if (transportMode.includes('ocean') && category === 'Perishable Goods') {
+          newRecommendations.push('Air freight recommended for perishable goods to ensure product quality.');
+        }
       }
-    } catch (err) {
-      console.error('Classification failed:', err);
-      setError('Failed to analyze product. Please try again or enter HS code manually.');
-    } finally {
-      setLoading(false);
+      
+      // Incoterm insights
+      if (incoterm) {
+        const incotermUpper = incoterm.toUpperCase();
+        newInsights.push(`Using ${incotermUpper} incoterm for this shipment.`);
+        
+        if (incotermUpper === 'EXW') {
+          newRecommendations.push('EXW places maximum responsibility on the buyer. Consider FOB or CIF for better risk distribution.');
+        } else if (incotermUpper === 'DDP') {
+          newRecommendations.push('DDP places maximum responsibility on the seller, including customs clearance and duties.');
+        }
+      }
+      
+      // Cost breakdown insights
+      if (costComponents && costComponents.length > 0 && totalCost) {
+        // Find highest cost component
+        const sortedComponents = [...costComponents].sort((a, b) => b.amount - a.amount);
+        const highestCost = sortedComponents[0];
+        
+        newInsights.push(`${highestCost.name} is your highest cost at ${highestCost.percentage.toFixed(1)}% of total.`);
+        
+        // Check for optimization opportunities
+        const dutyComponents = costComponents.filter(c => c.type === 'duty');
+        if (dutyComponents.length > 0 && dutyComponents.reduce((sum, c) => sum + c.amount, 0) / totalCost > 0.15) {
+          newRecommendations.push('High duty costs detected. Consider evaluating special trade programs or duty drawback opportunities.');
+        }
+        
+        const shippingComponents = costComponents.filter(c => c.type === 'shipping');
+        if (shippingComponents.length > 0 && shippingComponents.reduce((sum, c) => sum + c.amount, 0) / totalCost > 0.30) {
+          newRecommendations.push('Shipping costs are significant. Consider consolidating shipments or negotiating better carrier rates.');
+        }
+      }
+      
+      // Default recommendations if none generated
+      if (newRecommendations.length === 0) {
+        newRecommendations.push('Complete more fields for customized recommendations.');
+      }
+      
+      setInsights(newInsights);
+      setRecommendations(newRecommendations);
+      setIsLoading(false);
+    }, 1200);
+  };
+
+  // Handle HS code suggestion click
+  const handleHsCodeSuggestion = (code: string) => {
+    if (onHsCodeSuggestion) {
+      onHsCodeSuggestion(code);
     }
   };
-  
-  // Confidence level indicator for HS code suggestions
-  const getConfidenceLabel = (confidence: number) => {
-    if (confidence > 0.9) return 'High Confidence';
-    if (confidence > 0.7) return 'Medium Confidence';
-    return 'Low Confidence';
-  };
-  
-  const getConfidenceClass = (confidence: number) => {
-    if (confidence > 0.9) return 'high';
-    if (confidence > 0.7) return 'medium';
-    return 'low';
-  };
-  
+
   return (
-    <div className={`copilot-assistant ${isExpanded ? 'expanded' : 'collapsed'}`}>
-      <div className="copilot-header" onClick={() => setIsExpanded(!isExpanded)}>
-        <h3>AI Trade Copilot</h3>
-        <button className="toggle-button">
-          {isExpanded ? '−' : '+'}
-        </button>
+    <div className={`copilot-assistant ${isCollapsed ? 'collapsed' : ''}`}>
+      <div className="copilot-assistant-header" onClick={toggleCollapse}>
+        <div className="copilot-assistant-title">
+          <Bot size={20} />
+          <span>Trade Navigator Copilot</span>
+        </div>
+        <div>
+          {isCollapsed ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+        </div>
       </div>
       
-      {isExpanded && (
-        <div className="copilot-content">
-          {/* Recommendations Section */}
-          <div className="recommendations-section">
-            <h4>Smart Recommendations</h4>
-            <ul className="recommendations-list">
-              {recommendations.map((rec, index) => (
-                <li key={index} className="recommendation-item">{rec}</li>
-              ))}
-            </ul>
-          </div>
-          
-          {/* Analysis Actions (only show if we have product description and category) */}
-          {productDescription && category && (
-            <div className="analysis-actions">
-              <button 
-                onClick={analyzeProduct}
-                disabled={loading}
-                className="analyze-button"
-              >
-                {loading ? 'Analyzing...' : 'Analyze Product'}
-              </button>
+      {!isCollapsed && (
+        <div className="copilot-assistant-content">
+          {isLoading ? (
+            <div className="loading-animation">
+              <span></span>
+              <span></span>
+              <span></span>
             </div>
-          )}
-          
-          {/* Error Messages */}
-          {error && (
-            <div className="error-message">
-              {error}
-            </div>
-          )}
-          
-          {/* HS Code Analysis Results */}
-          {result && (
-            <div className="result-container">
-              <div className="hs-code-suggestion">
-                <span className="label">Suggested HS Code:</span>
-                <span className="code">{result.hsCode}</span>
-                <span className={`confidence ${getConfidenceClass(result.confidence)}`}>
-                  {getConfidenceLabel(result.confidence)}
-                </span>
-              </div>
-              
-              <div className="source-info">
-                <span className="label">Source:</span>
-                <span className="value">{result.source}</span>
-              </div>
-              
-              {result.alternativeCodes && result.alternativeCodes.length > 0 && (
-                <div className="alternatives">
-                  <span className="label">Alternative codes:</span>
-                  <div className="alternative-list">
-                    {result.alternativeCodes.map((code: string, index: number) => (
-                      <button 
-                        key={index}
-                        onClick={() => onHsCodeSuggestion && onHsCodeSuggestion(code)}
-                        className="alternative-code"
-                      >
-                        {code}
-                      </button>
+          ) : (
+            <>
+              {insights.length > 0 && (
+                <div className="copilot-assistant-message">
+                  <h4 className="text-base font-medium mb-2">Insights</h4>
+                  <ul className="text-sm space-y-1">
+                    {insights.map((insight, index) => (
+                      <li key={`insight-${index}`} className="flex items-start gap-2">
+                        <Info size={14} className="text-primary mt-1" />
+                        <span>{insight}</span>
+                      </li>
                     ))}
+                  </ul>
+                </div>
+              )}
+              
+              {recommendations.length > 0 && (
+                <div className="copilot-assistant-message">
+                  <h4 className="text-base font-medium mb-2">Recommendations</h4>
+                  <ul className="text-sm space-y-1">
+                    {recommendations.map((rec, index) => (
+                      <li key={`rec-${index}`} className="flex items-start gap-2">
+                        <Lightbulb size={14} className="text-amber-500 mt-1" />
+                        <span>{rec}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              
+              {hsCode && (
+                <div className="copilot-assistant-info">
+                  <Info size={16} className="text-primary" />
+                  <div className="text-sm">
+                    <p>HS Code {hsCode} has been assigned to your product.</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      This code determines applicable duties and regulations.
+                    </p>
                   </div>
                 </div>
               )}
-            </div>
+            </>
           )}
         </div>
       )}
