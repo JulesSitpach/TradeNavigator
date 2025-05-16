@@ -1,10 +1,10 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import PageHeader from "@/components/common/PageHeader";
 import { LanguageContext } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
-import { FaDownload, FaPlus, FaBox, FaShip, FaMoneyBill, FaChartPie, FaFileInvoice, FaGlobe } from "react-icons/fa";
+import { FaDownload, FaPlus, FaBox, FaShip, FaMoneyBill, FaChartPie, FaFileInvoice, FaGlobe, FaInfoCircle } from "react-icons/fa";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -769,7 +769,7 @@ const TradeAgreementCalculator = () => {
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button variant="outline" size="icon">
-                      <FaCircleInfo />
+                      <FaInfoCircle />
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>

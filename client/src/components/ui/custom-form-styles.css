@@ -1,0 +1,78 @@
+/* Custom form styles for the TradeNavigator platform */
+
+/* Default state - white background for all inputs and selects */
+.input-field-white,
+.select-field-white {
+  background-color: white !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+/* Completed state - blue background for filled inputs and selects */
+.input-field-completed,
+.select-field-completed {
+  background-color: #f0f7ff !important;
+  border: 1px solid #bfdbfe !important;
+}
+
+/* White select triggers */
+.select-trigger-white {
+  background-color: white !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+/* Blue select triggers when completed */
+.select-trigger-completed {
+  background-color: #f0f7ff !important;
+  border: 1px solid #bfdbfe !important;
+}
+
+/* White container for product info form */
+.product-info-container {
+  background-color: white;
+  border-radius: 0.375rem;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+/* Form section headers */
+.form-section-header {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 1rem;
+}
+
+/* Form section description */
+.form-section-description {
+  font-size: 0.875rem;
+  color: #64748b;
+  margin-bottom: 1.5rem;
+}
+
+/* Units labels */
+.units-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 2.5rem;
+  padding: 0 0.75rem;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-left: none;
+  border-top-right-radius: 0.25rem;
+  border-bottom-right-radius: 0.25rem;
+  color: #64748b;
+  font-size: 0.875rem;
+}
+
+/* Active unit selector */
+.unit-selector-active {
+  background-color: #1e40af;
+  color: white;
+}
+
+/* Inactive unit selector */
+.unit-selector-inactive {
+  background-color: #f8fafc;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+}
