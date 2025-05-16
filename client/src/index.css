@@ -8,14 +8,16 @@
   border-bottom: 1px solid #dee2e6;
 }
 
-/* Simple flexible tabs that wrap naturally */
+/* Enhanced flexible tabs that wrap naturally with improved visual design */
 .flexible-tabs {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  padding: 8px 16px;
+  padding: 12px 16px;
   background-color: #f8f9fa;
   border-bottom: 1px solid #dee2e6;
+  position: relative;
+  z-index: 10;
 }
 
 .flexible-tabs a {
@@ -25,28 +27,60 @@
   white-space: nowrap;
   border-radius: 4px;
   transition: all 0.2s ease;
+  font-weight: 500;
+  border: 1px solid transparent;
 }
 
 .flexible-tabs a:hover {
   background-color: rgba(13, 110, 253, 0.1);
   color: #0d6efd;
+  border-color: rgba(13, 110, 253, 0.2);
 }
 
 .flexible-tabs a.active {
   background-color: #0d6efd;
   color: white;
+  border-color: #0d6efd;
+  box-shadow: 0 2px 4px rgba(13, 110, 253, 0.25);
 }
 
-/* Add any responsive adjustments if needed */
+/* Added indicator for active tab to improve visibility */
+.flexible-tabs a.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid #0d6efd;
+}
+
+/* Responsive adjustments for different screen sizes */
 @media (max-width: 768px) {
   .flexible-tabs {
-    gap: 4px;
-    padding: 6px 12px;
+    gap: 6px;
+    padding: 10px 12px;
   }
   
   .flexible-tabs a {
     padding: 6px 12px;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
+  }
+}
+
+/* Extra small screens adjustment */
+@media (max-width: 480px) {
+  .flexible-tabs {
+    gap: 4px;
+    padding: 8px 10px;
+  }
+  
+  .flexible-tabs a {
+    padding: 5px 10px;
+    font-size: 0.8rem;
   }
 }
 

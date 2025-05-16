@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, decimal, varchar, timestamp, json, boolean } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, decimal, varchar, timestamp, json, boolean, index } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -108,6 +108,21 @@ export type AnalysisResult = typeof analysisResults.$inferSelect;
 export type InsertAnalysisResult = z.infer<typeof insertAnalysisResultSchema>;
 
 export type TariffData = typeof tariffData.$inferSelect;
+
+// Session table for authentication
+export const sessions = pgTable(
+  "sessions",
+  {
+    sid: varchar("sid").primaryKey(),
+    sess: json("sess").notNull(),
+    expire: timestamp("expire", { mode: "date" }).notNull(),
+  },
+  (table) => {
+    return {
+      expireIdx: index("expire_idx").on(table.expire),
+    };
+  }
+);
 
 // Types for special programs feature (API interfaces)
 export interface Country {

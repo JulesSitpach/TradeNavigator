@@ -1,0 +1,168 @@
+# Dashboard Development Checklist: Avoiding Common Pitfalls
+
+## For All Dashboards
+
+1. **No Hard-Coded Data**
+   - ✅ Get all values from user input or API responses
+   - ✅ Calculate all figures dynamically
+   - ❌ Never use fixed percentages, dollar amounts, or rates
+   - ❌ Never show template text as if it were user-specific analysis
+
+2. **Data Flow Integrity**
+   - ✅ Always use the same source data across all dashboards
+   - ✅ Pass complete context between screens to maintain consistency
+   - ❌ Never assume previous input values
+   - ❌ Never display calculations that don't match user's specific inputs
+
+3. **Navigation Consistency**
+   - ✅ Display all tabs on every screen (Overview, Cost Breakdown, etc.)
+   - ✅ Allow tab wrapping for smaller screens instead of hiding options
+   - ✅ Maintain user's context when switching between tabs
+   - ❌ No "back" buttons required to navigate between main features
+
+4. **Loading States**
+   - ✅ Show appropriate loading indicators while calculating
+   - ✅ Provide partial results if some data is available
+   - ✅ Clearly communicate when results are ready
+   - ❌ Never show placeholder data that looks like real results
+
+## Cost Breakdown Dashboard
+
+1. **Calculation Accuracy**
+   - ✅ Use actual HS code for duty calculations
+   - ✅ Calculate using the exact product value entered
+   - ✅ Apply current exchange rates for currency conversions
+   - ❌ Never use approximate or rounded figures
+
+2. **Visualization Clarity**
+   - ✅ Show percentage breakdown that sums to exactly 100%
+   - ✅ Label all cost components clearly
+   - ✅ Use consistent color coding for cost categories
+   - ❌ Avoid unlabeled or unexplained segments
+
+3. **Currency Handling**
+   - ✅ Show original currency and conversions
+   - ✅ Date-stamp exchange rates
+   - ✅ Allow toggling between currencies
+   - ❌ Don't mix currencies within calculations
+
+## Alternative Routes Dashboard
+
+1. **Comparison Integrity**
+   - ✅ Show actual time/cost trade-offs based on real rates
+   - ✅ Calculate savings based on user's specific shipment
+   - ✅ Show both benefits AND drawbacks for each option
+   - ❌ Never present only positive aspects of an option
+
+2. **Realistic Estimates**
+   - ✅ Include all relevant charges (fuel, handling, etc.)
+   - ✅ Show actual transit times, not ideal scenarios
+   - ✅ Factor in current delays and seasonal issues
+   - ❌ Don't display unrealistic best-case scenarios
+
+3. **Decision Support**
+   - ✅ Present clear cost/benefit analysis
+   - ✅ Highlight reliability factors
+   - ✅ Include environmental impact information
+   - ❌ Don't make recommendations without showing reasoning
+
+## Tariff Analysis Dashboard
+
+1. **Classification Accuracy**
+   - ✅ Verify HS code validity with official databases
+   - ✅ Show duty rates from current tariff schedules
+   - ✅ Calculate based on actual product attributes
+   - ❌ Never use outdated or approximate rates
+
+2. **Comparison Validity**
+   - ✅ Compare only equivalent products across markets
+   - ✅ Account for different classification rules by country
+   - ✅ Show applicable trade agreement benefits
+   - ❌ Don't compare rates without noting different bases
+
+3. **Documentation Clarity**
+   - ✅ List specific documents required for this exact product
+   - ✅ Indicate which are mandatory vs. optional
+   - ✅ Link requirements to specific regulations
+   - ❌ Don't show generic document lists
+
+## Regulations Dashboard
+
+1. **Requirement Relevance**
+   - ✅ Display only regulations applicable to the specific product
+   - ✅ Organize by category (safety, environmental, etc.)
+   - ✅ Indicate complexity with clear metrics
+   - ❌ Don't overwhelm with irrelevant regulations
+
+2. **Market Comparison**
+   - ✅ Highlight key differences between markets
+   - ✅ Show complexity variation with metrics
+   - ✅ Include timeline implications
+   - ❌ Don't use subjective assessments without basis
+
+3. **Cost Implications**
+   - ✅ Estimate compliance costs where possible
+   - ✅ Include testing and certification expenses
+   - ✅ Show ongoing vs. one-time costs
+   - ❌ Don't hide significant compliance expenses
+
+## Special Programs Dashboard
+
+1. **Eligibility Assessment**
+   - ✅ Evaluate eligibility based on actual product details
+   - ✅ Show specific requirements met/not met
+   - ✅ Calculate actual potential savings
+   - ❌ Don't suggest programs without checking eligibility
+
+2. **Balanced Information**
+   - ✅ Show processing times and effort required
+   - ✅ Include both benefits and obligations
+   - ✅ Present realistic savings expectations
+   - ❌ Don't exaggerate benefits or minimize requirements
+
+3. **Application Guidance**
+   - ✅ List specific next steps
+   - ✅ Include documentation requirements
+   - ✅ Provide timeline expectations
+   - ❌ Don't oversimplify complex application processes
+
+## Market Analysis Dashboard
+
+1. **Data Currency**
+   - ✅ Use recent market size and growth data
+   - ✅ Date-stamp all market information
+   - ✅ Update competitive landscape regularly
+   - ❌ Don't use outdated market reports
+
+2. **Relevance to Product**
+   - ✅ Filter market data to the specific product category
+   - ✅ Show demand for the exact product type
+   - ✅ Include market-specific pricing information
+   - ❌ Don't show general market stats unrelated to the product
+
+3. **Entry Barrier Accuracy**
+   - ✅ Calculate real costs of market entry
+   - ✅ Include regulatory hurdles specific to the market
+   - ✅ Show competitive positioning challenges
+   - ❌ Don't minimize significant entry barriers
+
+## Final Verification For Every Dashboard
+
+Before releasing any dashboard:
+
+1. **Truth Test**
+   - Is every displayed value directly derived from user input or current API data?
+   - Would changing the user's inputs change these results accordingly?
+   - Are all comparisons and differentials mathematically accurate?
+
+2. **Value Test**
+   - Does this dashboard provide actionable insights specific to this user?
+   - Are both benefits and challenges clearly presented?
+   - Is there clear guidance on next steps?
+
+3. **Clarity Test**
+   - Would a non-expert understand these insights?
+   - Are technical terms explained where necessary?
+   - Is the most important information immediately visible?
+
+By following this checklist for each dashboard, you'll avoid the common pitfalls of template-based systems and ensure that TradeNavigator delivers genuine, personalized value to SMBs for their international trade decisions.
