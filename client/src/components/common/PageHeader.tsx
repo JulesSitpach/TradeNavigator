@@ -1,12 +1,15 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, ComponentType } from 'react';
 import { Button } from '@/components/ui/button';
+import { Link } from 'wouter';
 
 interface ActionItem {
   label: string;
-  onClick: () => void;
+  onClick?: () => void;
   icon?: ReactNode;
   variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link';
   disabled?: boolean;
+  as?: ComponentType<any>;
+  href?: string;
 }
 
 interface PageHeaderProps {
@@ -27,18 +30,38 @@ const PageHeader: React.FC<PageHeaderProps> = ({ title, description, children, a
         
         {actions && actions.length > 0 && (
           <div className="mt-4 md:mt-0 space-x-2 flex flex-wrap gap-2">
-            {actions.map((action, index) => (
-              <Button 
-                key={index}
-                onClick={action.onClick}
-                variant={action.variant || 'default'}
-                disabled={action.disabled}
-                className="flex items-center"
-              >
-                {action.icon && <span className="mr-2">{action.icon}</span>}
-                {action.label}
-              </Button>
-            ))}
+            {actions.map((action, index) => {
+              const ButtonComponent = action.as || 'button';
+              
+              if (action.as === Link && action.href) {
+                return (
+                  <Link key={index} href={action.href}>
+                    <Button 
+                      onClick={action.onClick}
+                      variant={action.variant || 'default'}
+                      disabled={action.disabled}
+                      className="flex items-center"
+                    >
+                      {action.icon && <span className="mr-2">{action.icon}</span>}
+                      {action.label}
+                    </Button>
+                  </Link>
+                );
+              }
+              
+              return (
+                <Button 
+                  key={index}
+                  onClick={action.onClick}
+                  variant={action.variant || 'default'}
+                  disabled={action.disabled}
+                  className="flex items-center"
+                >
+                  {action.icon && <span className="mr-2">{action.icon}</span>}
+                  {action.label}
+                </Button>
+              );
+            })}
           </div>
         )}
         

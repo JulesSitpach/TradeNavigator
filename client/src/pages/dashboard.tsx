@@ -42,7 +42,8 @@ const Dashboard = () => {
           {
             label: t("dashboard.newAnalysis"),
             icon: <FaPlus />,
-            onClick: () => window.location.href = "/product-analysis",
+            href: "/product-analysis",
+            as: Link
           }
         ]}
       />

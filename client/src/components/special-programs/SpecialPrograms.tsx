@@ -317,16 +317,19 @@ const SpecialPrograms: React.FC<SpecialProgramsProps> = ({
                   <p className="text-sm text-gray-600">{getSelectedProgram().detailedDescription}</p>
                 </div>
 
-                {getSelectedProgram().requirements && getSelectedProgram().requirements.length > 0 && (
-                  <div className="mb-4">
-                    <h4 className="font-medium mb-2">Requirements</h4>
-                    <ul className="list-disc list-inside text-sm text-gray-600">
-                      {getSelectedProgram().requirements?.map((requirement, index) => (
-                        <li key={index}>{requirement}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
+                {(() => {
+                  const program = getSelectedProgram();
+                  return program.requirements && Array.isArray(program.requirements) && program.requirements.length > 0 ? (
+                    <div className="mb-4">
+                      <h4 className="font-medium mb-2">Requirements</h4>
+                      <ul className="list-disc list-inside text-sm text-gray-600">
+                        {program.requirements.map((requirement, index) => (
+                          <li key={index}>{requirement}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : null;
+                })()}
 
                 {getSelectedProgram().limitations && (
                   <div className="mb-4">
