@@ -5,6 +5,7 @@ import { comtradeApi } from "./api/comtrade";
 import { shippoApi } from "./api/shippo";
 import { openaiService } from "./api/openai";
 import { exchangeRateApi } from "./api/exchange";
+import * as costCalculator from "./api/cost-calculator";
 import bcrypt from "bcrypt";
 import session from "express-session";
 import pgSimple from "connect-pg-simple";
@@ -1470,6 +1471,207 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Cost breakdown calculator endpoint
+  app.post("/api/cost-breakdown/calculate", isAuthenticated, async (req, res) => {
+    try {
+      // Extract product and shipping details from request body
+      const { productDetails, shippingDetails } = req.body;
+      
+      if (!productDetails || !shippingDetails) {
+        return res.status(400).json({ message: 'Missing required product or shipping details' });
+      }
+      
+      // Validate required fields
+      const requiredProductFields = ['description', 'category', 'hsCode', 'originCountry', 'destinationCountry', 'value'];
+      const requiredShippingFields = ['quantity', 'transportMode', 'shipmentType', 'packageType', 'weight', 'dimensions'];
+      
+      const missingProductFields = requiredProductFields.filter(field => !productDetails[field]);
+      const missingShippingFields = requiredShippingFields.filter(field => !shippingDetails[field]);
+      
+      if (missingProductFields.length > 0 || missingShippingFields.length > 0) {
+        return res.status(400).json({ 
+          message: 'Missing required fields',
+          missingFields: {
+            productDetails: missingProductFields,
+            shippingDetails: missingShippingFields
+          }
+        });
+      }
+      
+      // Product cost calculation
+      const productCost = productDetails.value * shippingDetails.quantity;
+      
+      // Calculate duty rate using the calculator service
+      const dutyRate = costCalculator.calculateDutyRate(
+        productDetails.hsCode, 
+        productDetails.originCountry, 
+        productDetails.destinationCountry
+      );
+      const dutyAmount = (productCost * dutyRate) / 100;
+      
+      // Calculate shipping cost
+      const shippingCost = costCalculator.calculateShippingCost(
+        productDetails.originCountry,
+        productDetails.destinationCountry,
+        shippingDetails.transportMode,
+        shippingDetails.shipmentType,
+        shippingDetails.weight,
+        shippingDetails.dimensions
+      );
+      
+      // Calculate tax
+      const taxInfo = costCalculator.getTaxInfo(productDetails.destinationCountry);
+      const taxAmount = ((productCost + dutyAmount) * taxInfo.rate) / 100;
+      
+      // Calculate insurance
+      const insuranceCost = costCalculator.calculateInsurance(
+        productCost, 
+        shippingDetails.transportMode
+      );
+      
+      // Calculate customs fees
+      const customsFees = costCalculator.calculateCustomsFees(
+        productDetails.destinationCountry, 
+        productCost
+      );
+      
+      // Calculate volume in cubic meters for last mile calculations
+      let volumeInCubicMeters = 
+        (shippingDetails.dimensions.length * 
+         shippingDetails.dimensions.width * 
+         shippingDetails.dimensions.height) / 1000000;
+      
+      // Handle different units
+      if (shippingDetails.dimensions.unit === 'in') {
+        // Convert from cubic inches to cubic meters
+        volumeInCubicMeters = volumeInCubicMeters * 0.0000164;
+      } else if (shippingDetails.dimensions.unit === 'm') {
+        // Already in meters, no conversion needed
+        volumeInCubicMeters = 
+          shippingDetails.dimensions.length * 
+          shippingDetails.dimensions.width * 
+          shippingDetails.dimensions.height;
+      }
+      
+      // Calculate last mile delivery
+      const lastMileDelivery = costCalculator.calculateLastMileDelivery(
+        productDetails.destinationCountry,
+        shippingDetails.weight,
+        volumeInCubicMeters
+      );
+      
+      // Calculate handling fees
+      const handlingFees = costCalculator.calculateHandlingFees(
+        shippingDetails.quantity,
+        shippingDetails.packageType
+      );
+      
+      // Calculate total landed cost
+      const totalLandedCost = 
+        productCost + 
+        dutyAmount + 
+        taxAmount + 
+        shippingCost + 
+        insuranceCost + 
+        customsFees + 
+        lastMileDelivery + 
+        handlingFees;
+      
+      // Format cost components for the response
+      const components = [
+        {
+          name: "Product Value",
+          value: parseFloat(productCost.toFixed(2)),
+          percentage: parseFloat(((productCost / totalLandedCost) * 100).toFixed(1)),
+          description: "Value of the goods being shipped",
+          category: "product"
+        },
+        {
+          name: `Import Duty (${dutyRate.toFixed(1)}%)`,
+          value: parseFloat(dutyAmount.toFixed(2)),
+          percentage: parseFloat(((dutyAmount / totalLandedCost) * 100).toFixed(1)),
+          description: `Import duty calculated at ${dutyRate.toFixed(1)}% of product value`,
+          category: "duty"
+        },
+        {
+          name: `${taxInfo.name} (${taxInfo.rate.toFixed(1)}%)`,
+          value: parseFloat(taxAmount.toFixed(2)),
+          percentage: parseFloat(((taxAmount / totalLandedCost) * 100).toFixed(1)),
+          description: `${taxInfo.name} calculated at ${taxInfo.rate.toFixed(1)}% of dutiable value`,
+          category: "tax"
+        },
+        {
+          name: "Freight Cost",
+          value: parseFloat(shippingCost.toFixed(2)),
+          percentage: parseFloat(((shippingCost / totalLandedCost) * 100).toFixed(1)),
+          description: "Cost of international transportation",
+          category: "shipping"
+        },
+        {
+          name: "Insurance",
+          value: parseFloat(insuranceCost.toFixed(2)),
+          percentage: parseFloat(((insuranceCost / totalLandedCost) * 100).toFixed(1)),
+          description: "Insurance coverage for goods in transit",
+          category: "shipping"
+        },
+        {
+          name: "Customs Clearance",
+          value: parseFloat(customsFees.toFixed(2)),
+          percentage: parseFloat(((customsFees / totalLandedCost) * 100).toFixed(1)),
+          description: "Fees for customs processing and declarations",
+          category: "other"
+        },
+        {
+          name: "Last Mile Delivery",
+          value: parseFloat(lastMileDelivery.toFixed(2)),
+          percentage: parseFloat(((lastMileDelivery / totalLandedCost) * 100).toFixed(1)),
+          description: "Cost of final delivery to destination",
+          category: "shipping"
+        },
+        {
+          name: "Handling Fees",
+          value: parseFloat(handlingFees.toFixed(2)),
+          percentage: parseFloat(((handlingFees / totalLandedCost) * 100).toFixed(1)),
+          description: "Fees for cargo handling and processing",
+          category: "other"
+        }
+      ];
+      
+      // Return the cost breakdown data
+      return res.json({
+        components,
+        breakdown: {
+          productCost,
+          dutyAmount,
+          dutyRate,
+          taxAmount,
+          taxRate: taxInfo.rate,
+          shippingCost,
+          insuranceCost,
+          customsFees,
+          lastMileDelivery,
+          handlingFees,
+          totalLandedCost,
+          dataSource: "Advanced Model"
+        },
+        totalCost: parseFloat(totalLandedCost.toFixed(2)),
+        currency: "USD",
+        productDetails: {
+          name: productDetails.description,
+          category: productDetails.category,
+          hsCode: productDetails.hsCode,
+          origin: productDetails.originCountry,
+          destination: productDetails.destinationCountry,
+          value: productDetails.value
+        },
+        transportMode: shippingDetails.transportMode
+      });
+    } catch (error) {
+      console.error("Error calculating cost breakdown:", error);
+      res.status(500).json({ message: "Failed to calculate cost breakdown" });
+    }
+  });
+
   // Get alternative routes data
   app.get("/api/alternative-routes", isAuthenticated, async (req, res) => {
     try {
