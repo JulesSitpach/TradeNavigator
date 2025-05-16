@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { FaUser, FaEnvelope, FaBuilding, FaGlobe, FaKey, FaSave } from "react-icons/fa6";
+import { FaUser, FaEnvelope, FaBuilding, FaGlobe, FaKey, FaFloppyDisk } from "react-icons/fa6";
 import PageHeader from "@/components/common/PageHeader";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -294,7 +294,7 @@ const Profile = () => {
                         </span>
                       ) : (
                         <span className="flex items-center">
-                          <FaSave className="mr-2" />
+                          <FaFloppyDisk className="mr-2" />
                           Save Changes
                         </span>
                       )}

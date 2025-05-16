@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FaSearch, FaMagnifyingGlassDollar, FaDownload } from "react-icons/fa6";
+import { FaMagnifyingGlass, FaMagnifyingGlassDollar, FaDownload } from "react-icons/fa6";
 import PageHeader from "@/components/common/PageHeader";
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -227,7 +227,7 @@ const TariffLookup = () => {
                         </span>
                       ) : (
                         <span className="flex items-center">
-                          <FaSearch className="mr-2" />
+                          <FaMagnifyingGlass className="mr-2" />
                           Search Tariffs
                         </span>
                       )}
