@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import PageHeader from "@/components/common/PageHeader";
 import { FaArrowLeft, FaSearch } from "react-icons/fa";
-import "../styles/form-styles.css";
+import "../../styles/form-styles.css";
 
 const ProductInfoForm = () => {
   // State for tracking completed fields

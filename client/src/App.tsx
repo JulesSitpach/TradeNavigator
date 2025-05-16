@@ -95,6 +95,7 @@ function Router() {
       <PrivateRoute exact path="/dashboard/trade-partners" component={Dashboard} />
       <PrivateRoute exact path="/dashboard/ai-predictions" component={Dashboard} />
       <PrivateRoute exact path="/dashboard/new-analysis" component={NewAnalysis} />
+      <PrivateRoute exact path="/dashboard/product-info" component={ProductInfoForm} />
       
       {/* Fallback to 404 */}
       <Route component={NotFound} />
