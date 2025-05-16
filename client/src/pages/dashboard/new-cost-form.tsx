@@ -269,8 +269,8 @@ const NewCostForm = () => {
               <Button 
                 className="calculate-btn"
                 onClick={() => {
-                  // In a real implementation, this would submit the form data and redirect to results
-                  window.location.href = "/dashboard/cost-breakdown";
+                  // Submit the form data and redirect to the complete breakdown page with scrollable tabs
+                  window.location.href = "/dashboard/cost-breakdown-complete";
                 }}
               >
                 Calculate Cost Analysis

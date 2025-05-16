@@ -7,6 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend } from 'recharts';
 import ScrollTabs from '@/components/ui/scroll-tabs';
 import PageHeader from '@/components/common/PageHeader';
+import CopilotAssistant from '@/components/ai/CopilotAssistant';
 
 // Dummy data to match the provided example
 const costBreakdownData = {

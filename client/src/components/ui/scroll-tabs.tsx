@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import "../../styles/scrollable-tabs.css";
 
 interface ScrollTabsProps {
   children: React.ReactNode;

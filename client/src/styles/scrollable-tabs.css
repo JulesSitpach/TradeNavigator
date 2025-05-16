@@ -1,0 +1,83 @@
+/* Scrollable Tabs Styling based on TradeNavigator UI Style Guide */
+
+.scrollable-tabs-container {
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  scroll-behavior: smooth;
+  width: 100%;
+}
+
+.scrollable-tabs-container::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+.scroll-tab-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.scroll-tab-button.left {
+  left: -14px;
+}
+
+.scroll-tab-button.right {
+  right: -14px;
+}
+
+/* Custom styling for the tabs */
+.tabs-list {
+  width: 100%;
+  justify-content: flex-start;
+  border-bottom: 1px solid #e2e8f0;
+  border-radius: 0;
+  height: 48px;
+  padding: 0;
+  background-color: transparent;
+}
+
+.tab-trigger {
+  flex: 1;
+  max-width: 200px;
+  padding: 0 16px;
+  height: 100%;
+  font-size: 14px;
+  color: #64748b;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.tab-trigger[data-state="active"] {
+  color: #0066cc;
+  border-bottom: 2px solid #0066cc;
+  font-weight: 500;
+}
+
+/* Responsive styling */
+@media (max-width: 768px) {
+  .tab-trigger {
+    max-width: 150px;
+    padding: 0 12px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 576px) {
+  .tab-trigger {
+    max-width: 130px;
+    padding: 0 8px;
+    font-size: 12px;
+  }
+}
