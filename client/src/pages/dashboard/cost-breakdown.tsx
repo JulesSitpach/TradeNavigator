@@ -4,7 +4,8 @@ import PageHeader from "@/components/common/PageHeader";
 import { LanguageContext } from "@/contexts/LanguageContext";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useQuery } from "@tanstack/react-query";
-import { FaDownload, FaInfoCircle, FaBox, FaShip, FaFileInvoice, FaPercent } from "react-icons/fa6";
+import { FaDownload, FaBox, FaShip, FaFileInvoice, FaPercent } from "react-icons/fa";
+import { FaCircleInfo } from "react-icons/fa6";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -540,7 +541,7 @@ const CostBreakdownDashboard = () => {
                       
                       <div className="bg-amber-50 p-4 rounded-md text-sm text-amber-700">
                         <div className="flex items-start">
-                          <FaInfoCircle className="text-amber-500 mr-2 mt-0.5 flex-shrink-0" />
+                          <FaCircleInfo className="text-amber-500 mr-2 mt-0.5 flex-shrink-0" />
                           <div>
                             <p className="font-medium mb-1">Classification Review Recommended</p>
                             <p className="text-xs">Current HTS classification may not be optimal. A thorough review could identify lower duty rate options.</p>
