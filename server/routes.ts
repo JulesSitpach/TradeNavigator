@@ -60,7 +60,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     session({
       store: new PgSession({
         pool,
-        tableName: "session", // Use a table named "session" to store session data
+        tableName: "sessions", // Use a table named "sessions" to store session data
       }),
       secret: process.env.SESSION_SECRET || "trade-navigator-secret",
       resave: false,

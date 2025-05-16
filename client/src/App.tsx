@@ -21,6 +21,9 @@ import Profile from "@/pages/profile";
 import Subscription from "@/pages/subscription";
 import SpecialPrograms from "@/pages/special-programs";
 
+// Dashboard pages
+import CostBreakdownDashboard from "@/pages/dashboard/cost-breakdown";
+
 function PrivateRoute({ component: Component, ...rest }: { component: React.ComponentType<any>; path: string; exact?: boolean }) {
   // For development, we'll allow access to routes without authentication
   const isDevelopment = import.meta.env.DEV;
@@ -77,7 +80,7 @@ function Router() {
       
       {/* Dashboard Flexible Tabs Routes */}
       <PrivateRoute exact path="/dashboard/overview" component={Dashboard} />
-      <PrivateRoute exact path="/dashboard/cost-breakdown" component={Dashboard} />
+      <PrivateRoute exact path="/dashboard/cost-breakdown" component={CostBreakdownDashboard} />
       <PrivateRoute exact path="/dashboard/alternative-routes" component={Dashboard} />
       <PrivateRoute exact path="/dashboard/tariff-analysis" component={Dashboard} />
       <PrivateRoute exact path="/dashboard/regulations" component={Dashboard} />
