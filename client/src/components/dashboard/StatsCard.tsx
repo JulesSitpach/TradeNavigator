@@ -1,26 +1,32 @@
-import { Card } from "@/components/ui/card";
-import { ReactNode } from "react";
+import React, { ReactNode } from 'react';
+import { Card } from '@/components/ui/card';
 
 interface StatsCardProps {
   title: string;
   value: string | number;
   change?: string;
-  icon: ReactNode;
+  icon?: ReactNode;
 }
 
-const StatsCard = ({ title, value, change, icon }: StatsCardProps) => {
+const StatsCard: React.FC<StatsCardProps> = ({ title, value, change, icon }) => {
+  const isPositiveChange = change?.startsWith('+');
+
   return (
-    <Card className="bg-white p-5 border border-neutral-200">
+    <Card className="bg-white shadow-sm p-5 border border-neutral-200">
       <div className="flex items-center">
-        <div className="flex-shrink-0 bg-primary-50 rounded-full p-3">
-          {icon}
-        </div>
+        {icon && (
+          <div className="flex items-center justify-center w-12 h-12 rounded-full bg-blue-50">
+            {icon}
+          </div>
+        )}
         <div className="ml-5">
-          <h3 className="text-sm font-medium text-neutral-500">{title}</h3>
-          <div className="mt-1 flex items-baseline">
-            <span className="text-2xl font-semibold text-neutral-900">{value}</span>
+          <p className="text-sm font-medium text-neutral-500">{title}</p>
+          <div className="flex items-baseline">
+            <h3 className="text-2xl font-semibold text-neutral-900">{value}</h3>
             {change && (
-              <span className="ml-2 text-xs font-medium text-secondary">{change}</span>
+              <span className={`ml-2 text-xs font-medium ${isPositiveChange ? 'text-green-600' : 'text-red-600'}`}>
+                {change}
+              </span>
             )}
           </div>
         </div>

@@ -23,6 +23,11 @@ const PgSession = pgSimple(session);
 
 // Validate user authentication
 function isAuthenticated(req: Request, res: Response, next: Function) {
+  // For development, bypass authentication
+  if (process.env.NODE_ENV === 'development') {
+    return next();
+  }
+  
   if (req.session && req.session.userId) {
     return next();
   }
