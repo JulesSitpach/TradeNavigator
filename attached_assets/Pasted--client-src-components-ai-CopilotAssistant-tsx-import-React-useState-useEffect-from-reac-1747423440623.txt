@@ -1,0 +1,133 @@
+// client/src/components/ai/CopilotAssistant.tsx
+
+import React, { useState, useEffect } from 'react';
+import hsCodeAIService from '../../services/hsCodeAIService';
+import './CopilotAssistant.scss'; // Add styling file
+
+interface CopilotProps {
+  productDescription: string;
+  category: string;
+  onHsCodeSuggestion: (code: string) => void;
+  onAnalysisComplete?: (result: any) => void;
+}
+
+const CopilotAssistant: React.FC<CopilotProps> = ({
+  productDescription,
+  category,
+  onHsCodeSuggestion,
+  onAnalysisComplete
+}) => {
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
+  
+  const analyzeProduct = async () => {
+    if (!productDescription || !category) {
+      setError("Please provide both product description and category");
+      return;
+    }
+    
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const classificationResult = await hsCodeAIService.classifyProduct(
+        productDescription,
+        category
+      );
+      
+      setResult(classificationResult);
+      
+      // Notify parent component
+      onHsCodeSuggestion(classificationResult.hsCode);
+      
+      if (onAnalysisComplete) {
+        onAnalysisComplete(classificationResult);
+      }
+    } catch (err) {
+      console.error('Classification failed:', err);
+      setError('Failed to analyze product. Please try again or enter HS code manually.');
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  // Confidence level indicator
+  const getConfidenceLabel = (confidence: number) => {
+    if (confidence > 0.9) return 'High Confidence';
+    if (confidence > 0.7) return 'Medium Confidence';
+    return 'Low Confidence';
+  };
+  
+  const getConfidenceClass = (confidence: number) => {
+    if (confidence > 0.9) return 'high';
+    if (confidence > 0.7) return 'medium';
+    return 'low';
+  };
+  
+  return (
+    <div className="copilot-assistant">
+      <div className="copilot-header">
+        <h3>AI Classification Assistant</h3>
+        <button 
+          onClick={analyzeProduct}
+          disabled={loading || !productDescription || !category}
+          className="analyze-button"
+        >
+          {loading ? 'Analyzing...' : 'Analyze Product'}
+        </button>
+      </div>
+      
+      {error && (
+        <div className="error-message">
+          {error}
+        </div>
+      )}
+      
+      {result && (
+        <div className="result-container">
+          <div className="hs-code-suggestion">
+            <span className="label">Suggested HS Code:</span>
+            <span className="code">{result.hsCode}</span>
+            <span className={`confidence ${getConfidenceClass(result.confidence)}`}>
+              {getConfidenceLabel(result.confidence)}
+            </span>
+          </div>
+          
+          <div className="source-info">
+            <span className="label">Source:</span>
+            <span className="value">{result.source}</span>
+          </div>
+          
+          {result.alternativeCodes && result.alternativeCodes.length > 0 && (
+            <div className="alternatives">
+              <span className="label">Alternative codes:</span>
+              <div className="alternative-list">
+                {result.alternativeCodes.map((code: string, index: number) => (
+                  <button 
+                    key={index}
+                    onClick={() => onHsCodeSuggestion(code)}
+                    className="alternative-code"
+                  >
+                    {code}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+          
+          <div className="classification-tips">
+            <h4>Classification Insights:</h4>
+            <ul>
+              <li>This product falls under {category} category</li>
+              <li>Key classification factors identified: material, functionality</li>
+              <li>Duty rates may vary by destination country</li>
+            </ul>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default CopilotAssistant;

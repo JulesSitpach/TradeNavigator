@@ -1,0 +1,95 @@
+// client/src/services/hsCodeAIService.ts
+
+import axios from 'axios';
+import { hsCodeMappings } from '../utils/hsCodeCorrections';
+
+interface ClassificationResult {
+  hsCode: string;
+  confidence: number;
+  alternativeCodes?: string[];
+  source: 'AI' | 'Mapping' | 'Fallback';
+}
+
+class HSCodeAIService {
+  async classifyProduct(
+    productDescription: string, 
+    category: string
+  ): Promise<ClassificationResult> {
+    try {
+      // First check our local mappings for exact matches
+      const mappingResult = this.checkMappings(productDescription, category);
+      if (mappingResult) {
+        return {
+          hsCode: mappingResult,
+          confidence: 0.95,
+          source: 'Mapping'
+        };
+      }
+      
+      // If no mapping match, call the server API endpoint (which securely uses your API keys)
+      const response = await axios.post('/api/ai/classify', {
+        productDescription,
+        category,
+        context: this.getContextForCategory(category)
+      });
+      
+      return {
+        hsCode: response.data.hsCode,
+        confidence: response.data.confidence || 0.85,
+        alternativeCodes: response.data.alternatives || [],
+        source: 'AI'
+      };
+    } catch (error) {
+      console.error('HS Code classification error:', error);
+      
+      // Fallback to best-guess based on category
+      return {
+        hsCode: this.getFallbackHSCode(category),
+        confidence: 0.5,
+        source: 'Fallback'
+      };
+    }
+  }
+  
+  private checkMappings(description: string, category: string): string | null {
+    // Check against your existing hsCodeMappings
+    // This leverages your existing corrections logic
+    const normalizedDesc = description.toLowerCase();
+    
+    // Example pattern matching from your hsCodeCorrections.ts
+    if (normalizedDesc.includes('laptop') || normalizedDesc.includes('notebook computer')) {
+      return '8471.30';
+    }
+    
+    if (normalizedDesc.includes('smart watch') || normalizedDesc.includes('fitness watch')) {
+      return '8528.52';
+    }
+    
+    // Return null if no match found
+    return null;
+  }
+  
+  private getContextForCategory(category: string): string {
+    // Provide category-specific prompting context to improve AI results
+    const contextMap: {[key: string]: string} = {
+      'Electronics': 'Focus on distinguishing between consumer electronics, components, and specialized equipment.',
+      'Textiles & Garments': 'Consider material composition, gender, and garment type.',
+      // Add other categories
+    };
+    
+    return contextMap[category] || '';
+  }
+  
+  private getFallbackHSCode(category: string): string {
+    // Provide general fallback codes by category when AI fails
+    const fallbacks: {[key: string]: string} = {
+      'Electronics': '8543.70', // Electrical machines and apparatus, having individual functions
+      'Textiles & Garments': '6211.43', // General garments
+      // Add other categories
+    };
+    
+    return fallbacks[category] || '9999.99'; // Generic fallback
+  }
+}
+
+export default new HSCodeAIService();

@@ -1,533 +1,485 @@
-import { useState } from "react";
+import React, { useState } from 'react';
+import { useLocation } from 'wouter';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import PageHeader from "@/components/common/PageHeader";
-import { FaArrowLeft, FaSearch } from "react-icons/fa";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
-import { Loader2, Check, AlertCircle } from "lucide-react";
-import "../../styles/form-styles.css";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import { Info, Calculator } from "lucide-react";
+import PageHeader from '@/components/common/PageHeader';
+import '../../styles/cost-breakdown-form.css';
 
-const ProductInfoForm = () => {
-  // State for tracking completed fields
-  const [completedFields, setCompletedFields] = useState<Record<string, boolean>>({});
-  const [formValues, setFormValues] = useState({
-    productDescription: "",
-    productCategory: "",
-    hsCode: "",
-    originCountry: "",
-    destinationCountry: "",
-    productValue: "",
-    quantity: "",
-    transportMode: "",
-    shipmentType: "",
-    packageType: "",
-    weight: "",
-    length: "",
-    width: "",
-    height: ""
+// Import country data for dropdown options
+const countries = [
+  { code: 'US', name: 'United States', isCPTPP: false },
+  { code: 'CA', name: 'Canada', isCPTPP: true },
+  { code: 'MX', name: 'Mexico', isCPTPP: false },
+  { code: 'CN', name: 'China', isCPTPP: false },
+  { code: 'JP', name: 'Japan', isCPTPP: true },
+  { code: 'DE', name: 'Germany', isCPTPP: false },
+  { code: 'AU', name: 'Australia', isCPTPP: true },
+  { code: 'BR', name: 'Brazil', isCPTPP: false },
+  { code: 'VN', name: 'Vietnam', isCPTPP: true },
+  { code: 'GB', name: 'United Kingdom', isCPTPP: false },
+  { code: 'SG', name: 'Singapore', isCPTPP: true },
+  { code: 'MY', name: 'Malaysia', isCPTPP: true },
+  { code: 'NZ', name: 'New Zealand', isCPTPP: true },
+];
+
+// Product categories
+const productCategories = [
+  { value: 'electronics', label: 'Electronics' },
+  { value: 'textiles', label: 'Textiles & Apparel' },
+  { value: 'automotive', label: 'Automotive Parts' },
+  { value: 'food', label: 'Food & Beverages' },
+  { value: 'chemicals', label: 'Chemicals & Pharmaceuticals' },
+  { value: 'machinery', label: 'Machinery & Equipment' },
+  { value: 'furniture', label: 'Furniture & Home Goods' },
+  { value: 'toys', label: 'Toys & Games' },
+];
+
+// Transport Modes
+const transportModes = [
+  { value: 'ocean_fcl', label: 'Ocean (FCL)' },
+  { value: 'ocean_lcl', label: 'Ocean (LCL)' },
+  { value: 'air', label: 'Air Freight' },
+  { value: 'road', label: 'Road Transport' },
+  { value: 'rail', label: 'Rail Transport' },
+  { value: 'multimodal', label: 'Multimodal Transport' },
+];
+
+// Incoterms
+const incoterms = [
+  { value: 'fob', label: 'FOB (Free On Board)' },
+  { value: 'cif', label: 'CIF (Cost, Insurance & Freight)' },
+  { value: 'exw', label: 'EXW (Ex Works)' },
+  { value: 'ddp', label: 'DDP (Delivered Duty Paid)' },
+  { value: 'fca', label: 'FCA (Free Carrier)' },
+  { value: 'dap', label: 'DAP (Delivered At Place)' },
+];
+
+// Shipment Types
+const shipmentTypes = [
+  { value: 'lcl', label: 'Less than Container Load (LCL)' },
+  { value: 'fcl_20', label: '20ft Full Container (FCL)' },
+  { value: 'fcl_40', label: '40ft Full Container (FCL)' },
+  { value: 'air_standard', label: 'Air Freight (Standard)' },
+  { value: 'air_express', label: 'Air Freight (Express)' },
+];
+
+// Package Types
+const packageTypes = [
+  { value: 'pallets', label: 'Pallets' },
+  { value: 'boxes', label: 'Boxes/Cartons' },
+  { value: 'drums', label: 'Drums' },
+  { value: 'crates', label: 'Crates' },
+  { value: 'loose', label: 'Loose Cargo' },
+];
+
+// Currencies
+const currencies = [
+  { value: 'USD', label: 'USD ($)' },
+  { value: 'EUR', label: 'EUR (€)' },
+  { value: 'GBP', label: 'GBP (£)' },
+  { value: 'CAD', label: 'CAD ($)' },
+  { value: 'JPY', label: 'JPY (¥)' },
+  { value: 'CNY', label: 'CNY (¥)' },
+];
+
+interface FormData {
+  productName: string;
+  category: string;
+  hsCode: string;
+  originCountry: string;
+  destinationCountry: string;
+  quantity: string;
+  unitValue: string;
+  currency: string;
+  weight: string;
+  transportMode: string;
+  incoterm: string;
+  shipmentType: string;
+  packageType: string;
+}
+
+const ProductInfoForm: React.FC = () => {
+  const [formData, setFormData] = useState<FormData>({
+    productName: '',
+    category: '',
+    hsCode: '',
+    originCountry: '',
+    destinationCountry: '',
+    quantity: '',
+    unitValue: '',
+    currency: 'USD',
+    weight: '',
+    transportMode: '',
+    incoterm: 'fob',
+    shipmentType: '',
+    packageType: '',
   });
 
-  // Function to handle input changes
-  const handleInputChange = (field: string, value: string) => {
-    setFormValues({
-      ...formValues,
-      [field]: value
-    });
+  const [errors, setErrors] = useState<Partial<FormData>>({});
+  const [completedFields, setCompletedFields] = useState<Set<string>>(new Set());
+  const [, setLocation] = useLocation();
+
+  const handleInputChange = (field: keyof FormData, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
     
     // Mark field as completed if it has a value
-    setCompletedFields({
-      ...completedFields,
-      [field]: !!value.trim()
-    });
-  };
-
-  // Function to look up HS code using AI Copilot
-  const [isLookingUpHsCode, setIsLookingUpHsCode] = useState(false);
-  const [copilotSuggestions, setCopilotSuggestions] = useState<Array<{code: string, description: string, confidence: number}>>([]);
-  const [showCopilotModal, setShowCopilotModal] = useState(false);
-
-  const handleHsCodeLookup = () => {
-    if (!formValues.productDescription || !formValues.productCategory) {
-      alert("Please enter a product description and select a category first");
-      return;
+    if (value) {
+      const updatedCompleted = new Set(completedFields);
+      updatedCompleted.add(field);
+      setCompletedFields(updatedCompleted);
+    } else {
+      const updatedCompleted = new Set(completedFields);
+      updatedCompleted.delete(field);
+      setCompletedFields(updatedCompleted);
     }
-
-    setIsLookingUpHsCode(true);
     
-    // In a real implementation, this would call the OpenAI API
-    // Simulate API call for now
-    setTimeout(() => {
-      let suggestions = [];
-      
-      // Generate relevant suggestions based on category
-      if (formValues.productCategory === "textiles") {
-        suggestions = [
-          { code: "6109.10", description: "T-shirts, singlets and other vests, knitted or crocheted, of cotton", confidence: 0.92 },
-          { code: "6104.62", description: "Women's or girls' trousers, overalls, breeches and shorts, knitted or crocheted, of cotton", confidence: 0.78 },
-          { code: "6110.20", description: "Sweaters, pullovers, sweatshirts and similar articles, knitted or crocheted, of cotton", confidence: 0.65 }
-        ];
-      } else if (formValues.productCategory === "electronics") {
-        suggestions = [
-          { code: "8517.62", description: "Machines for the reception, conversion and transmission or regeneration of voice, images or other data", confidence: 0.94 },
-          { code: "8471.30", description: "Portable automatic data processing machines, weighing not more than 10 kg", confidence: 0.87 },
-          { code: "8518.30", description: "Headphones and earphones, whether or not combined with a microphone", confidence: 0.72 }
-        ];
-      } else if (formValues.productCategory === "food") {
-        suggestions = [
-          { code: "2106.90", description: "Food preparations not elsewhere specified or included", confidence: 0.90 },
-          { code: "1806.90", description: "Chocolate and other food preparations containing cocoa", confidence: 0.82 },
-          { code: "2202.99", description: "Non-alcoholic beverages, not including fruit or vegetable juices", confidence: 0.74 }
-        ];
-      } else {
-        suggestions = [
-          { code: "8479.89", description: "Machines and mechanical appliances having individual functions", confidence: 0.85 },
-          { code: "3926.90", description: "Other articles of plastics", confidence: 0.76 },
-          { code: "7326.90", description: "Other articles of iron or steel", confidence: 0.67 }
-        ];
-      }
-      
-      setCopilotSuggestions(suggestions);
-      setShowCopilotModal(true);
-      setIsLookingUpHsCode(false);
-    }, 1500);
-  };
-  
-  // Handle selecting a suggestion from the AI Copilot
-  const handleSelectHsCode = (hsCode: string) => {
-    handleInputChange("hsCode", hsCode);
-    setShowCopilotModal(false);
+    // Clear error for this field if any
+    if (errors[field]) {
+      setErrors(prev => {
+        const updated = { ...prev };
+        delete updated[field];
+        return updated;
+      });
+    }
   };
 
-  // Handle form submission
+  const validateForm = (): boolean => {
+    const newErrors: Partial<FormData> = {};
+    let isValid = true;
+
+    // Required fields
+    const requiredFields: (keyof FormData)[] = [
+      'productName', 'category', 'originCountry', 'destinationCountry', 
+      'quantity', 'unitValue', 'weight', 'transportMode', 'shipmentType'
+    ];
+    
+    requiredFields.forEach(field => {
+      if (!formData[field]) {
+        newErrors[field] = 'This field is required';
+        isValid = false;
+      }
+    });
+
+    // Numeric validation
+    const numericFields: (keyof FormData)[] = ['quantity', 'unitValue', 'weight'];
+    numericFields.forEach(field => {
+      if (formData[field] && isNaN(Number(formData[field]))) {
+        newErrors[field] = 'Must be a number';
+        isValid = false;
+      }
+    });
+
+    setErrors(newErrors);
+    return isValid;
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Process form submission
-    console.log("Form submitted", formValues);
-    // Navigate to results page or show analysis
+    
+    if (validateForm()) {
+      // Store form data in session storage for the cost breakdown page
+      sessionStorage.setItem('productInfoData', JSON.stringify(formData));
+      
+      // Navigate to the cost breakdown page
+      setLocation('/dashboard/cost-breakdown-complete');
+    }
   };
 
-  // AI Copilot dialog component to display HS code suggestions
-  const renderAICopilotDialog = () => (
-    <Dialog open={showCopilotModal} onOpenChange={setShowCopilotModal}>
-      <DialogContent className="sm:max-w-[600px]">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <AlertCircle className="h-5 w-5 text-blue-500" />
-            AI Copilot HS Code Suggestions
-          </DialogTitle>
-        </DialogHeader>
-        
-        <div className="my-6">
-          <p className="text-sm text-neutral-500 mb-4">
-            Based on your product description and category, here are the most likely HS codes:
-          </p>
-          
-          <div className="space-y-4">
-            {copilotSuggestions.map((suggestion, index) => (
-              <div 
-                key={index}
-                className="border rounded-lg p-4 hover:bg-neutral-50 cursor-pointer transition-colors"
-                onClick={() => handleSelectHsCode(suggestion.code)}
-              >
-                <div className="flex justify-between items-center mb-2">
-                  <h3 className="font-medium text-lg">
-                    {suggestion.code}
-                  </h3>
-                  <Badge className={
-                    suggestion.confidence > 0.85 
-                      ? "bg-green-100 text-green-800" 
-                      : suggestion.confidence > 0.7 
-                      ? "bg-yellow-100 text-yellow-800" 
-                      : "bg-neutral-100 text-neutral-800"
-                  }>
-                    {Math.round(suggestion.confidence * 100)}% match
-                  </Badge>
-                </div>
-                <p className="text-sm text-neutral-600">{suggestion.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-        
-        <DialogFooter>
-          <Button variant="outline" onClick={() => setShowCopilotModal(false)}>
-            Cancel
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-
   return (
-    <>
-      {/* Render the AI Copilot dialog */}
-      {renderAICopilotDialog()}
-      
+    <div>
       <PageHeader
-        title="Product & Shipping Details"
-        description="Enter information about your product and shipping requirements"
+        title="Product Information"
+        description="Enter details about your product to analyze trade costs"
         actions={[
           {
-            label: "Back to Dashboard",
-            icon: <FaArrowLeft />,
-            href: "/dashboard",
-            variant: "outline"
+            label: "Browse Products",
+            icon: <Info size={16} />,
+            onClick: () => setLocation('/dashboard/products'),
+            variant: "outline",
+            href: "/dashboard/products"
           }
         ]}
       />
 
-      <form onSubmit={handleSubmit}>
-        <div className="space-y-8">
-          {/* Product Details Section */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Product Details</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <Label htmlFor="product-description">Product Description</Label>
-                  <Textarea 
-                    id="product-description"
-                    placeholder="Enter product description"
-                    className={completedFields.productDescription ? "form-input-completed" : "form-input-white"}
-                    value={formValues.productDescription}
-                    onChange={(e) => handleInputChange("productDescription", e.target.value)}
+      <Card className="cost-breakdown-form">
+        <CardHeader>
+          <CardTitle>Product & Shipment Details</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit}>
+            <div className="form-row">
+              <div className="form-col form-col-md-6">
+                <div className="form-group">
+                  <Label htmlFor="productName">Product Name</Label>
+                  <Input
+                    id="productName"
+                    value={formData.productName}
+                    onChange={(e) => handleInputChange('productName', e.target.value)}
+                    className={`form-control ${completedFields.has('productName') ? 'completed' : ''} ${errors.productName ? 'error' : ''}`}
+                    placeholder="Enter product name"
                   />
-                </div>
-
-                <div className="space-y-6">
-                  <div>
-                    <Label htmlFor="product-category">Product Category <span className="text-xs text-gray-500">(Select first for better HS code results)</span></Label>
-                    <div className={completedFields.productCategory ? "form-select-completed" : "form-select-white"}>
-                      <Select 
-                        value={formValues.productCategory} 
-                        onValueChange={(value) => handleInputChange("productCategory", value)}
-                      >
-                        <SelectTrigger id="product-category">
-                          <SelectValue placeholder="Select a category" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="textiles">Textiles & Garments</SelectItem>
-                          <SelectItem value="electronics">Electronics</SelectItem>
-                          <SelectItem value="food">Food & Beverages</SelectItem>
-                          <SelectItem value="cosmetics">Cosmetics</SelectItem>
-                          <SelectItem value="machinery">Machinery</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="hs-code">HS Code</Label>
-                    <div className="flex">
-                      <Input 
-                        id="hs-code"
-                        placeholder="e.g., 6109.10"
-                        className={`flex-1 ${completedFields.hsCode ? "form-input-completed" : "form-input-white"}`}
-                        value={formValues.hsCode}
-                        onChange={(e) => handleInputChange("hsCode", e.target.value)}
-                      />
-                      <Button 
-                        type="button" 
-                        className="ml-2" 
-                        variant="outline"
-                        onClick={handleHsCodeLookup}
-                        disabled={isLookingUpHsCode}
-                      >
-                        {isLookingUpHsCode ? (
-                          <>
-                            <Loader2 className="mr-1 h-4 w-4 animate-spin" />
-                            Looking up...
-                          </>
-                        ) : (
-                          <>
-                            <FaSearch className="mr-1" size={14} />
-                            AI Lookup
-                          </>
-                        )}
-                      </Button>
-                    </div>
-                    <p className="text-xs text-gray-500 mt-1">
-                      Enter product description and category to get AI-powered HS code suggestions
-                    </p>
-                    <p className="text-xs text-blue-600 cursor-pointer mt-1 flex items-center" onClick={handleHsCodeLookup}>
-                      <AlertCircle className="h-3 w-3 mr-1" />
-                      Click "AI Lookup" for intelligent classification assistance
-                    </p>
-                  </div>
+                  {errors.productName && <span className="error-message">{errors.productName}</span>}
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div>
-                  <Label htmlFor="origin-country">Origin Country</Label>
-                  <div className={completedFields.originCountry ? "form-select-completed" : "form-select-white"}>
-                    <Select 
-                      value={formValues.originCountry} 
-                      onValueChange={(value) => handleInputChange("originCountry", value)}
-                    >
-                      <SelectTrigger id="origin-country">
-                        <SelectValue placeholder="Select a country" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {/* Major Manufacturing Origins */}
-                        <SelectItem value="cn">China</SelectItem>
-                        <SelectItem value="vn">Vietnam</SelectItem>
-                        <SelectItem value="in">India</SelectItem>
-                        <SelectItem value="mx">Mexico</SelectItem>
-                        <SelectItem value="my">Malaysia</SelectItem>
-                        <SelectItem value="th">Thailand</SelectItem>
-                        <SelectItem value="id">Indonesia</SelectItem>
-                        <SelectItem value="bd">Bangladesh</SelectItem>
-                        <SelectItem value="kr">South Korea</SelectItem>
-                        <SelectItem value="tw">Taiwan</SelectItem>
-                        <SelectItem value="jp">Japan</SelectItem>
-                        
-                        {/* South American Origins */}
-                        <SelectItem value="br">Brazil</SelectItem>
-                        <SelectItem value="co">Colombia</SelectItem>
-                        <SelectItem value="cl">Chile</SelectItem>
-                        <SelectItem value="ar">Argentina</SelectItem>
-                        <SelectItem value="pe">Peru</SelectItem>
-                        
-                        {/* Central American Origins */}
-                        <SelectItem value="pa">Panama</SelectItem>
-                        <SelectItem value="cr">Costa Rica</SelectItem>
-                        <SelectItem value="do">Dominican Republic</SelectItem>
-                        <SelectItem value="gt">Guatemala</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+              <div className="form-col form-col-md-6">
+                <div className="form-group">
+                  <Label htmlFor="category">Product Category</Label>
+                  <Select
+                    value={formData.category}
+                    onValueChange={(value) => handleInputChange('category', value)}
+                  >
+                    <SelectTrigger className={`form-control dropdown-select ${completedFields.has('category') ? 'completed' : ''} ${errors.category ? 'error' : ''}`}>
+                      <SelectValue placeholder="Select category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {productCategories.map((category) => (
+                        <SelectItem key={category.value} value={category.value}>
+                          {category.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {errors.category && <span className="error-message">{errors.category}</span>}
                 </div>
+              </div>
+            </div>
 
-                <div>
-                  <Label htmlFor="destination-country">Destination Country</Label>
-                  <div className={completedFields.destinationCountry ? "form-select-completed" : "form-select-white"}>
-                    <Select 
-                      value={formValues.destinationCountry} 
-                      onValueChange={(value) => handleInputChange("destinationCountry", value)}
-                    >
-                      <SelectTrigger id="destination-country">
-                        <SelectValue placeholder="Select a country" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {/* Major Import Destinations */}
-                        <SelectItem value="us">United States</SelectItem>
-                        <SelectItem value="ca">Canada</SelectItem>
-                        <SelectItem value="eu">European Union</SelectItem>
-                        <SelectItem value="de">Germany</SelectItem>
-                        <SelectItem value="fr">France</SelectItem>
-                        <SelectItem value="it">Italy</SelectItem>
-                        <SelectItem value="nl">Netherlands</SelectItem>
-                        <SelectItem value="es">Spain</SelectItem>
-                        <SelectItem value="uk">United Kingdom</SelectItem>
-                        <SelectItem value="au">Australia</SelectItem>
-                        <SelectItem value="jp">Japan</SelectItem>
-                        <SelectItem value="kr">South Korea</SelectItem>
-                        <SelectItem value="sg">Singapore</SelectItem>
-                        <SelectItem value="br">Brazil</SelectItem>
-                        <SelectItem value="ae">UAE</SelectItem>
-                        <SelectItem value="sa">Saudi Arabia</SelectItem>
-                        
-                        {/* South American Destinations */}
-                        <SelectItem value="co">Colombia</SelectItem>
-                        <SelectItem value="cl">Chile</SelectItem>
-                        <SelectItem value="ar">Argentina</SelectItem>
-                        <SelectItem value="pe">Peru</SelectItem>
-                        
-                        {/* Central American Destinations */}
-                        <SelectItem value="mx">Mexico</SelectItem>
-                        <SelectItem value="pa">Panama</SelectItem>
-                        <SelectItem value="cr">Costa Rica</SelectItem>
-                        <SelectItem value="do">Dominican Republic</SelectItem>
-                        <SelectItem value="gt">Guatemala</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+            <div className="form-row">
+              <div className="form-col form-col-md-6">
+                <div className="form-group">
+                  <Label htmlFor="hsCode">HS Code (if known)</Label>
+                  <Input
+                    id="hsCode"
+                    value={formData.hsCode}
+                    onChange={(e) => handleInputChange('hsCode', e.target.value)}
+                    className={`form-control ${completedFields.has('hsCode') ? 'completed' : ''}`}
+                    placeholder="e.g. 8471.30"
+                  />
+                  <span className="form-hint">Our AI can suggest codes if you don't know it</span>
                 </div>
+              </div>
 
-                <div>
-                  <Label htmlFor="product-value">Product Value (in USD)</Label>
+              <div className="form-col form-col-md-3">
+                <div className="form-group">
+                  <Label htmlFor="quantity">Quantity</Label>
+                  <Input
+                    id="quantity"
+                    value={formData.quantity}
+                    onChange={(e) => handleInputChange('quantity', e.target.value)}
+                    className={`form-control ${completedFields.has('quantity') ? 'completed' : ''} ${errors.quantity ? 'error' : ''}`}
+                    placeholder="e.g. 100"
+                  />
+                  {errors.quantity && <span className="error-message">{errors.quantity}</span>}
+                </div>
+              </div>
+
+              <div className="form-col form-col-md-3">
+                <div className="form-group">
+                  <Label htmlFor="weight">Total Weight (kg)</Label>
+                  <Input
+                    id="weight"
+                    value={formData.weight}
+                    onChange={(e) => handleInputChange('weight', e.target.value)}
+                    className={`form-control ${completedFields.has('weight') ? 'completed' : ''} ${errors.weight ? 'error' : ''}`}
+                    placeholder="e.g. 500"
+                  />
+                  {errors.weight && <span className="error-message">{errors.weight}</span>}
+                </div>
+              </div>
+            </div>
+
+            <div className="form-row">
+              <div className="form-col form-col-md-6">
+                <div className="form-group">
+                  <Label htmlFor="unitValue">Unit Value</Label>
                   <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500">$</span>
-                    <Input 
-                      id="product-value"
-                      type="number"
-                      placeholder="Enter value in USD"
-                      className={`pl-7 ${completedFields.productValue ? "form-input-completed" : "form-input-white"}`}
-                      value={formValues.productValue}
-                      onChange={(e) => handleInputChange("productValue", e.target.value)}
+                    <Input
+                      id="unitValue"
+                      value={formData.unitValue}
+                      onChange={(e) => handleInputChange('unitValue', e.target.value)}
+                      className={`form-control ${completedFields.has('unitValue') ? 'completed' : ''} ${errors.unitValue ? 'error' : ''}`}
+                      placeholder="e.g. 25.50"
                     />
+                    {errors.unitValue && <span className="error-message">{errors.unitValue}</span>}
                   </div>
                 </div>
               </div>
-            </CardContent>
-          </Card>
 
-          {/* Shipping Details Section */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Shipping Details</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-6">
-                  <div>
-                    <Label htmlFor="quantity">Quantity</Label>
-                    <Input 
-                      id="quantity"
-                      type="number"
-                      placeholder="Enter quantity"
-                      className={completedFields.quantity ? "form-input-completed" : "form-input-white"}
-                      value={formValues.quantity}
-                      onChange={(e) => handleInputChange("quantity", e.target.value)}
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="transport-mode">Transport Mode</Label>
-                    <div className={completedFields.transportMode ? "form-select-completed" : "form-select-white"}>
-                      <Select 
-                        value={formValues.transportMode} 
-                        onValueChange={(value) => handleInputChange("transportMode", value)}
-                      >
-                        <SelectTrigger id="transport-mode">
-                          <SelectValue placeholder="Select transport mode" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="air">Air Freight</SelectItem>
-                          <SelectItem value="sea">Sea Freight</SelectItem>
-                          <SelectItem value="road">Road Transport</SelectItem>
-                          <SelectItem value="rail">Rail Freight</SelectItem>
-                          <SelectItem value="multimodal">Multimodal</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="shipment-type">Shipment Type</Label>
-                      <div className={completedFields.shipmentType ? "form-select-completed" : "form-select-white"}>
-                        <Select 
-                          value={formValues.shipmentType} 
-                          onValueChange={(value) => handleInputChange("shipmentType", value)}
-                        >
-                          <SelectTrigger id="shipment-type">
-                            <SelectValue placeholder="Select shipment type" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="fcl">Full Container Load (FCL)</SelectItem>
-                            <SelectItem value="lcl">Less than Container Load (LCL)</SelectItem>
-                            <SelectItem value="bulk">Bulk Cargo</SelectItem>
-                            <SelectItem value="parcel">Parcel</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-
-                    <div>
-                      <Label htmlFor="package-type">Package Type</Label>
-                      <div className={completedFields.packageType ? "form-select-completed" : "form-select-white"}>
-                        <Select 
-                          value={formValues.packageType} 
-                          onValueChange={(value) => handleInputChange("packageType", value)}
-                        >
-                          <SelectTrigger id="package-type">
-                            <SelectValue placeholder="Select package type" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="box">Boxes</SelectItem>
-                            <SelectItem value="pallet">Pallets</SelectItem>
-                            <SelectItem value="container">Container</SelectItem>
-                            <SelectItem value="drum">Drums</SelectItem>
-                            <SelectItem value="crate">Crates</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="space-y-6">
-                  <div>
-                    <Label htmlFor="weight">Weight (kg)</Label>
-                    <div className="flex">
-                      <Input 
-                        id="weight"
-                        type="number"
-                        placeholder="Weight in kg"
-                        className={`flex-1 rounded-r-none ${completedFields.weight ? "form-input-completed" : "form-input-white"}`}
-                        value={formValues.weight}
-                        onChange={(e) => handleInputChange("weight", e.target.value)}
-                      />
-                      <div className="flex">
-                        <div className="unit-selector unit-selector-active rounded-l-none py-2 px-3">kg</div>
-                        <div className="unit-selector unit-selector-inactive rounded py-2 px-3 ml-1">lb</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div>
-                    <Label>Package Dimensions</Label>
-                    <div className="dimensions-unit-selector">
-                      <div className="unit-selector unit-selector-active">cm</div>
-                      <div className="unit-selector unit-selector-inactive">in</div>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-3 gap-4">
-                    <div>
-                      <Label htmlFor="length">Length (cm)</Label>
-                      <Input 
-                        id="length"
-                        type="number"
-                        placeholder="Length"
-                        className={completedFields.length ? "form-input-completed" : "form-input-white"}
-                        value={formValues.length}
-                        onChange={(e) => handleInputChange("length", e.target.value)}
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="width">Width (cm)</Label>
-                      <Input 
-                        id="width"
-                        type="number"
-                        placeholder="Width"
-                        className={completedFields.width ? "form-input-completed" : "form-input-white"}
-                        value={formValues.width}
-                        onChange={(e) => handleInputChange("width", e.target.value)}
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="height">Height (cm)</Label>
-                      <Input 
-                        id="height"
-                        type="number"
-                        placeholder="Height"
-                        className={completedFields.height ? "form-input-completed" : "form-input-white"}
-                        value={formValues.height}
-                        onChange={(e) => handleInputChange("height", e.target.value)}
-                      />
-                    </div>
-                  </div>
+              <div className="form-col form-col-md-6">
+                <div className="form-group">
+                  <Label htmlFor="currency">Currency</Label>
+                  <Select
+                    value={formData.currency}
+                    onValueChange={(value) => handleInputChange('currency', value)}
+                  >
+                    <SelectTrigger className={`form-control dropdown-select ${completedFields.has('currency') ? 'completed' : ''}`}>
+                      <SelectValue placeholder="Select currency" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {currencies.map((currency) => (
+                        <SelectItem key={currency.value} value={currency.value}>
+                          {currency.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
-              
-              <div className="flex justify-end mt-6">
-                <Button type="submit">Calculate Cost Analysis</Button>
+            </div>
+
+            <div className="form-row">
+              <div className="form-col form-col-md-6">
+                <div className="form-group">
+                  <Label htmlFor="originCountry">Origin Country</Label>
+                  <Select
+                    value={formData.originCountry}
+                    onValueChange={(value) => handleInputChange('originCountry', value)}
+                  >
+                    <SelectTrigger className={`form-control dropdown-select ${completedFields.has('originCountry') ? 'completed' : ''} ${errors.originCountry ? 'error' : ''}`}>
+                      <SelectValue placeholder="Select origin country" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {countries.sort((a, b) => a.name.localeCompare(b.name)).map((country) => (
+                        <SelectItem key={country.code} value={country.code}>
+                          {country.name}
+                          {country.isCPTPP && <span className="cptpp-indicator">CPTPP</span>}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {errors.originCountry && <span className="error-message">{errors.originCountry}</span>}
+                </div>
               </div>
-            </CardContent>
-          </Card>
-        </div>
-      </form>
-    </>
+
+              <div className="form-col form-col-md-6">
+                <div className="form-group">
+                  <Label htmlFor="destinationCountry">Destination Country</Label>
+                  <Select
+                    value={formData.destinationCountry}
+                    onValueChange={(value) => handleInputChange('destinationCountry', value)}
+                  >
+                    <SelectTrigger className={`form-control dropdown-select ${completedFields.has('destinationCountry') ? 'completed' : ''} ${errors.destinationCountry ? 'error' : ''}`}>
+                      <SelectValue placeholder="Select destination country" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {countries.sort((a, b) => a.name.localeCompare(b.name)).map((country) => (
+                        <SelectItem key={country.code} value={country.code}>
+                          {country.name}
+                          {country.isCPTPP && <span className="cptpp-indicator">CPTPP</span>}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {errors.destinationCountry && <span className="error-message">{errors.destinationCountry}</span>}
+                </div>
+              </div>
+            </div>
+
+            <div className="form-row">
+              <div className="form-col form-col-md-4">
+                <div className="form-group">
+                  <Label htmlFor="transportMode">Transport Mode</Label>
+                  <Select
+                    value={formData.transportMode}
+                    onValueChange={(value) => handleInputChange('transportMode', value)}
+                  >
+                    <SelectTrigger className={`form-control dropdown-select ${completedFields.has('transportMode') ? 'completed' : ''} ${errors.transportMode ? 'error' : ''}`}>
+                      <SelectValue placeholder="Select transport mode" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {transportModes.map((mode) => (
+                        <SelectItem key={mode.value} value={mode.value}>
+                          {mode.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {errors.transportMode && <span className="error-message">{errors.transportMode}</span>}
+                </div>
+              </div>
+
+              <div className="form-col form-col-md-4">
+                <div className="form-group">
+                  <Label htmlFor="incoterm">Incoterm</Label>
+                  <Select
+                    value={formData.incoterm}
+                    onValueChange={(value) => handleInputChange('incoterm', value)}
+                  >
+                    <SelectTrigger className={`form-control dropdown-select ${completedFields.has('incoterm') ? 'completed' : ''}`}>
+                      <SelectValue placeholder="Select incoterm" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {incoterms.map((term) => (
+                        <SelectItem key={term.value} value={term.value}>
+                          {term.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
+
+            <div className="form-row">
+              <div className="form-col form-col-md-6">
+                <div className="form-group">
+                  <Label htmlFor="shipmentType">Shipment Type</Label>
+                  <Select
+                    value={formData.shipmentType}
+                    onValueChange={(value) => handleInputChange('shipmentType', value)}
+                  >
+                    <SelectTrigger className={`form-control dropdown-select ${completedFields.has('shipmentType') ? 'completed' : ''} ${errors.shipmentType ? 'error' : ''}`}>
+                      <SelectValue placeholder="Select shipment type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {shipmentTypes.map((type) => (
+                        <SelectItem key={type.value} value={type.value}>
+                          {type.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {errors.shipmentType && <span className="error-message">{errors.shipmentType}</span>}
+                </div>
+              </div>
+
+              <div className="form-col form-col-md-6">
+                <div className="form-group">
+                  <Label htmlFor="packageType">Package Type</Label>
+                  <Select
+                    value={formData.packageType}
+                    onValueChange={(value) => handleInputChange('packageType', value)}
+                  >
+                    <SelectTrigger className={`form-control dropdown-select ${completedFields.has('packageType') ? 'completed' : ''}`}>
+                      <SelectValue placeholder="Select package type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {packageTypes.map((type) => (
+                        <SelectItem key={type.value} value={type.value}>
+                          {type.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-6 flex justify-end">
+              <Button type="submit" className="calculate-button">
+                <Calculator size={16} />
+                Calculate Cost Breakdown
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
 

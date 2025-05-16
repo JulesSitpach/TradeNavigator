@@ -1,368 +1,497 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useLocation } from 'wouter';
+import { 
+  Card, 
+  CardContent, 
+  CardHeader, 
+  CardTitle, 
+  CardDescription 
+} from "@/components/ui/card";
+import { 
+  Table, 
+  TableBody, 
+  TableCell, 
+  TableHead, 
+  TableHeader, 
+  TableRow 
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Printer, Download, Share2 } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend } from 'recharts';
-import ScrollTabs from '@/components/ui/scroll-tabs';
+import { 
+  ChevronLeft, 
+  FileBarChart, 
+  BarChart3, 
+  TrendingUp, 
+  DollarSign, 
+  Ship, 
+  FileText, 
+  ShieldCheck
+} from "lucide-react";
 import PageHeader from '@/components/common/PageHeader';
 import CopilotAssistant from '@/components/ai/CopilotAssistant';
 
-// Dummy data to match the provided example
-const costBreakdownData = {
-  tradeFlow: {
-    productName: "High-performance laptops, 13-inch display, Intel Core i7",
-    hsCode: "8471.30",
-    quantity: 50,
-    value: 20000,
-    duty: 672.80,
-    vat: 4075.86,
-    totalLandedCost: 26927.21
-  },
-  currency: {
-    base: "USD",
-    rates: {
-      "EUR": 0.92,
-      "CAD": 1.33
-    },
-    exchangeRatesDate: "2025-05-15"
-  },
-  costComponents: [
-    { name: "Product Cost", value: 20000, percentage: 74.3 },
-    { name: "Shipping", value: 1450, percentage: 5.4 },
-    { name: "Customs Duty", value: 672.80, percentage: 2.5 },
-    { name: "VAT/GST", value: 4075.86, percentage: 15.1 },
-    { name: "Insurance", value: 320, percentage: 1.2 },
-    { name: "Documentation", value: 150, percentage: 0.6 },
-    { name: "Handling Fees", value: 258.55, percentage: 1.0 }
-  ],
-  detailedBreakdown: [
-    { name: "Product Cost (FOB)", value: 20000, percentage: 74.3 },
-    { name: "Ocean Freight", value: 850, percentage: 3.2 },
-    { name: "Insurance", value: 320, percentage: 1.2 },
-    { name: "Import Duty (3.4%)", value: 672.80, percentage: 2.5 },
-    { name: "Customs Clearance", value: 180, percentage: 0.7 },
-    { name: "Inland Transportation", value: 420, percentage: 1.6 },
-    { name: "Documentation Fees", value: 150, percentage: 0.6 },
-    { name: "Handling Fees", value: 258.55, percentage: 1.0 },
-    { name: "VAT/GST (19%)", value: 4075.86, percentage: 15.1 }
-  ],
-  optimizationInsights: {
-    currentStatus: "Current route is using FOB Incoterms from Shenzhen to Hamburg using ocean freight.",
-    recommendations: [
-      "Consider using CIF terms for better cost efficiency with this supplier",
-      "Shipment consolidation could save up to 12% on shipping costs",
-      "Applying for Germany's IT product tariff exemption could eliminate duty costs completely",
-      "Explore special economic zone storage options in Hamburg to defer VAT payments"
-    ],
-    potentialSavings: 3150.24
-  }
+// Mock data structure for cost breakdown
+interface CostComponent {
+  id: string;
+  name: string;
+  amount: number;
+  percentage: number;
+  description?: string;
+  type: 'duty' | 'tax' | 'fee' | 'shipping' | 'other';
+}
+
+// Component for displaying cost components in a table
+const CostComponentsTable = ({ components, currency }: { components: CostComponent[], currency: string }) => {
+  return (
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Component</TableHead>
+          <TableHead>Amount</TableHead>
+          <TableHead className="text-right">% of Total</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {components.map((component) => (
+          <TableRow key={component.id}>
+            <TableCell className="font-medium">
+              {component.name}
+              <span className="block text-xs text-muted-foreground mt-1">
+                {component.description || ''}
+              </span>
+            </TableCell>
+            <TableCell>
+              {currency} {component.amount.toFixed(2)}
+            </TableCell>
+            <TableCell className="text-right">
+              <Badge variant={
+                component.percentage > 30 ? "destructive" : 
+                component.percentage > 20 ? "warning" : 
+                "secondary"
+              }>
+                {component.percentage.toFixed(1)}%
+              </Badge>
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  );
 };
 
-// Colors for the pie chart
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#A28CFF', '#FF6B6B', '#4ECDC4'];
+// Cost Breakdown Dashboard Component
+const CostBreakdownComplete: React.FC = () => {
+  const [, setLocation] = useLocation();
+  const [productData, setProductData] = useState<any>(null);
+  const [costData, setCostData] = useState<{
+    components: CostComponent[],
+    totalCost: number,
+    currency: string,
+    calculatedAt: Date
+  }>({
+    components: [],
+    totalCost: 0,
+    currency: 'USD',
+    calculatedAt: new Date()
+  });
 
-const CostBreakdownComplete = () => {
-  const [activeTab, setActiveTab] = useState("overview");
-  
-  // Scroll to top when component mounts
   useEffect(() => {
-    window.scrollTo(0, 0);
+    // Retrieve product data from session storage
+    const storedData = sessionStorage.getItem('productInfoData');
+    if (storedData) {
+      const parsedData = JSON.parse(storedData);
+      setProductData(parsedData);
+      
+      // Generate sample cost breakdown based on product data
+      generateCostBreakdown(parsedData);
+    }
   }, []);
 
+  // Function to generate cost breakdown data based on product details
+  const generateCostBreakdown = (product: any) => {
+    // Basic calculations (in a real app, this would be API data)
+    const productValue = Number(product.unitValue) * Number(product.quantity);
+    const transportCost = calculateTransportCost(product.transportMode, product.weight, product.originCountry, product.destinationCountry);
+    const dutyRate = calculateDutyRate(product.hsCode, product.destinationCountry);
+    const dutyAmount = productValue * dutyRate;
+    const vatRate = getVatRate(product.destinationCountry);
+    const vatAmount = (productValue + transportCost + dutyAmount) * vatRate;
+    const customsProcessingFee = 35.0;
+    const documentationFee = 25.0;
+    const cargoInsurance = productValue * 0.015;
+    
+    // Total cost
+    const totalCost = productValue + transportCost + dutyAmount + vatAmount + customsProcessingFee + documentationFee + cargoInsurance;
+    
+    // Generate cost components
+    const components: CostComponent[] = [
+      {
+        id: '1',
+        name: 'Product Cost',
+        amount: productValue,
+        percentage: (productValue / totalCost) * 100,
+        description: `${product.quantity} units at ${product.unitValue} ${product.currency} each`,
+        type: 'other'
+      },
+      {
+        id: '2',
+        name: 'Transport Cost',
+        amount: transportCost,
+        percentage: (transportCost / totalCost) * 100,
+        description: `${product.transportMode} shipping (${product.weight} kg)`,
+        type: 'shipping'
+      },
+      {
+        id: '3',
+        name: 'Import Duty',
+        amount: dutyAmount,
+        percentage: (dutyAmount / totalCost) * 100,
+        description: `${(dutyRate * 100).toFixed(1)}% for HS code ${product.hsCode || 'N/A'}`,
+        type: 'duty'
+      },
+      {
+        id: '4',
+        name: `VAT (${product.destinationCountry})`,
+        amount: vatAmount,
+        percentage: (vatAmount / totalCost) * 100,
+        description: `${(vatRate * 100).toFixed(1)}% on customs value plus duty`,
+        type: 'tax'
+      },
+      {
+        id: '5',
+        name: 'Customs Processing Fee',
+        amount: customsProcessingFee,
+        percentage: (customsProcessingFee / totalCost) * 100,
+        type: 'fee'
+      },
+      {
+        id: '6',
+        name: 'Documentation Fee',
+        amount: documentationFee,
+        percentage: (documentationFee / totalCost) * 100,
+        type: 'fee'
+      },
+      {
+        id: '7',
+        name: 'Cargo Insurance',
+        amount: cargoInsurance,
+        percentage: (cargoInsurance / totalCost) * 100,
+        description: '1.5% of product value',
+        type: 'other'
+      }
+    ];
+    
+    // Sort components by amount (descending)
+    components.sort((a, b) => b.amount - a.amount);
+    
+    setCostData({
+      components,
+      totalCost,
+      currency: product.currency || 'USD',
+      calculatedAt: new Date()
+    });
+  };
+  
+  // Helper functions for cost calculations
+  const calculateTransportCost = (mode: string, weight: string, origin: string, destination: string): number => {
+    const weightNum = Number(weight);
+    
+    // Base rates per transport mode
+    const rates: Record<string, number> = {
+      'ocean_fcl': 1200,
+      'ocean_lcl': 45, // per kg
+      'air': 85, // per kg
+      'road': 35, // per kg
+      'rail': 25, // per kg
+      'multimodal': 65 // per kg
+    };
+    
+    // Distance factor (simplified)
+    const distanceFactor = origin === destination ? 0.5 : 1;
+    
+    // Calculate based on mode
+    if (mode === 'ocean_fcl') {
+      return rates[mode] * distanceFactor; // Base container cost
+    } else {
+      // Per kg rates
+      return weightNum * (rates[mode] || rates['ocean_lcl']) * distanceFactor;
+    }
+  };
+  
+  const calculateDutyRate = (hsCode: string, country: string): number => {
+    // Simplified duty rates by country (in reality these would be based on HS code + country)
+    const ratesByCountry: Record<string, number> = {
+      'US': 0.0325,
+      'EU': 0.04,
+      'CA': 0.03,
+      'JP': 0.05,
+      'CN': 0.07,
+      'UK': 0.035,
+      'AU': 0.05
+    };
+    
+    // Default rate if country not found
+    return ratesByCountry[country] || 0.04;
+  };
+  
+  const getVatRate = (country: string): number => {
+    // Simplified VAT rates by country
+    const vatRates: Record<string, number> = {
+      'US': 0.0, // No VAT, but would have sales tax
+      'CA': 0.05, // GST
+      'UK': 0.20,
+      'DE': 0.19,
+      'FR': 0.20,
+      'JP': 0.10,
+      'CN': 0.13,
+      'AU': 0.10
+    };
+    
+    return vatRates[country] || 0.17; // Default VAT rate
+  };
+  
+  // If no product data is loaded yet, show loading or redirect
+  if (!productData) {
+    return (
+      <div className="container mx-auto p-4">
+        <h1>No Product Data Found</h1>
+        <p>Please enter product details to see cost breakdown.</p>
+        <Button onClick={() => setLocation('/dashboard/product-info')}>
+          <ChevronLeft className="mr-2 h-4 w-4" />
+          Back to Product Form
+        </Button>
+      </div>
+    );
+  }
+  
+  // Group cost components by type
+  const dutyAndTaxes = costData.components.filter(c => c.type === 'duty' || c.type === 'tax');
+  const shippingAndHandling = costData.components.filter(c => c.type === 'shipping' || c.type === 'fee');
+  const productAndOther = costData.components.filter(c => c.type === 'other');
+  
   return (
-    <>
+    <div className="container mx-auto">
       <PageHeader
         title="Cost Breakdown Analysis"
-        description="Detailed breakdown of all costs associated with your trade"
+        description={`Analysis for ${productData.productName || 'Product'}`}
         actions={[
           {
-            label: "Print",
-            icon: <Printer size={16} />,
-            onClick: () => window.print(),
+            label: "Back to Form",
+            icon: <ChevronLeft size={16} />,
+            onClick: () => setLocation('/dashboard/product-info'),
             variant: "outline"
           },
           {
-            label: "Export",
-            icon: <Download size={16} />,
-            onClick: () => console.log("Export data"),
-            variant: "outline"
-          },
-          {
-            label: "Share",
-            icon: <Share2 size={16} />,
-            onClick: () => console.log("Share analysis"),
-            variant: "outline"
+            label: "Export Report",
+            icon: <FileBarChart size={16} />,
+            onClick: () => alert('Export feature would go here'),
+            variant: "default"
           }
         ]}
       />
 
-      <Card className="mb-6">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-lg font-medium">Trade Flow Summary</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="space-y-1.5">
-              <div className="text-sm font-medium">Product Name</div>
-              <div className="text-sm">{costBreakdownData.tradeFlow.productName}</div>
-              
-              <div className="text-sm font-medium mt-3">HS Code</div>
-              <div className="text-sm">{costBreakdownData.tradeFlow.hsCode}</div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+        {/* Summary Cards */}
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg">Total Cost</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold">
+              {costData.currency} {costData.totalCost.toFixed(2)}
             </div>
-            
-            <div className="space-y-1.5">
-              <div className="text-sm font-medium">Quantity</div>
-              <div className="text-sm">{costBreakdownData.tradeFlow.quantity} units</div>
-              
-              <div className="text-sm font-medium mt-3">Product Value</div>
-              <div className="text-sm">${costBreakdownData.tradeFlow.value.toLocaleString()}</div>
+            <p className="text-sm text-muted-foreground mt-2">
+              Including all duties, taxes, and fees
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg">Duties & Taxes</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold">
+              {costData.currency} {dutyAndTaxes.reduce((sum, c) => sum + c.amount, 0).toFixed(2)}
             </div>
-            
-            <div className="space-y-1.5">
-              <div className="text-sm font-medium">Customs Duty</div>
-              <div className="text-sm">${costBreakdownData.tradeFlow.duty.toLocaleString()}</div>
-              
-              <div className="text-sm font-medium mt-3">VAT</div>
-              <div className="text-sm">${costBreakdownData.tradeFlow.vat.toLocaleString()}</div>
-              
-              <div className="text-sm font-medium mt-3">Total Landed Cost</div>
-              <div className="text-sm font-bold">${costBreakdownData.tradeFlow.totalLandedCost.toLocaleString()}</div>
+            <p className="text-sm text-muted-foreground mt-2">
+              {(dutyAndTaxes.reduce((sum, c) => sum + c.amount, 0) / costData.totalCost * 100).toFixed(1)}% of total cost
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg">Shipping & Handling</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold">
+              {costData.currency} {shippingAndHandling.reduce((sum, c) => sum + c.amount, 0).toFixed(2)}
             </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardContent className="p-0">
-          <ScrollTabs>
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="w-full justify-start border-b rounded-none h-12 p-0 bg-transparent">
-                <TabsTrigger 
-                  value="overview" 
-                  className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none flex-1 max-w-[200px]"
-                >
-                  Overview
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="detailed-breakdown" 
-                  className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none flex-1 max-w-[200px]"
-                >
-                  Detailed Breakdown
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="optimization" 
-                  className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none flex-1 max-w-[200px]"
-                >
-                  Optimization Insights
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="duty-analysis" 
-                  className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none flex-1 max-w-[200px]"
-                >
-                  Duty Analysis
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="currency-exchange" 
-                  className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none flex-1 max-w-[200px]"
-                >
-                  Currency Exchange
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="tax-considerations" 
-                  className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none flex-1 max-w-[200px]"
-                >
-                  Tax Considerations
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="exemption-analysis" 
-                  className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none flex-1 max-w-[200px]"
-                >
-                  Exemption Analysis
-                </TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="overview" className="p-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <div>
-                    <h3 className="text-lg font-medium mb-4">Cost Distribution</h3>
-                    <div className="h-[300px]">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <PieChart>
-                          <Pie
-                            data={costBreakdownData.costComponents}
-                            cx="50%"
-                            cy="50%"
-                            innerRadius={60}
-                            outerRadius={100}
-                            fill="#8884d8"
-                            paddingAngle={2}
-                            dataKey="value"
-                            label={({name, percent}) => `${name}: ${(percent * 100).toFixed(1)}%`}
-                          >
-                            {costBreakdownData.costComponents.map((entry, index) => (
-                              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                            ))}
-                          </Pie>
-                          <Legend verticalAlign="bottom" height={36} />
-                        </PieChart>
-                      </ResponsiveContainer>
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <h3 className="text-lg font-medium mb-4">Cost Components</h3>
-                    <div className="space-y-3">
-                      {costBreakdownData.costComponents.map((component, index) => (
-                        <div key={index} className="flex justify-between items-center">
-                          <div className="flex items-center">
-                            <div
-                              className="w-3 h-3 rounded-full mr-2"
-                              style={{ backgroundColor: COLORS[index % COLORS.length] }}
-                            ></div>
-                            <span>{component.name}</span>
-                          </div>
-                          <div className="flex items-center space-x-3">
-                            <span className="font-medium">
-                              ${component.value.toLocaleString()}
-                            </span>
-                            <div className="text-sm text-gray-500 w-12 text-right">
-                              {component.percentage}%
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                      <Separator className="my-4" />
-                      <div className="flex justify-between items-center font-bold">
-                        <span>Total Landed Cost</span>
-                        <span>${costBreakdownData.tradeFlow.totalLandedCost.toLocaleString()}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </TabsContent>
-
-              <TabsContent value="detailed-breakdown" className="p-6">
-                <h3 className="text-lg font-medium mb-4">Detailed Cost Breakdown</h3>
-                <div className="overflow-x-auto">
-                  <table className="w-full border-collapse">
-                    <thead>
-                      <tr className="bg-muted">
-                        <th className="text-left p-3 font-medium">Cost Component</th>
-                        <th className="text-right p-3 font-medium">Value</th>
-                        <th className="text-right p-3 font-medium">% of Total</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {costBreakdownData.detailedBreakdown.map((item, index) => (
-                        <tr key={index} className="border-b border-muted-foreground/20">
-                          <td className="p-3">{item.name}</td>
-                          <td className="p-3 text-right">${item.value.toLocaleString()}</td>
-                          <td className="p-3 text-right">{item.percentage}%</td>
-                        </tr>
-                      ))}
-                      <tr className="font-bold">
-                        <td className="p-3">Total Landed Cost</td>
-                        <td className="p-3 text-right">${costBreakdownData.tradeFlow.totalLandedCost.toLocaleString()}</td>
-                        <td className="p-3 text-right">100%</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </TabsContent>
-
-              <TabsContent value="optimization" className="p-6">
-                <h3 className="text-lg font-medium mb-4">Cost Optimization Insights</h3>
-                <Card className="bg-muted/30 border-none mb-6">
-                  <CardContent className="p-4">
-                    <p className="text-sm">{costBreakdownData.optimizationInsights.currentStatus}</p>
-                  </CardContent>
-                </Card>
-                
-                <h4 className="font-medium mb-2">Recommendations</h4>
-                <ul className="list-disc pl-5 space-y-2 mb-6">
-                  {costBreakdownData.optimizationInsights.recommendations.map((rec, index) => (
-                    <li key={index} className="text-sm">{rec}</li>
-                  ))}
-                </ul>
-                
-                <div className="bg-green-50 border border-green-200 rounded-md p-4">
-                  <div className="flex justify-between items-center">
-                    <span className="font-medium text-green-700">Potential Savings</span>
-                    <span className="font-bold text-green-700">
-                      ${costBreakdownData.optimizationInsights.potentialSavings.toLocaleString()}
-                    </span>
-                  </div>
-                </div>
-              </TabsContent>
-
-              <TabsContent value="duty-analysis" className="p-6">
-                <h3 className="text-lg font-medium mb-4">Duty Analysis</h3>
-                <p className="text-muted-foreground mb-2">More content would be added here...</p>
-              </TabsContent>
-
-              <TabsContent value="currency-exchange" className="p-6">
-                <h3 className="text-lg font-medium mb-4">Currency Exchange</h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <Card>
-                    <CardHeader className="py-3">
-                      <CardTitle className="text-base font-medium">USD/EUR</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-2xl font-bold">€{costBreakdownData.currency.rates.EUR}</div>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        Exchange rate as of {costBreakdownData.currency.exchangeRatesDate}
-                      </p>
-                    </CardContent>
-                  </Card>
-                  
-                  <Card>
-                    <CardHeader className="py-3">
-                      <CardTitle className="text-base font-medium">USD/CAD</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-2xl font-bold">C${costBreakdownData.currency.rates.CAD}</div>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        Exchange rate as of {costBreakdownData.currency.exchangeRatesDate}
-                      </p>
-                    </CardContent>
-                  </Card>
-                  
-                  <Card>
-                    <CardHeader className="py-3">
-                      <CardTitle className="text-base font-medium">USD Equivalent</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-2xl font-bold">${costBreakdownData.tradeFlow.totalLandedCost.toLocaleString()}</div>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        Total landed cost
-                      </p>
-                    </CardContent>
-                  </Card>
-                </div>
-              </TabsContent>
-
-              <TabsContent value="tax-considerations" className="p-6">
-                <h3 className="text-lg font-medium mb-4">Tax Considerations</h3>
-                <p className="text-muted-foreground mb-2">More content would be added here...</p>
-              </TabsContent>
-
-              <TabsContent value="exemption-analysis" className="p-6">
-                <h3 className="text-lg font-medium mb-4">Exemption Analysis</h3>
-                <p className="text-muted-foreground mb-2">More content would be added here...</p>
-              </TabsContent>
-            </Tabs>
-          </ScrollTabs>
-        </CardContent>
-      </Card>
-      
-      <div className="mt-6 flex justify-end space-x-4">
-        <Button variant="outline">Back to Form</Button>
-        <Button>Share Analysis</Button>
+            <p className="text-sm text-muted-foreground mt-2">
+              {(shippingAndHandling.reduce((sum, c) => sum + c.amount, 0) / costData.totalCost * 100).toFixed(1)}% of total cost
+            </p>
+          </CardContent>
+        </Card>
       </div>
-    </>
+
+      <div className="grid grid-cols-1 lg:grid-cols-7 gap-6 mb-6">
+        {/* Main cost breakdown table */}
+        <Card className="lg:col-span-4">
+          <CardHeader>
+            <CardTitle>Cost Components Breakdown</CardTitle>
+            <CardDescription>
+              Detailed breakdown of all costs associated with this shipment
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <CostComponentsTable 
+              components={costData.components} 
+              currency={costData.currency} 
+            />
+          </CardContent>
+        </Card>
+        
+        {/* Product Details Summary */}
+        <Card className="lg:col-span-3">
+          <CardHeader>
+            <CardTitle>Product & Shipment Details</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <h4 className="text-sm font-medium text-muted-foreground">Product</h4>
+                <p className="text-base font-medium">{productData.productName}</p>
+              </div>
+              <div>
+                <h4 className="text-sm font-medium text-muted-foreground">Category</h4>
+                <p className="text-base font-medium">{productData.category}</p>
+              </div>
+              <div>
+                <h4 className="text-sm font-medium text-muted-foreground">HS Code</h4>
+                <p className="text-base font-medium">{productData.hsCode || 'Not specified'}</p>
+              </div>
+              <div>
+                <h4 className="text-sm font-medium text-muted-foreground">Quantity</h4>
+                <p className="text-base font-medium">{productData.quantity} units</p>
+              </div>
+              <div>
+                <h4 className="text-sm font-medium text-muted-foreground">Value per Unit</h4>
+                <p className="text-base font-medium">{productData.currency} {productData.unitValue}</p>
+              </div>
+              <div>
+                <h4 className="text-sm font-medium text-muted-foreground">Total Weight</h4>
+                <p className="text-base font-medium">{productData.weight} kg</p>
+              </div>
+              <div>
+                <h4 className="text-sm font-medium text-muted-foreground">Origin</h4>
+                <p className="text-base font-medium">{getCountryName(productData.originCountry)}</p>
+              </div>
+              <div>
+                <h4 className="text-sm font-medium text-muted-foreground">Destination</h4>
+                <p className="text-base font-medium">{getCountryName(productData.destinationCountry)}</p>
+              </div>
+              <div>
+                <h4 className="text-sm font-medium text-muted-foreground">Transport Mode</h4>
+                <p className="text-base font-medium">{formatTransportMode(productData.transportMode)}</p>
+              </div>
+              <div>
+                <h4 className="text-sm font-medium text-muted-foreground">Incoterm</h4>
+                <p className="text-base font-medium">{productData.incoterm?.toUpperCase() || 'Not specified'}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Action Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <Card className="hover:shadow-md transition-shadow cursor-pointer">
+          <CardContent className="p-4 flex flex-col items-center text-center">
+            <BarChart3 size={24} className="mb-2 text-primary" />
+            <h3 className="font-medium">Alternative Routes</h3>
+            <p className="text-sm text-muted-foreground">Compare different shipping methods</p>
+          </CardContent>
+        </Card>
+        
+        <Card className="hover:shadow-md transition-shadow cursor-pointer">
+          <CardContent className="p-4 flex flex-col items-center text-center">
+            <TrendingUp size={24} className="mb-2 text-primary" />
+            <h3 className="font-medium">Duty Optimization</h3>
+            <p className="text-sm text-muted-foreground">Analyze ways to reduce duties</p>
+          </CardContent>
+        </Card>
+        
+        <Card className="hover:shadow-md transition-shadow cursor-pointer">
+          <CardContent className="p-4 flex flex-col items-center text-center">
+            <ShieldCheck size={24} className="mb-2 text-primary" />
+            <h3 className="font-medium">Compliance Check</h3>
+            <p className="text-sm text-muted-foreground">Verify regulatory requirements</p>
+          </CardContent>
+        </Card>
+        
+        <Card className="hover:shadow-md transition-shadow cursor-pointer">
+          <CardContent className="p-4 flex flex-col items-center text-center">
+            <FileText size={24} className="mb-2 text-primary" />
+            <h3 className="font-medium">Required Documents</h3>
+            <p className="text-sm text-muted-foreground">View documentation needs</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* AI Copilot - Floating */}
+      <div className="fixed bottom-4 right-4 z-50 w-96 max-w-full">
+        <CopilotAssistant 
+          productDescription={productData.productName}
+          category={productData.category}
+          hsCode={productData.hsCode}
+          originCountry={productData.originCountry}
+          destinationCountry={productData.destinationCountry}
+          transportMode={productData.transportMode}
+          incoterm={productData.incoterm}
+          totalCost={costData.totalCost}
+          costComponents={costData.components}
+        />
+      </div>
+    </div>
   );
 };
+
+// Helper function to get country names from codes
+function getCountryName(code: string): string {
+  const countries: Record<string, string> = {
+    'US': 'United States',
+    'CA': 'Canada',
+    'MX': 'Mexico',
+    'CN': 'China',
+    'JP': 'Japan',
+    'DE': 'Germany',
+    'UK': 'United Kingdom',
+    'FR': 'France',
+    'IT': 'Italy',
+    'AU': 'Australia',
+    'BR': 'Brazil',
+    'IN': 'India',
+    'VN': 'Vietnam',
+    'SG': 'Singapore',
+    'MY': 'Malaysia'
+  };
+  
+  return countries[code] || code;
+}
+
+// Helper function to format transport mode
+function formatTransportMode(mode: string): string {
+  const modes: Record<string, string> = {
+    'ocean_fcl': 'Ocean (Full Container)',
+    'ocean_lcl': 'Ocean (Less than Container)',
+    'air': 'Air Freight',
+    'road': 'Road Transport',
+    'rail': 'Rail Transport',
+    'multimodal': 'Multimodal Transport'
+  };
+  
+  return modes[mode] || mode;
+}
 
 export default CostBreakdownComplete;
