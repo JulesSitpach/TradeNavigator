@@ -266,7 +266,15 @@ const NewCostAnalysisForm = () => {
             </div>
             
             <div className="flex justify-end mt-6">
-              <Button className="calculate-btn">Calculate Cost Analysis</Button>
+              <Button 
+                className="calculate-btn"
+                onClick={() => {
+                  // In a real implementation, this would submit the form data and redirect to results
+                  window.location.href = "/dashboard/cost-breakdown";
+                }}
+              >
+                Calculate Cost Analysis
+              </Button>
             </div>
           </div>
         </CardContent>
