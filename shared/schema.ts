@@ -92,7 +92,9 @@ export const insertAnalysisResultSchema = createInsertSchema(analysisResults).om
   createdAt: true,
 });
 
-// Types
+// Insert schemas for existing tables
+
+// Types for core models
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
 
@@ -106,6 +108,41 @@ export type AnalysisResult = typeof analysisResults.$inferSelect;
 export type InsertAnalysisResult = z.infer<typeof insertAnalysisResultSchema>;
 
 export type TariffData = typeof tariffData.$inferSelect;
+
+// Types for special programs feature (not database tables yet)
+export interface Country {
+  id: number;
+  code: string;
+  name: string;
+  region: string;
+  isOrigin: boolean;
+  isDestination: boolean;
+  description?: string;
+  flagUrl?: string;
+}
+
+export interface SpecialProgram {
+  id: number;
+  name: string;
+  countryId: number;
+  description?: string;
+  eligibilityCriteria?: string;
+  applicationProcess?: string;
+  documentationRequired?: string;
+  processingTime?: string;
+  potentialSavings?: number;
+  limitations?: string;
+  programType?: string;
+}
+
+export type Country = typeof countries.$inferSelect;
+export type InsertCountry = z.infer<typeof insertCountrySchema>;
+
+export type SpecialProgram = typeof specialPrograms.$inferSelect;
+export type InsertSpecialProgram = z.infer<typeof insertSpecialProgramSchema>;
+
+export type CountryGroup = typeof countryGroups.$inferSelect;
+export type InsertCountryGroup = z.infer<typeof insertCountryGroupSchema>;
 
 // Subscription tiers
 export const subscriptionTiers = {

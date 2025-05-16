@@ -719,6 +719,283 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ===== Country and Special Programs routes =====
+  
+  // Get all countries
+  app.get("/api/countries", isAuthenticated, async (req, res) => {
+    try {
+      // For development, return sample countries
+      if (process.env.NODE_ENV === 'development') {
+        // Return key manufacturing origins
+        const manufacturingOrigins = [
+          { id: 1, code: 'CN', name: 'China', region: 'Asia', isOrigin: true, isDestination: true, description: 'Major manufacturing hub for a wide range of products' },
+          { id: 2, code: 'VN', name: 'Vietnam', region: 'Asia', isOrigin: true, isDestination: false, description: 'Growing manufacturing hub, especially for electronics and textiles' },
+          { id: 3, code: 'IN', name: 'India', region: 'Asia', isOrigin: true, isDestination: true, description: 'Major source for textiles, pharmaceuticals, and IT services' },
+          { id: 4, code: 'MX', name: 'Mexico', region: 'North America', isOrigin: true, isDestination: true, description: 'Key manufacturing center for automotive and electronics for North American market' },
+          { id: 5, code: 'MY', name: 'Malaysia', region: 'Asia', isOrigin: true, isDestination: false, description: 'Important source for electronics and components' },
+          { id: 6, code: 'TH', name: 'Thailand', region: 'Asia', isOrigin: true, isDestination: false, description: 'Growing manufacturing base for automotive and electronics' },
+          { id: 7, code: 'ID', name: 'Indonesia', region: 'Asia', isOrigin: true, isDestination: false, description: 'Large production capacity for textiles, footwear, and natural resources' },
+          { id: 8, code: 'BD', name: 'Bangladesh', region: 'Asia', isOrigin: true, isDestination: false, description: 'Major textiles and apparel producer' },
+          { id: 9, code: 'KR', name: 'South Korea', region: 'Asia', isOrigin: true, isDestination: true, description: 'High-tech manufacturing hub for electronics and automotive' },
+          { id: 10, code: 'TW', name: 'Taiwan', region: 'Asia', isOrigin: true, isDestination: false, description: 'Critical for electronics and semiconductor production' },
+          { id: 11, code: 'JP', name: 'Japan', region: 'Asia', isOrigin: true, isDestination: true, description: 'High-value manufacturing with focus on precision engineering' },
+          
+          // Major import destinations
+          { id: 12, code: 'US', name: 'United States', region: 'North America', isOrigin: true, isDestination: true, description: 'Largest consumer market globally' },
+          { id: 13, code: 'CA', name: 'Canada', region: 'North America', isOrigin: true, isDestination: true, description: 'Major North American market with strong trade ties' },
+          { id: 14, code: 'DE', name: 'Germany', region: 'Europe', isOrigin: true, isDestination: true, description: 'Largest economy in Europe and manufacturing powerhouse' },
+          { id: 15, code: 'FR', name: 'France', region: 'Europe', isOrigin: true, isDestination: true, description: 'Major European market for consumer goods and luxury items' },
+          { id: 16, code: 'IT', name: 'Italy', region: 'Europe', isOrigin: true, isDestination: true, description: 'Important market for fashion, food, and machinery' },
+          { id: 17, code: 'NL', name: 'Netherlands', region: 'Europe', isOrigin: true, isDestination: true, description: 'Key European logistics hub and market' },
+          { id: 18, code: 'ES', name: 'Spain', region: 'Europe', isOrigin: true, isDestination: true, description: 'Significant Southern European market' },
+          { id: 19, code: 'GB', name: 'United Kingdom', region: 'Europe', isOrigin: true, isDestination: true, description: 'Major market with distinct post-Brexit regulations' },
+          { id: 20, code: 'AU', name: 'Australia', region: 'Oceania', isOrigin: true, isDestination: true, description: 'Leading market in Oceania with strong consumer demand' },
+          { id: 21, code: 'SG', name: 'Singapore', region: 'Asia', isOrigin: true, isDestination: true, description: 'Important trade hub and high-income market in Southeast Asia' },
+          { id: 22, code: 'BR', name: 'Brazil', region: 'South America', isOrigin: true, isDestination: true, description: 'Largest Latin American market with diverse import needs' },
+          { id: 23, code: 'AE', name: 'United Arab Emirates', region: 'Middle East', isOrigin: false, isDestination: true, description: 'Gateway to Middle Eastern markets with high purchasing power' },
+          { id: 24, code: 'SA', name: 'Saudi Arabia', region: 'Middle East', isOrigin: false, isDestination: true, description: 'Largest Middle Eastern market with growing import demand' },
+          
+          // South America additions
+          { id: 25, code: 'CO', name: 'Colombia', region: 'South America', isOrigin: true, isDestination: true, description: 'Growing manufacturing and import market with strategic position' },
+          { id: 26, code: 'CL', name: 'Chile', region: 'South America', isOrigin: true, isDestination: true, description: 'One of the most open economies in South America with extensive FTA network' },
+          { id: 27, code: 'AR', name: 'Argentina', region: 'South America', isOrigin: true, isDestination: true, description: 'Major South American market with diverse industrial base' },
+          { id: 28, code: 'PE', name: 'Peru', region: 'South America', isOrigin: true, isDestination: true, description: 'Fast-growing trade hub with significant mining sector' },
+          
+          // Central America additions
+          { id: 29, code: 'PA', name: 'Panama', region: 'Central America', isOrigin: false, isDestination: true, description: 'Strategic logistics hub with the Panama Canal' },
+          { id: 30, code: 'CR', name: 'Costa Rica', region: 'Central America', isOrigin: true, isDestination: true, description: 'Stable business environment with focus on technology and ecotourism' },
+          { id: 31, code: 'DO', name: 'Dominican Republic', region: 'Caribbean', isOrigin: true, isDestination: true, description: 'Caribbean manufacturing hub with strong US ties' },
+          { id: 32, code: 'GT', name: 'Guatemala', region: 'Central America', isOrigin: true, isDestination: true, description: 'Largest economy in Central America with diverse agricultural exports' }
+        ];
+        
+        return res.json(manufacturingOrigins);
+      }
+      
+      // If we have a database, fetch from there
+      // const countries = await db.select().from(countries);
+      // res.json(countries);
+      
+      // Fallback to empty array
+      res.json([]);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: "Server error" });
+    }
+  });
+  
+  // Get special programs by country
+  app.get("/api/special-programs/:countryCode", isAuthenticated, async (req, res) => {
+    try {
+      const { countryCode } = req.params;
+      
+      if (!countryCode) {
+        return res.status(400).json({ message: "Country code is required" });
+      }
+      
+      // For development, return sample special programs
+      if (process.env.NODE_ENV === 'development') {
+        let programs = [];
+        
+        // North American programs
+        if (countryCode === 'US') {
+          programs = [
+            {
+              id: 1,
+              name: 'Foreign Trade Zones (FTZ)',
+              countryId: 12,
+              description: 'Designated locations in the United States where companies can use special procedures that help encourage U.S. activity and value added – in competition with foreign alternatives – by allowing delayed or reduced duty payments on foreign merchandise, as well as other savings.',
+              eligibilityCriteria: 'Foreign and domestic merchandise may be moved into zones for operations not otherwise prohibited by law involving storage, exhibition, assembly, manufacturing, and processing.',
+              potentialSavings: 25.5,
+              programType: 'Duty deferral',
+              applicationProcess: 'Apply through the FTZ Board and local FTZ grantee',
+              limitations: 'Cannot be used for retail sales; must comply with all federal regulations'
+            },
+            {
+              id: 2,
+              name: 'Duty Drawback',
+              countryId: 12,
+              description: 'A refund of customs duties paid on imported materials that are either exported or used in the manufacture of exported articles.',
+              eligibilityCriteria: 'Importers who subsequently export or destroy the imported merchandise, or use it in the production of exported articles.',
+              potentialSavings: 99.0,
+              programType: 'Duty refund',
+              applicationProcess: 'File claims with U.S. Customs and Border Protection',
+              limitations: 'Claims must be filed within 5 years of importation'
+            },
+            {
+              id: 3,
+              name: 'Generalized System of Preferences (GSP)',
+              countryId: 12,
+              description: 'A U.S. trade program designed to promote economic growth in the developing world by providing preferential duty-free entry for thousands of products from designated beneficiary countries.',
+              eligibilityCriteria: 'Products must be from GSP-eligible countries and meet specific rules of origin requirements.',
+              potentialSavings: 100.0,
+              programType: 'Duty elimination',
+              applicationProcess: 'Claim during entry by adding GSP indicator',
+              limitations: 'Subject to periodic renewal by Congress; certain products excluded'
+            }
+          ];
+        } else if (countryCode === 'CA') {
+          programs = [
+            {
+              id: 4,
+              name: 'Duty Relief Program',
+              countryId: 13,
+              description: 'Provides relief from duties on imported goods that will be exported in the same condition or after further processing.',
+              eligibilityCriteria: 'Businesses that import goods for further processing and subsequent export.',
+              potentialSavings: 100.0,
+              programType: 'Duty deferral',
+              applicationProcess: 'Apply to Canada Border Services Agency (CBSA)',
+              limitations: 'Strict compliance with program rules required; record-keeping obligations'
+            },
+            {
+              id: 5,
+              name: 'Export Distribution Center Program',
+              countryId: 13,
+              description: 'Allows approved businesses to import goods and certain services without paying the GST/HST, when those goods are for export.',
+              eligibilityCriteria: 'Businesses that add limited value to goods for export and have annual exports of at least $1 million CAD.',
+              potentialSavings: 15.0,
+              programType: 'Tax relief',
+              applicationProcess: 'Apply to Canada Revenue Agency',
+              limitations: 'Must maintain at least 90% export ratio'
+            },
+            {
+              id: 6,
+              name: 'Customs Bonded Warehouses',
+              countryId: 13,
+              description: 'Secure facilities operated by the private sector and licensed by the CBSA for the storage, examination, and handling of imported goods until duties are paid or goods are exported.',
+              eligibilityCriteria: 'Any imported goods subject to duties or other import charges.',
+              potentialSavings: 20.0,
+              programType: 'Duty deferral',
+              applicationProcess: 'Apply for license through CBSA',
+              limitations: 'Storage limited to 4 years; compliance with warehouse regulations'
+            }
+          ];
+        } else if (countryCode === 'CN') {
+          programs = [
+            {
+              id: 7,
+              name: 'Processing Trade Relief',
+              countryId: 1,
+              description: 'Allows duty-free importation of materials and components used in the production of finished goods for export.',
+              eligibilityCriteria: 'Manufacturing companies engaging in export operations.',
+              potentialSavings: 100.0,
+              programType: 'Duty exemption',
+              applicationProcess: 'Apply through local Customs and Commerce authorities',
+              limitations: 'Strict enforcement of export requirements; bonding requirements'
+            },
+            {
+              id: 8,
+              name: 'Comprehensive Bonded Zones',
+              countryId: 1,
+              description: 'Special areas that combine the functions of bonded warehouses, export processing zones, and bonded logistics parks.',
+              eligibilityCriteria: 'Companies operating within designated comprehensive bonded zones.',
+              potentialSavings: 40.0,
+              programType: 'Duty & tax exemption',
+              applicationProcess: 'Register with zone administration and Customs',
+              limitations: 'Must operate within physical boundaries of the zone'
+            },
+            {
+              id: 9,
+              name: 'Export VAT Rebates',
+              countryId: 1,
+              description: 'Refund of value-added tax (VAT) for exported goods to improve export competitiveness.',
+              eligibilityCriteria: 'Exporters of goods subject to VAT in China.',
+              potentialSavings: 13.0,
+              programType: 'Tax refund',
+              applicationProcess: 'Apply through local Tax Bureau',
+              limitations: 'Rebate rates vary by product; documentation requirements'
+            }
+          ];
+        } else if (countryCode === 'MX') {
+          programs = [
+            {
+              id: 10,
+              name: 'IMMEX Program (Maquiladora)',
+              countryId: 4,
+              description: 'Allows temporary importation of goods used in industrial processes for manufacturing, transformation or repair of foreign merchandise for subsequent export.',
+              eligibilityCriteria: 'Companies that export at least $500,000 USD annually or export at least 10% of their production.',
+              potentialSavings: 100.0,
+              programType: 'Duty deferral',
+              applicationProcess: 'Apply through the Ministry of Economy',
+              limitations: 'Strict inventory control requirements; regular reporting'
+            },
+            {
+              id: 11,
+              name: 'Sectoral Promotion Programs (PROSEC)',
+              countryId: 4,
+              description: 'Provides preferential tariff rates for imports of specific inputs used in production processes of designated sectors.',
+              eligibilityCriteria: 'Producers in specific sectors like electronics, automotive, furniture, etc.',
+              potentialSavings: 80.0,
+              programType: 'Duty reduction',
+              applicationProcess: 'Apply through the Ministry of Economy',
+              limitations: 'Limited to specifically enumerated tariff items'
+            }
+          ];
+        } else if (countryCode === 'BR') {
+          programs = [
+            {
+              id: 12,
+              name: 'RECOF (Industrial Customs Special Regime)',
+              countryId: 22,
+              description: 'Allows suspension of taxes on imports of inputs to be used in manufactured products for export or domestic market.',
+              eligibilityCriteria: 'Companies in industrial sectors with significant export operations.',
+              potentialSavings: 40.0,
+              programType: 'Tax suspension',
+              applicationProcess: 'Application to Brazilian Federal Revenue',
+              limitations: 'Minimum annual export value requirements; complex inventory tracking'
+            },
+            {
+              id: 13,
+              name: 'Manaus Free Trade Zone',
+              countryId: 22,
+              description: 'Special economic area in the Amazon with tax incentives for manufacturing operations.',
+              eligibilityCriteria: 'Companies establishing operations within the Manaus Free Trade Zone.',
+              potentialSavings: 88.0,
+              programType: 'Tax & duty exemption',
+              applicationProcess: 'Apply through SUFRAMA (Superintendence of the Manaus Free Trade Zone)',
+              limitations: 'Geographical limitation; must follow Basic Production Process requirements'
+            }
+          ];
+        } else {
+          // Generic/default programs
+          programs = [
+            {
+              id: 20,
+              name: 'Free Trade Agreements',
+              description: 'Reduced or eliminated duties under bilateral or multilateral trade agreements',
+              eligibilityCriteria: 'Must meet rules of origin requirements',
+              potentialSavings: 100.0,
+              programType: 'Duty elimination',
+              applicationProcess: 'Submit certificate of origin with import documentation',
+              limitations: 'Product-specific rules; documentation requirements'
+            },
+            {
+              id: 21,
+              name: 'Bonded Warehouses',
+              description: 'Storage facilities where imported goods can be stored without payment of duties until they are entered into the commerce',
+              eligibilityCriteria: 'Any dutiable imported goods',
+              potentialSavings: 25.0,
+              programType: 'Duty deferral',
+              applicationProcess: 'Apply through local customs authorities',
+              limitations: 'Time limits for storage; handling restrictions'
+            }
+          ];
+        }
+        
+        return res.json(programs);
+      }
+      
+      // In production, would fetch from database
+      // const programs = await db.select().from(specialPrograms).where(eq(specialPrograms.countryCode, countryCode));
+      // res.json(programs);
+      
+      // Fallback
+      res.json([]);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: "Server error" });
+    }
+  });
+  
   // ===== Tariff routes =====
   
   // Get tariff data by HS code and country
