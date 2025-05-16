@@ -119,14 +119,14 @@ const SpecialPrograms: React.FC<SpecialProgramsProps> = ({
   const getSelectedProgram = () => {
     if (!programs || programs.length === 0) {
       return {
-        id: 'loading',
+        id: 0,
         title: 'Loading...',
         description: 'Please wait while we load program details',
         potentialSavings: 0,
         requirements: []
-      };
+      } as ProgramDetails;
     }
-    return programs.find(program => program.id === selectedProgram) || programs[0];
+    return programs.find(program => Number(program.id) === selectedProgram) || programs[0];
   };
 
   // Get country name from code
