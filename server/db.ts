@@ -5,31 +5,16 @@ import * as schema from "@shared/schema";
 
 neonConfig.webSocketConstructor = ws;
 
-// Define pool and db variables
-let pool: any;
-let db: any;
+// Ensure DATABASE_URL is properly handled
+const DATABASE_URL = process.env.DATABASE_URL;
 
-// Check if DATABASE_URL is available
-if (!process.env.DATABASE_URL) {
-  console.warn("DATABASE_URL not set. Using development mode with an in-memory database.");
-  
-  // Create mock implementation for development when no database is available
-  pool = { 
-    query: async () => ({ rows: [] }),
-    end: async () => {}
-  };
-  
-  db = {
-    select: () => ({ from: () => ({ where: () => [] }) }),
-    insert: () => ({ values: () => ({ returning: () => [] }) }),
-    update: () => ({ set: () => ({ where: () => ({ returning: () => [] }) }) }),
-    delete: () => ({ where: () => ({ returning: () => [] }) })
-  };
-} else {
-  // Use Neon serverless Postgres client with the DATABASE_URL
-  pool = new Pool({ connectionString: process.env.DATABASE_URL });
-  db = drizzle(pool, { schema });
-}
+// Create connection pool
+const pool = new Pool({ 
+  connectionString: DATABASE_URL 
+});
+
+// Create drizzle database instance
+const db = drizzle(pool, { schema });
 
 // Export the variables
 export { pool, db };
