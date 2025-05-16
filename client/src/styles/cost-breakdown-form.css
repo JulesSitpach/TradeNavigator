@@ -74,11 +74,47 @@ body {
 /* Form field styling */
 .form-grid {
   display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  gap: var(--spacing-m);
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-l);
+  margin-top: var(--spacing-m);
 }
 
 .field-group {
+  margin-bottom: var(--spacing-m);
+}
+
+.form-field {
+  margin-bottom: var(--spacing-l);
+}
+
+.form-section {
+  margin-bottom: var(--spacing-xl);
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--black);
+  margin-bottom: var(--spacing-xs);
+}
+
+.section-description {
+  font-size: 14px;
+  color: var(--dark-gray);
+  margin-bottom: var(--spacing-m);
+}
+
+.form-subsection {
+  margin-top: var(--spacing-xl);
+  margin-bottom: var(--spacing-l);
+  padding-bottom: var(--spacing-m);
+  border-bottom: 1px solid var(--medium-gray);
+}
+
+.subsection-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--black);
   margin-bottom: var(--spacing-m);
 }
 

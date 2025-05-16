@@ -33,7 +33,7 @@ const NewCostAnalysisForm = () => {
                   <Label htmlFor="product-description">Product Description</Label>
                   <Input 
                     id="product-description" 
-                    placeholder="High-performance laptops, 13" display, 32GB RAM, 1TB SSD" 
+                    placeholder="High-performance laptops, 13-inch display, 32GB RAM, 1TB SSD" 
                   />
                 </div>
                 
