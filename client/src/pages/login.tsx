@@ -120,7 +120,7 @@ const Login = () => {
                     </span>
                   ) : (
                     <span className="flex items-center">
-                      <FaSignIn className="mr-2" />
+                      <span className="mr-2">→</span>
                       {t("login.loginButton")}
                     </span>
                   )}

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import ProgramCard from './ProgramCard';
-import { FaFileExport } from 'react-icons/fa';
+import { FaFileExport } from 'react-icons/fa6';
 
 interface ProgramDetails {
   id: string;

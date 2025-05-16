@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FaPlus, FaEdit, FaTrash, FaCalculator } from "react-icons/fa6";
+import { FaPlus, FaPen, FaTrash, FaCalculator } from "react-icons/fa6";
 import PageHeader from "@/components/common/PageHeader";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
@@ -161,7 +161,7 @@ const Products = () => {
                             size="sm"
                             onClick={() => setEditProductId(product.id)}
                           >
-                            <FaEdit className="mr-1" />
+                            <FaPen className="mr-1" />
                             Edit
                           </Button>
                           <Button 
