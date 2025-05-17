@@ -1,0 +1,57 @@
+Alternative Routes Dashboard
+Design for Maximum SMB Value:
+
+Use a side-by-side comparison card layout showing each route option
+Include a visual timeline showing transit duration with key milestones
+Highlight the total cost difference between options in large, bold text
+Add risk indicators (low/medium/high) with explanatory tooltips
+Include a "Recommended Option" flag based on the business's specific needs
+Show cash flow impact visualization to help SMBs understand working capital implications
+
+Benefits:
+
+Provides clear cost-benefit analysis for decision-making
+Helps businesses understand the trade-offs between speed and cost
+Reduces risk through visibility of shipping reliability differences
+Enables better cash flow management and inventory planning
+
+Drawbacks:
+
+May require frequent updates as shipping rates change
+Risk indicators may oversimplify complex logistics realities
+Recommendations may not account for all business-specific factors
+
+Considerations:
+
+Include ability to adjust importance of factors (cost vs. speed vs. reliability)
+Consider integration with inventory management systems for better forecasting
+Allow for seasonal variation in shipping options and rates
+
+Tariff Analysis Dashboard
+Design for Maximum SMB Value:
+
+Create a "Duty Rate Comparison" section with visual scales showing relative rates
+Include a "Savings Opportunities" panel highlighting specific classification strategies
+Add a tariff timeline showing historical changes and future scheduled changes
+Design an interactive map showing duty rates for the same product across different markets
+Include actionable insights in callout boxes rather than raw data tables
+Add document templates or guides for tariff classification disputes
+
+Benefits:
+
+Identifies immediate savings opportunities through proper classification
+Provides market expansion insights based on favorable tariff rates
+Helps businesses anticipate and prepare for tariff changes
+Reduces risk of misclassification penalties
+
+Drawbacks:
+
+Complex tariff rules may require legal expertise beyond dashboard guidance
+Suggested classifications need careful review for compliance
+Historical data may not always predict future tariff changes reliably
+
+Considerations:
+
+Include confidence ratings for alternative classification suggestions
+Provide access to binding ruling information or similar precedents
+Consider integration with product development to design for favorable tariff treatment
