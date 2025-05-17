@@ -1,0 +1,84 @@
+# Priority Implementation for HS Code Classification Accuracy Across All Product Categories
+
+Here are the most practical and high-impact improvements your AI designer and developer can implement for better classification across all product categories, including additional categories like metals:
+
+## 1. Expanded Category-Aware Classification
+
+**Implementation Steps:**
+- Modify the API call to pass the selected product category alongside the description
+- Create a comprehensive mapping system between product categories and corresponding HS chapters:
+  - Food & Beverages → Chapters 1-24
+  - Electronics → Chapters 84-85
+  - Textiles & Apparel → Chapters 50-63
+  - Chemicals → Chapters 28-38
+  - Machinery → Chapters 84-85
+  - Pharmaceuticals → Chapter 30
+  - Automotive → Chapter 87
+  - Furniture → Chapter 94
+  - Toys & Games → Chapter 95
+  - Metals & Metal Products → Chapters 72-83
+  - Plastics & Rubber → Chapters 39-40
+  - Stone & Glass → Chapters 68-70
+  - Paper & Pulp → Chapters 47-49
+  - Other → Apply broader search logic
+- Implement validation logic that checks if suggested codes match the expected chapter range for each category
+- Add confidence penalties for suggestions that fall outside the expected chapter range
+
+## 2. Multi-Pattern Recognition System
+
+**Implementation Steps:**
+- Build a comprehensive pattern matcher for terminology across different product categories
+- Create a dictionary of industry-specific terms mapped to likely HS chapters
+- Implement logic to identify product characteristics that affect classification:
+  - For metals: alloy composition, processing state (cast, forged, drawn)
+  - For electronics: functionality, connectivity features
+  - For textiles: material composition percentages, fabrication method
+  - For chemicals: compound structure, application purpose
+- Develop pattern recognition for technical specifications that impact classification
+- Add extraction logic for component information that determines classification
+
+## 3. Multiple Suggestion System with Explanations
+
+**Implementation Steps:**
+- Modify the API response format to return 3-5 potential classifications
+- Implement confidence scoring for each suggestion (percentage likelihood)
+- Add short explanation text for why each code was suggested, such as:
+  - "Suggested based on metal composition mentioned in description"
+  - "Matched based on processing method for textiles"
+  - "Selected due to electronic functionality described"
+- Create a user interface element to display multiple suggestions with confidence levels
+- Implement a selection mechanism for users to choose the most appropriate code
+
+## 4. Cross-Category Feedback Collection
+
+**Implementation Steps:**
+- Add a "Was this classification correct?" element after each suggestion
+- Create a database structure that stores feedback organized by product category
+- Implement a simple form for users to suggest the correct code if they disagree
+- Design a periodic review process for submitted corrections by category
+- Build a data collection pipeline to store example pairs (description + category + correct code)
+
+## 5. Hierarchical Classification Logic
+
+**Implementation Steps:**
+- Implement a multi-stage classification process:
+  - First determine broad HS section based on product category
+  - Then identify chapter based on material composition or function
+  - Finally determine heading/subheading based on specific details
+- Create validation rules for logical consistency across classification levels
+- Add specific rules for commonly misclassified products across categories
+- Implement a fallback system that broadens search when confidence is low
+- Design an override system for established product-to-HS-code mappings
+
+## 6. Material-Function Analysis System
+
+**Implementation Steps:**
+- Create dual-analysis logic that considers both material composition and function:
+  - For products like metal furniture, determine if classification should follow the material (metal) or function (furniture)
+  - Implement the "essential character" rule from HS classification principles
+  - Add composition percentage detection for products with multiple materials
+- Build primary purpose identification based on product description
+- Implement comparative logic that weighs material-based vs. function-based classification
+- Create conflict resolution rules when multiple classifications could apply
+
+These implementations provide practical, focused improvements that your developer can implement across an expanded range of product categories. They address classification challenges for complex products that could fall into multiple categories while building a foundation for longer-term accuracy improvements.

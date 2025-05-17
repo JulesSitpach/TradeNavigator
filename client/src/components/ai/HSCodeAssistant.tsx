@@ -105,42 +105,84 @@ const HSCodeAssistant: React.FC<HSCodeAssistantProps> = ({
                   Suggested HS Code: {hsCodeSuggestion.hsCode}
                 </div>
                 <div className="text-xs text-muted-foreground">
-                  Based on your {hsCodeSuggestion.source === 'AI' ? 'product details' : 
-                                hsCodeSuggestion.source === 'Mapping' ? 'product description' : 
-                                'product category'}
+                  {hsCodeSuggestion.explanations?.[0] || 
+                   `Based on your ${hsCodeSuggestion.source === 'AI' ? 'product details' : 
+                    hsCodeSuggestion.source === 'Mapping' ? 'product description' : 'product category'}`}
                 </div>
               </div>
               <Badge variant={
                 hsCodeSuggestion.confidence > 0.9 ? "default" :
                 hsCodeSuggestion.confidence > 0.7 ? "default" :
                 "secondary"
-              } className={`text-xs ${hsCodeSuggestion.confidence > 0.9 ? 'bg-green-100 text-green-800 hover:bg-green-200' : ''}`}>
+              } className={`text-xs ${hsCodeSuggestion.confidence > 0.9 ? 'bg-green-100 text-green-800 hover:bg-green-200' : 
+                          hsCodeSuggestion.confidence > 0.7 ? 'bg-blue-100 text-blue-800 hover:bg-blue-200' : ''}`}>
                 {Math.round(hsCodeSuggestion.confidence * 100)}% match
               </Badge>
             </div>
             
-            <Button
-              variant="outline"
-              size="sm"
-              className="w-full mt-1 text-xs"
-              onClick={() => handleSelectHSCode(hsCodeSuggestion.hsCode)}
-            >
-              Use this code
-            </Button>
+            <div className="flex items-center justify-between mb-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex-1 text-xs py-1"
+                onClick={() => handleSelectHSCode(hsCodeSuggestion.hsCode)}
+              >
+                Use this code
+              </Button>
+              <div className="flex ml-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="p-1 h-auto text-green-600 hover:text-green-800"
+                  title="This suggestion is accurate"
+                  onClick={() => {
+                    // Log positive feedback without interrupting workflow
+                    console.log('Positive feedback for HS code:', hsCodeSuggestion.hsCode);
+                    // In a real app, this would send feedback to the backend
+                  }}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path>
+                  </svg>
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="p-1 h-auto text-red-600 hover:text-red-800"
+                  title="This suggestion is not accurate"
+                  onClick={() => {
+                    // Log negative feedback without interrupting workflow
+                    console.log('Negative feedback for HS code:', hsCodeSuggestion.hsCode);
+                    // In a real app, this would send feedback to the backend
+                  }}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"></path>
+                  </svg>
+                </Button>
+              </div>
+            </div>
             
             {hsCodeSuggestion.alternativeCodes && hsCodeSuggestion.alternativeCodes.length > 0 && (
               <div className="mt-2">
                 <div className="text-xs font-medium mb-1">Alternatives:</div>
                 <div className="flex flex-wrap gap-1">
                   {hsCodeSuggestion.alternativeCodes.map((code, index) => (
-                    <Badge 
-                      key={index} 
-                      variant="outline"
-                      className="text-xs cursor-pointer hover:bg-muted"
-                      onClick={() => handleSelectHSCode(code)}
-                    >
-                      {code}
-                    </Badge>
+                    <div key={index} className="flex-1 min-w-0">
+                      <Button 
+                        variant="ghost"
+                        size="sm"
+                        className="w-full text-xs justify-start h-auto py-1"
+                        onClick={() => handleSelectHSCode(code)}
+                      >
+                        <div className="truncate text-left">
+                          <span className="font-medium">{code}</span>
+                          {hsCodeSuggestion.explanations?.[index + 1] && (
+                            <div className="text-xs text-muted-foreground truncate">{hsCodeSuggestion.explanations[index + 1]}</div>
+                          )}
+                        </div>
+                      </Button>
+                    </div>
                   ))}
                 </div>
               </div>
