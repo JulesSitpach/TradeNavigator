@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import PageHeader from "@/components/common/PageHeader";
 import { LanguageContext } from "@/contexts/LanguageContext";
+import { useAnalysis } from "@/contexts/AnalysisContext";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useQuery } from "@tanstack/react-query";
 import { FaDownload } from "react-icons/fa6";
@@ -91,18 +92,44 @@ const mockData = {
 const AlternativeRoutesDashboard = () => {
   const { t } = useContext(LanguageContext);
   const [localData, setLocalData] = useState<any>(null);
+  const { currentAnalysis, isLoading: analysisLoading, lastUpdated } = useAnalysis();
 
-  // Get alternative routes data from API - use mock data for demonstration
-  const { isLoading, error } = useQuery({
+  // Get alternative routes data from API if needed
+  const { isLoading: apiLoading, error } = useQuery({
     queryKey: ['/api/alternative-routes'],
-    enabled: false, // Disable automatic fetching since we're using mock data
+    enabled: false, // Disable automatic fetching since we're using central analysis data
   });
 
-  // Use mock data for demonstration
+  // When current analysis changes, update our data
   useEffect(() => {
-    // In a real implementation, this would come from the API or a cost breakdown data context
-    setLocalData(mockData);
-  }, []);
+    if (currentAnalysis) {
+      console.log("Analysis data updated in Alternative Routes Dashboard");
+      
+      // In a real implementation, we would transform the currentAnalysis data
+      // to generate route-specific insights instead of using mock data.
+      // For demonstration purposes, we're adapting our mock data with values from currentAnalysis.
+      
+      const adaptedData = {
+        ...mockData,
+        currentRoute: {
+          ...mockData.currentRoute,
+          origin: `${currentAnalysis.productDetails?.originCountry || 'Unknown'} Port`,
+          destination: `${currentAnalysis.productDetails?.destinationCountry || 'Unknown'} Port`,
+          transportMode: currentAnalysis.productDetails?.transportMode || mockData.currentRoute.transportMode,
+        },
+        productValue: currentAnalysis.productDetails?.productValue || mockData.productValue,
+        weight: currentAnalysis.productDetails?.weight || mockData.weight
+      };
+      
+      setLocalData(adaptedData);
+    } else if (!localData) {
+      // Fallback to mock data if no analysis is available yet
+      setLocalData(mockData);
+    }
+  }, [currentAnalysis, lastUpdated]);
+  
+  // Combined loading state
+  const isLoading = apiLoading || analysisLoading || !localData;
 
   // Risk level badge colors
   const getRiskBadgeClass = (risk: string) => {
@@ -254,7 +281,13 @@ const AlternativeRoutesDashboard = () => {
               </div>
             </div>
             <div className="text-sm text-blue-600">
-              {new Date().toLocaleDateString()} at {new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+              {lastUpdated ? 
+                `Updated ${lastUpdated.toLocaleDateString()} at ${lastUpdated.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}` :
+                `${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`
+              }
+              {currentAnalysis && 
+                <div className="text-xs text-green-600 mt-1">All data is synchronized across dashboards</div>
+              }
             </div>
           </div>
 

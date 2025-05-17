@@ -297,7 +297,13 @@ const TariffAnalysisDashboard = () => {
               </div>
             </div>
             <div className="text-sm text-blue-600">
-              {new Date().toLocaleDateString()} at {new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+              {lastUpdated ? 
+                `Updated ${lastUpdated.toLocaleDateString()} at ${lastUpdated.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}` :
+                `${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`
+              }
+              {currentAnalysis && 
+                <div className="text-xs text-green-600 mt-1">All data is synchronized across dashboards</div>
+              }
             </div>
           </div>
 
