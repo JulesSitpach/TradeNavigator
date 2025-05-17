@@ -25,6 +25,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import HSCodeAssistant from "@/components/ai/HSCodeAssistant";
+import SavedAnalyses, { SavedAnalysis } from "@/components/analysis/SavedAnalyses";
 
 // Form schema for product information
 const productInfoFormSchema = z.object({
@@ -45,15 +46,6 @@ const productInfoFormSchema = z.object({
 });
 
 type ProductInfoFormValues = z.infer<typeof productInfoFormSchema>;
-
-// Type for saved analysis
-interface SavedAnalysis {
-  id: string;
-  name: string;
-  date: string;
-  formData: ProductInfoFormValues;
-  results: any;
-}
 
 // Product categories for dropdown
 const productCategories = [
@@ -108,7 +100,7 @@ const packageTypes = [
 ];
 
 // Product Information Form Component
-const ProductInformationForm = ({ onCalculate }: { onCalculate: (values: ProductInfoFormValues) => void }) => {
+const ProductInformationForm = ({ onCalculate }: { onCalculate: () => void }) => {
   const [showHSAssistant, setShowHSAssistant] = useState(false);
   
   // Initialize form with default values
@@ -135,7 +127,7 @@ const ProductInformationForm = ({ onCalculate }: { onCalculate: (values: Product
   const onSubmit = (values: ProductInfoFormValues) => {
     console.log("Form values:", values);
     // Here we would send the data to the server for analysis
-    onCalculate(values);
+    onCalculate();
   };
   
   return (
@@ -465,11 +457,7 @@ const ProductInformationForm = ({ onCalculate }: { onCalculate: (values: Product
           </div>
         </div>
         
-        <div className="flex justify-end">
-          <Button type="submit" className="bg-blue-600 hover:bg-blue-700">
-            Calculate
-          </Button>
-        </div>
+        <Button type="submit" className="w-full">Calculate</Button>
       </form>
     </Form>
   );
@@ -496,125 +484,118 @@ const CostBreakdownTable = () => {
                   Amount (USD)
                 </th>
                 <th className="whitespace-nowrap px-5 py-3 text-right">
-                  Percentage
+                  % of Total
                 </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-neutral-200">
-              <tr className="hover:bg-neutral-50">
-                <td className="px-5 py-4">
-                  <div className="font-medium text-neutral-800">Product Value</div>
-                  <div className="text-xs text-neutral-500">Base value of goods</div>
+              <tr>
+                <td className="whitespace-nowrap px-5 py-4 text-left">
+                  <div className="font-medium text-neutral-900">Product Value</div>
                 </td>
-                <td className="px-5 py-4 text-right text-neutral-800">
-                  $20,000.00
+                <td className="whitespace-nowrap px-5 py-4 text-right">
+                  $20,000
                 </td>
-                <td className="px-5 py-4 text-right text-neutral-800">
+                <td className="whitespace-nowrap px-5 py-4 text-right">
                   52.3%
                 </td>
               </tr>
-              <tr className="hover:bg-neutral-50">
-                <td className="px-5 py-4">
-                  <div className="font-medium text-neutral-800">Import Duty</div>
-                  <div className="text-xs text-neutral-500">Based on HS code 8471.30</div>
+              <tr>
+                <td className="whitespace-nowrap px-5 py-4 text-left">
+                  <div className="font-medium text-neutral-900">Import Duty (12.8%)</div>
                 </td>
-                <td className="px-5 py-4 text-right text-neutral-800">
-                  $2,000.00
+                <td className="whitespace-nowrap px-5 py-4 text-right">
+                  $2,560
                 </td>
-                <td className="px-5 py-4 text-right text-neutral-800">
-                  5.2%
-                </td>
-              </tr>
-              <tr className="hover:bg-neutral-50">
-                <td className="px-5 py-4">
-                  <div className="font-medium text-neutral-800">VAT</div>
-                  <div className="text-xs text-neutral-500">Value-added tax</div>
-                </td>
-                <td className="px-5 py-4 text-right text-neutral-800">
-                  $560.00
-                </td>
-                <td className="px-5 py-4 text-right text-neutral-800">
-                  1.5%
+                <td className="whitespace-nowrap px-5 py-4 text-right">
+                  6.7%
                 </td>
               </tr>
-              <tr className="hover:bg-neutral-50">
-                <td className="px-5 py-4">
-                  <div className="font-medium text-neutral-800">Ocean Freight</div>
-                  <div className="text-xs text-neutral-500">Main carriage fee</div>
+              <tr>
+                <td className="whitespace-nowrap px-5 py-4 text-left">
+                  <div className="font-medium text-neutral-900">Freight Cost</div>
                 </td>
-                <td className="px-5 py-4 text-right text-neutral-800">
-                  $8,500.00
+                <td className="whitespace-nowrap px-5 py-4 text-right">
+                  $12,452
                 </td>
-                <td className="px-5 py-4 text-right text-neutral-800">
-                  22.2%
-                </td>
-              </tr>
-              <tr className="hover:bg-neutral-50">
-                <td className="px-5 py-4">
-                  <div className="font-medium text-neutral-800">Insurance</div>
-                  <div className="text-xs text-neutral-500">Cargo insurance premium</div>
-                </td>
-                <td className="px-5 py-4 text-right text-neutral-800">
-                  $950.00
-                </td>
-                <td className="px-5 py-4 text-right text-neutral-800">
-                  2.5%
+                <td className="whitespace-nowrap px-5 py-4 text-right">
+                  32.6%
                 </td>
               </tr>
-              <tr className="hover:bg-neutral-50">
-                <td className="px-5 py-4">
-                  <div className="font-medium text-neutral-800">Port Handling</div>
-                  <div className="text-xs text-neutral-500">Terminal handling charges</div>
+              <tr>
+                <td className="whitespace-nowrap px-5 py-4 text-left">
+                  <div className="font-medium text-neutral-900">Insurance</div>
                 </td>
-                <td className="px-5 py-4 text-right text-neutral-800">
-                  $1,200.00
+                <td className="whitespace-nowrap px-5 py-4 text-right">
+                  $300
                 </td>
-                <td className="px-5 py-4 text-right text-neutral-800">
-                  3.1%
-                </td>
-              </tr>
-              <tr className="hover:bg-neutral-50">
-                <td className="px-5 py-4">
-                  <div className="font-medium text-neutral-800">Customs Clearance</div>
-                  <div className="text-xs text-neutral-500">Documentation and processing</div>
-                </td>
-                <td className="px-5 py-4 text-right text-neutral-800">
-                  $1,802.00
-                </td>
-                <td className="px-5 py-4 text-right text-neutral-800">
-                  4.7%
+                <td className="whitespace-nowrap px-5 py-4 text-right">
+                  0.8%
                 </td>
               </tr>
-              <tr className="hover:bg-neutral-50">
-                <td className="px-5 py-4">
-                  <div className="font-medium text-neutral-800">Last Mile Delivery</div>
-                  <div className="text-xs text-neutral-500">To final destination</div>
+              <tr>
+                <td className="whitespace-nowrap px-5 py-4 text-left">
+                  <div className="font-medium text-neutral-900">Documentation Fees</div>
                 </td>
-                <td className="px-5 py-4 text-right text-neutral-800">
-                  $1,860.00
+                <td className="whitespace-nowrap px-5 py-4 text-right">
+                  $69
                 </td>
-                <td className="px-5 py-4 text-right text-neutral-800">
-                  4.9%
-                </td>
-              </tr>
-              <tr className="hover:bg-neutral-50">
-                <td className="px-5 py-4">
-                  <div className="font-medium text-neutral-800">Other Fees</div>
-                  <div className="text-xs text-neutral-500">Miscellaneous charges</div>
-                </td>
-                <td className="px-5 py-4 text-right text-neutral-800">
-                  $1,350.00
-                </td>
-                <td className="px-5 py-4 text-right text-neutral-800">
-                  3.5%
+                <td className="whitespace-nowrap px-5 py-4 text-right">
+                  0.2%
                 </td>
               </tr>
-              <tr className="bg-neutral-100 font-semibold">
-                <td className="px-5 py-4 text-neutral-900">Total</td>
-                <td className="px-5 py-4 text-right text-neutral-900">
-                  $38,222.00
+              <tr>
+                <td className="whitespace-nowrap px-5 py-4 text-left">
+                  <div className="font-medium text-neutral-900">Customs Clearance</div>
                 </td>
-                <td className="px-5 py-4 text-right text-neutral-900">
+                <td className="whitespace-nowrap px-5 py-4 text-right">
+                  $1,600
+                </td>
+                <td className="whitespace-nowrap px-5 py-4 text-right">
+                  4.2%
+                </td>
+              </tr>
+              <tr>
+                <td className="whitespace-nowrap px-5 py-4 text-left">
+                  <div className="font-medium text-neutral-900">Inland Transportation</div>
+                </td>
+                <td className="whitespace-nowrap px-5 py-4 text-right">
+                  $1,075
+                </td>
+                <td className="whitespace-nowrap px-5 py-4 text-right">
+                  2.8%
+                </td>
+              </tr>
+              <tr>
+                <td className="whitespace-nowrap px-5 py-4 text-left">
+                  <div className="font-medium text-neutral-900">Warehousing</div>
+                </td>
+                <td className="whitespace-nowrap px-5 py-4 text-right">
+                  $50
+                </td>
+                <td className="whitespace-nowrap px-5 py-4 text-right">
+                  0.1%
+                </td>
+              </tr>
+              <tr>
+                <td className="whitespace-nowrap px-5 py-4 text-left">
+                  <div className="font-medium text-neutral-900">Other Taxes and Fees</div>
+                </td>
+                <td className="whitespace-nowrap px-5 py-4 text-right">
+                  $145
+                </td>
+                <td className="whitespace-nowrap px-5 py-4 text-right">
+                  0.4%
+                </td>
+              </tr>
+              <tr className="bg-neutral-50 font-semibold">
+                <td className="whitespace-nowrap px-5 py-4 text-left">
+                  <div className="font-semibold text-neutral-900">Total Landed Cost</div>
+                </td>
+                <td className="whitespace-nowrap px-5 py-4 text-right text-primary-700">
+                  $38,251
+                </td>
+                <td className="whitespace-nowrap px-5 py-4 text-right">
                   100%
                 </td>
               </tr>
@@ -625,6 +606,15 @@ const CostBreakdownTable = () => {
     </Card>
   );
 };
+
+// Type for saved analysis
+interface SavedAnalysis {
+  id: string;
+  name: string;
+  date: string;
+  formData: ProductInfoFormValues;
+  results: any;
+}
 
 // Cost Breakdown Dashboard - Main Component
 const CostBreakdownDashboard = () => {
@@ -669,12 +659,66 @@ const CostBreakdownDashboard = () => {
       costComponentsForCopilot[component.name] = {
         amount: component.value,
         description: component.name,
-        category: component.category
+        category: component.name.toLowerCase().includes('duty') ? 'customs' : 
+                 component.name.toLowerCase().includes('shipping') ? 'shipping' : 'other'
       };
     });
   }
   
-  // Handler for calculate event from form
+  // Save current analysis
+  const saveAnalysis = () => {
+    if (!data) {
+      alert("Please calculate a cost breakdown first");
+      return;
+    }
+
+    if (!saveName.trim()) {
+      alert("Please enter a name for this analysis");
+      return;
+    }
+
+    if (!formData) {
+      alert("No form data available to save");
+      return;
+    }
+    
+    const newAnalysis: SavedAnalysis = {
+      id: Date.now().toString(),
+      name: saveName,
+      date: new Date().toISOString(),
+      formData: formData,
+      results: data
+    };
+    
+    const updatedSavedAnalyses = [...savedAnalyses, newAnalysis];
+    setSavedAnalyses(updatedSavedAnalyses);
+    localStorage.setItem('savedCostAnalyses', JSON.stringify(updatedSavedAnalyses));
+    
+    setSaveName("");
+    alert("Analysis saved successfully!");
+  };
+
+  // Load a saved analysis
+  const loadAnalysis = (analysis: SavedAnalysis) => {
+    setFormData(analysis.formData);
+    setTimeout(() => {
+      const form = document.querySelector("form");
+      if (form) {
+        // Reset the form with the saved values
+        const event = new Event("submit", { cancelable: true, bubbles: true });
+        form.dispatchEvent(event);
+      }
+    }, 500);
+  };
+
+  // Delete a saved analysis
+  const deleteAnalysis = (id: string) => {
+    const updatedSavedAnalyses = savedAnalyses.filter(analysis => analysis.id !== id);
+    setSavedAnalyses(updatedSavedAnalyses);
+    localStorage.setItem('savedCostAnalyses', JSON.stringify(updatedSavedAnalyses));
+    alert("Analysis deleted!");
+  };
+  
   const handleCalculate = (values: ProductInfoFormValues) => {
     console.log("Form values:", values);
     
@@ -739,26 +783,11 @@ const CostBreakdownDashboard = () => {
     alert("Analysis saved successfully!");
   };
   
-  // Load a saved analysis
-  const loadAnalysis = (analysis: SavedAnalysis) => {
-    setFormData(analysis.formData);
-    setResults(analysis.results);
-    setShowResults(true);
-    
-    setTimeout(() => {
-      const resultsElement = document.getElementById('cost-breakdown-results');
-      if (resultsElement) {
-        resultsElement.scrollIntoView({ behavior: 'smooth' });
-      }
-    }, 100);
-  };
-  
   // Delete a saved analysis
   const deleteAnalysis = (id: string) => {
     const updatedSavedAnalyses = savedAnalyses.filter(analysis => analysis.id !== id);
     setSavedAnalyses(updatedSavedAnalyses);
     localStorage.setItem('savedCostAnalyses', JSON.stringify(updatedSavedAnalyses));
-    alert("Analysis deleted!");
   };
   
   return (
@@ -815,43 +844,42 @@ const CostBreakdownDashboard = () => {
                       <span className="text-sm font-medium">$12,452</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-sm text-neutral-600">Other Fees:</span>
-                      <span className="text-sm font-medium">$3,210</span>
+                      <span className="text-sm text-neutral-600">Other Costs:</span>
+                      <span className="text-sm font-medium">$3,239</span>
                     </div>
-                    <div className="flex justify-between pt-2 mt-2 border-t border-neutral-200">
-                      <span className="text-sm font-medium text-neutral-700">Total:</span>
-                      <span className="text-sm font-bold text-primary">$38,222</span>
+                    <div className="border-t border-neutral-200 pt-2 mt-2">
+                      <div className="flex justify-between font-semibold">
+                        <span>Total Landed Cost:</span>
+                        <span className="text-primary-700">$38,251</span>
+                      </div>
                     </div>
                   </div>
                 </CardContent>
               </Card>
               
-              {/* Save Analysis Card */}
               <Card className="bg-white shadow-sm border border-neutral-200">
                 <CardHeader className="px-4 py-3 border-b border-neutral-200">
-                  <CardTitle className="text-md font-medium flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                      <path d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4V5h12v10z" />
-                      <path d="M8 7a1 1 0 00-1 1v4a1 1 0 001 1h4a1 1 0 001-1V8a1 1 0 00-1-1H8z" />
-                    </svg>
-                    Save Analysis
-                  </CardTitle>
+                  <CardTitle className="text-md font-medium">Regulatory Requirements</CardTitle>
                 </CardHeader>
                 <CardContent className="p-4">
-                  <div className="space-y-3">
-                    <p className="text-sm text-neutral-600">Save this breakdown to reference later or share with your team</p>
-                    <Input
-                      placeholder="Analysis name"
-                      value={saveName}
-                      onChange={(e) => setSaveName(e.target.value)}
-                    />
-                    <Button 
-                      className="w-full bg-blue-600 hover:bg-blue-700" 
-                      onClick={saveAnalysis}
-                    >
-                      Save Breakdown
-                    </Button>
-                  </div>
+                  <ul className="space-y-2 text-sm">
+                    <li className="flex items-start">
+                      <span className="inline-block w-2 h-2 rounded-full bg-blue-500 mt-1.5 mr-2"></span>
+                      <span>Certificate of Origin required</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="inline-block w-2 h-2 rounded-full bg-blue-500 mt-1.5 mr-2"></span>
+                      <span>FCC certification needed</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="inline-block w-2 h-2 rounded-full bg-blue-500 mt-1.5 mr-2"></span>
+                      <span>RoHS compliance declaration</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="inline-block w-2 h-2 rounded-full bg-blue-500 mt-1.5 mr-2"></span>
+                      <span>Country of origin labeling</span>
+                    </li>
+                  </ul>
                 </CardContent>
               </Card>
               
@@ -860,89 +888,37 @@ const CostBreakdownDashboard = () => {
                   <CardTitle className="text-md font-medium">Optimization Tips</CardTitle>
                 </CardHeader>
                 <CardContent className="p-4">
-                  <div className="space-y-3">
-                    <div className="bg-blue-50 p-3 rounded-md border border-blue-100">
-                      <h4 className="text-sm font-medium text-blue-800">Duty Savings Opportunity</h4>
-                      <p className="text-xs text-blue-700 mt-1">Use the Canada-US-Mexico Agreement to potentially save $560 in duties.</p>
-                    </div>
-                    <div className="bg-green-50 p-3 rounded-md border border-green-100">
-                      <h4 className="text-sm font-medium text-green-800">Shipping Cost Reduction</h4>
-                      <p className="text-xs text-green-700 mt-1">Consider FCL instead of LCL to reduce per-unit shipping costs by up to 22%.</p>
-                    </div>
-                  </div>
+                  <ul className="space-y-2 text-sm">
+                    <li className="flex items-start">
+                      <span className="inline-block w-2 h-2 rounded-full bg-green-500 mt-1.5 mr-2"></span>
+                      <span>Consider using sea freight to save 80%</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="inline-block w-2 h-2 rounded-full bg-green-500 mt-1.5 mr-2"></span>
+                      <span>Apply for duty drawback potential savings: $1,200</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="inline-block w-2 h-2 rounded-full bg-green-500 mt-1.5 mr-2"></span>
+                      <span>Use Foreign Trade Zone to defer duties</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="inline-block w-2 h-2 rounded-full bg-green-500 mt-1.5 mr-2"></span>
+                      <span>Consolidate shipments to reduce documentation fees</span>
+                    </li>
+                  </ul>
                 </CardContent>
               </Card>
             </div>
           </div>
         )}
-        
-        {/* Saved Analyses Section */}
-        {savedAnalyses.length > 0 && (
-          <div className="mt-4">
-            <Card className="bg-white shadow-sm border border-neutral-200">
-              <CardHeader className="border-b border-neutral-200 px-5 py-4">
-                <CardTitle className="text-lg font-medium text-neutral-900 flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                    <path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z" />
-                  </svg>
-                  Saved Analyses
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="px-5 py-4">
-                <div className="space-y-4">
-                  {savedAnalyses.map((analysis) => (
-                    <div key={analysis.id} className="border rounded-lg p-4 bg-gray-50 hover:bg-gray-100 transition-colors">
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <h3 className="text-lg font-medium">{analysis.name}</h3>
-                          <div className="flex flex-wrap gap-x-4 text-sm text-gray-500 mt-1">
-                            <span>{new Date(analysis.date).toLocaleDateString()}</span>
-                            <span>{analysis.formData.productDescription}</span>
-                            <span>{analysis.formData.originCountry} → {analysis.formData.destinationCountry}</span>
-                          </div>
-                          <div className="mt-2 text-sm">
-                            <span className="font-medium">HS Code: </span>
-                            {analysis.formData.hsCode}
-                          </div>
-                        </div>
-                        <div className="flex gap-2">
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
-                            onClick={() => loadAnalysis(analysis)}
-                            className="text-blue-600 border-blue-600"
-                          >
-                            Load
-                          </Button>
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
-                            onClick={() => deleteAnalysis(analysis.id)}
-                            className="text-red-600 border-red-600"
-                          >
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                              <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
-                            </svg>
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
-        
-        {/* AI Copilot */}
-        <div className="fixed bottom-6 right-6">
-          <CopilotAssistant 
-            productDetails={productDetailsForCopilot}
-            shipmentDetails={shipmentDetailsForCopilot}
-            costComponents={costComponentsForCopilot}
-          />
-        </div>
       </div>
+      
+      {/* Floating AI Copilot Assistant */}
+      <CopilotAssistant 
+        productDetails={productDetailsForCopilot}
+        shipmentDetails={shipmentDetailsForCopilot}
+        costComponents={costComponentsForCopilot}
+      />
     </>
   );
 };
