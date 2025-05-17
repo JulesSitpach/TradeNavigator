@@ -109,13 +109,24 @@ const packageTypes = [
 ];
 
 // Product Information Form Component
-const ProductInformationForm = ({ onCalculate }: { onCalculate: (values: ProductInfoFormValues) => void }) => {
+const ProductInformationForm = ({ 
+  onCalculate, 
+  isModified = false,
+  lastAnalysis = null,
+  onReset = () => {}
+}: { 
+  onCalculate: (values: ProductInfoFormValues) => void,
+  isModified?: boolean,
+  lastAnalysis?: ProductInfoFormValues | null,
+  onReset?: () => void
+}) => {
   const [showHSAssistant, setShowHSAssistant] = useState(false);
+  const [modifiedFields, setModifiedFields] = useState<string[]>([]);
   
-  // Initialize form with default values
+  // Initialize form with default values or modified values
   const form = useForm<ProductInfoFormValues>({
     resolver: zodResolver(productInfoFormSchema),
-    defaultValues: {
+    defaultValues: lastAnalysis || {
       productDescription: "",
       productCategory: "",
       hsCode: "",
@@ -133,10 +144,29 @@ const ProductInformationForm = ({ onCalculate }: { onCalculate: (values: Product
     },
   });
   
+  // When form values change, track which fields are different from lastAnalysis
+  useEffect(() => {
+    if (isModified && lastAnalysis) {
+      const formValues = form.getValues();
+      const changedFields = Object.keys(formValues).filter(key => {
+        return formValues[key as keyof ProductInfoFormValues] !== 
+               lastAnalysis[key as keyof ProductInfoFormValues];
+      });
+      setModifiedFields(changedFields);
+    }
+  }, [form.watch(), isModified, lastAnalysis]);
+  
   const onSubmit = (values: ProductInfoFormValues) => {
     console.log("Form values:", values);
     // Here we would send the data to the server for analysis
     onCalculate(values);
+  };
+  
+  // Handle form reset
+  const handleReset = () => {
+    form.reset();
+    setModifiedFields([]);
+    onReset();
   };
   
   return (
@@ -466,7 +496,29 @@ const ProductInformationForm = ({ onCalculate }: { onCalculate: (values: Product
           </div>
         </div>
         
-        <div className="flex justify-end">
+        {isModified && (
+          <Alert variant="info" className="mb-4">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Modified from previous analysis</AlertTitle>
+            <AlertDescription>
+              You are modifying a previous analysis. Fields changed: {modifiedFields.length > 0 ? 
+                modifiedFields.map(field => field.replace(/([A-Z])/g, ' $1').toLowerCase()).join(', ') : 
+                'None yet'}
+            </AlertDescription>
+          </Alert>
+        )}
+        
+        <div className="flex justify-end space-x-3">
+          {isModified && (
+            <Button 
+              type="button" 
+              variant="outline"
+              onClick={handleReset}
+              className="border-gray-300 text-gray-700"
+            >
+              Reset Form
+            </Button>
+          )}
           <Button type="submit" className="bg-blue-600 hover:bg-blue-700">
             Calculate
           </Button>
