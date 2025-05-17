@@ -186,46 +186,110 @@ const NewCostForm = () => {
     // Store current form data in localStorage to preserve it
     localStorage.setItem('currentFormData', JSON.stringify(formValues));
     
-    // For demo purposes, we'll generate mock results
-    // In a real implementation, this would call your API or perform the calculation
-    const mockResults = {
-      totalCost: parseFloat(formValues.productValue) * 1.25, // 25% increase as an example
+    // In a real app, this would call your API for accurate tariff and shipping costs
+    // For now, we're calculating based on user-entered values
+    const dutyRate = 0.07; // 7% duty rate
+    const taxRate = 0.10;  // 10% VAT/tax
+    const shippingRate = formValues.transportMode === 'Air' ? 0.08 : 0.05; // Air is more expensive
+    
+    const productValueNum = parseFloat(formValues.productValue) || 0;
+    const quantityNum = parseInt(formValues.quantity) || 1;
+    const weightNum = parseFloat(formValues.weight) || 1;
+    
+    // Calculate component costs
+    const dutyAmount = productValueNum * dutyRate;
+    const taxAmount = productValueNum * taxRate;
+    const shippingAmount = productValueNum * shippingRate + (weightNum * 2); // Base + weight factor
+    const insuranceAmount = productValueNum * 0.02; // 2% of value
+    const handlingAmount = 50 + (quantityNum * 2); // Base fee + per item
+    
+    // Calculate total
+    const totalCost = productValueNum + dutyAmount + taxAmount + shippingAmount + insuranceAmount + handlingAmount;
+    
+    // Create properly structured results with both amount and percentage
+    const results = {
+      totalCost: totalCost,
       components: [
-        { name: "Duties", value: parseFloat(formValues.productValue) * 0.07 },
-        { name: "Taxes", value: parseFloat(formValues.productValue) * 0.10 },
-        { name: "Shipping", value: parseFloat(formValues.productValue) * 0.05 },
-        { name: "Insurance", value: parseFloat(formValues.productValue) * 0.02 },
-        { name: "Handling", value: parseFloat(formValues.productValue) * 0.01 }
-      ]
+        { 
+          name: "Duties", 
+          amount: dutyAmount, 
+          percentage: (dutyAmount / totalCost) * 100,
+          details: { category: "Customs" }
+        },
+        { 
+          name: "VAT/Sales Tax", 
+          amount: taxAmount, 
+          percentage: (taxAmount / totalCost) * 100,
+          details: { category: "Tax" }
+        },
+        { 
+          name: "Freight", 
+          amount: shippingAmount, 
+          percentage: (shippingAmount / totalCost) * 100,
+          details: { category: "Logistics" }
+        },
+        { 
+          name: "Insurance", 
+          amount: insuranceAmount, 
+          percentage: (insuranceAmount / totalCost) * 100,
+          details: { category: "Logistics" }
+        },
+        { 
+          name: "Documentation", 
+          amount: handlingAmount, 
+          percentage: (handlingAmount / totalCost) * 100,
+          details: { category: "Administration" }
+        }
+      ],
+      timestamp: new Date()
     };
     
     // Store calculation results
-    setResults(mockResults);
+    setResults(results);
     setCalculationComplete(true);
-    localStorage.setItem('calculationResults', JSON.stringify(mockResults));
+    localStorage.setItem('calculationResults', JSON.stringify(results));
+    
+    // Generate a unique ID for this analysis
+    const analysisId = `analysis-${Date.now()}`;
     
     // Update the global analysis context so other dashboards can access this data
-    setCurrentAnalysis({
+    const analysisData = {
+      id: analysisId,
+      name: `Analysis - ${formValues.productDescription}`,
+      date: new Date().toISOString(),
       // Include the original form values for other dashboards to reference
       formValues: formValues,
       // Include the calculation results
-      results: mockResults,
+      results: results,
       // Include structured data for dashboards that expect specific formats
-      totalCost: mockResults.totalCost,
-      components: mockResults.components,
+      totalCost: results.totalCost,
+      components: results.components,
       productDetails: {
         description: formValues.productDescription,
         category: formValues.productCategory,
         hsCode: formValues.hsCode,
         originCountry: formValues.originCountry,
         destinationCountry: formValues.destinationCountry,
-        value: parseFloat(formValues.productValue),
-        quantity: parseInt(formValues.quantity),
-        weight: parseFloat(formValues.weight),
-        transportMode: formValues.transportMode
+        productValue: parseFloat(formValues.productValue) || 0,
+        value: parseFloat(formValues.productValue) || 0,
+        quantity: parseInt(formValues.quantity) || 1,
+        weight: parseFloat(formValues.weight) || 0,
+        transportMode: formValues.transportMode,
+        dimensions: {
+          length: parseFloat(formValues.length) || 0,
+          width: parseFloat(formValues.width) || 0,
+          height: parseFloat(formValues.height) || 0
+        }
       },
       timestamp: new Date()
-    });
+    };
+    
+    // Save to Analysis Context
+    setCurrentAnalysis(analysisData);
+    
+    // Also update localStorage for other components to use
+    localStorage.setItem('currentAnalysis', JSON.stringify(analysisData));
+    localStorage.setItem('hasAnalysisData', 'true');
     
     toast({
       title: "Calculation Complete",
