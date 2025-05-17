@@ -586,12 +586,12 @@ const ProductInformationForm = ({
               Reset Form
             </Button>
           )}
-          {/* Split Calculate/Modify Button */}
-          <div className="flex relative">
-            {/* Main Calculate Button */}
+          {/* Split Button: Calculate/Modify */}
+          <div className="flex space-x-1">
+            {/* Main Calculate/Recalculate Button */}
             <Button 
               type="submit" 
-              className={isModifyingAnalysis ? "bg-green-600 hover:bg-green-700 rounded-r-none" : "bg-blue-600 hover:bg-blue-700 rounded-r-none"}
+              className={isModifyingAnalysis ? "bg-green-600 hover:bg-green-700" : "bg-blue-600 hover:bg-blue-700"}
             >
               {isModifyingAnalysis ? (
                 <>
@@ -610,53 +610,64 @@ const ProductInformationForm = ({
               )}
             </Button>
             
-            {/* Dropdown for additional options */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button 
-                  variant="default" 
-                  className={isModifyingAnalysis ? "bg-green-600 hover:bg-green-700 rounded-l-none border-l border-l-green-500" : "bg-blue-600 hover:bg-blue-700 rounded-l-none border-l border-l-blue-500"}
-                >
-                  <ChevronDown className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                {showResults && !isModifyingAnalysis && (
-                  <DropdownMenuItem onClick={handleModify}>
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                      <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                    </svg>
-                    Modify Current Values
-                  </DropdownMenuItem>
-                )}
-                {isModifyingAnalysis && (
-                  <DropdownMenuItem 
-                    onClick={() => {
-                      setIsModifying(false);
-                      setLastAnalysis(null);
-                      form.reset({});
-                    }}
-                    className="text-amber-600"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clipRule="evenodd" />
-                    </svg>
-                    Revert Changes
-                  </DropdownMenuItem>
-                )}
-                {formData && showResults && (
-                  <DropdownMenuItem 
-                    onClick={() => setSaveDialogOpen(true)}
-                    className="text-blue-600"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                      <path d="M7.707 10.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V6h5a2 2 0 012 2v7a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2h5v5.586l-1.293-1.293zM9 4a1 1 0 012 0v2H9V4z" />
-                    </svg>
-                    Save Analysis
-                  </DropdownMenuItem>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
+            {/* Actions Dropdown */}
+            {results && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="px-2">
+                    <ChevronDown className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  {!isModifyingAnalysis && (
+                    <DropdownMenuItem 
+                      onClick={() => {
+                        if (formData) {
+                          setIsModifyingAnalysis(true);
+                          setLastAnalysis(formData);
+                          setModificationInfo({
+                            originalName: saveName || "Unnamed Analysis",
+                            date: new Date().toLocaleDateString()
+                          });
+                        }
+                      }}
+                      className="cursor-pointer flex items-center"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2 text-green-600" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                      </svg>
+                      Modify Values
+                    </DropdownMenuItem>
+                  )}
+                  {isModifyingAnalysis && (
+                    <DropdownMenuItem 
+                      onClick={() => {
+                        setIsModifyingAnalysis(false);
+                        form.reset(lastAnalysis || {});
+                        setModificationInfo(null);
+                      }}
+                      className="cursor-pointer flex items-center text-amber-600"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clipRule="evenodd" />
+                      </svg>
+                      Revert Changes
+                    </DropdownMenuItem>
+                  )}
+                  {formData && (
+                    <DropdownMenuItem 
+                      onClick={() => setSaveDialogOpen(true)}
+                      className="cursor-pointer flex items-center text-blue-600"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M7.707 10.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V6h5a2 2 0 012 2v7a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2h5v5.586l-1.293-1.293zM9 4a1 1 0 012 0v2H9V4z" />
+                      </svg>
+                      Save Analysis
+                    </DropdownMenuItem>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
           </div>
         </div>
       </form>
@@ -821,6 +832,7 @@ const CostBreakdownDashboard = () => {
   const [currentAnalysisId, setCurrentAnalysisId] = useState<string | null>(null);
   const [savedAnalyses, setSavedAnalyses] = useState<SavedAnalysis[]>([]);
   const [saveName, setSaveName] = useState("");
+  const [saveDialogOpen, setSaveDialogOpen] = useState(false);
   const [formData, setFormData] = useState<ProductInfoFormValues | null>(null);
   const [results, setResults] = useState<any>(null);
   const { toast } = useToast();
@@ -890,6 +902,24 @@ const CostBreakdownDashboard = () => {
     });
   }
   
+  // Handler for initiating modification from the dropdown menu
+  const handleModifyFromDropdown = () => {
+    if (formData) {
+      setIsModifying(true);
+      setLastAnalysis(formData);
+      // Set modification info for user feedback
+      setModificationInfo({
+        originalName: "Current Analysis",
+        date: new Date().toLocaleString()
+      });
+    }
+  };
+
+  // Handle saving the current analysis
+  const handleSaveAnalysis = () => {
+    setSaveDialogOpen(true);
+  };
+
   // Handler for calculate event from form
   const handleCalculate = (values: ProductInfoFormValues) => {
     console.log("Form values:", values);
