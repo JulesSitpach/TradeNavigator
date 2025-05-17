@@ -591,9 +591,9 @@ const ProductInformationForm = ({
             {/* Main Calculate/Recalculate Button */}
             <Button 
               type="submit" 
-              className={isModifying ? "bg-green-600 hover:bg-green-700" : "bg-blue-600 hover:bg-blue-700"}
+              className={isModified ? "bg-green-600 hover:bg-green-700" : "bg-blue-600 hover:bg-blue-700"}
             >
-              {isModifying ? (
+              {isModified ? (
                 <>
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
                     <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
@@ -937,11 +937,19 @@ const CostBreakdownDashboard = () => {
   const handleModifyFromDropdown = () => {
     if (formData) {
       setIsModifying(true);
+      setIsModifyingAnalysis(true);
       setLastAnalysis(formData);
       // Set modification info for user feedback
       setModificationInfo({
-        originalName: "Current Analysis",
+        originalName: saveName || "Current Analysis",
         date: new Date().toLocaleString()
+      });
+      
+      // Show success toast
+      toast({
+        title: "Modifying Analysis",
+        description: "Make your changes and click Recalculate when done.",
+        variant: "default"
       });
     }
   };
