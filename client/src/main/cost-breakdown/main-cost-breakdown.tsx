@@ -19,7 +19,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import PageHeader from "@/components/common/PageHeader";
 import { useToast } from "@/hooks/use-toast";
 import { AnalysisContext } from "@/contexts/AnalysisContext";
-import { Calculator, Save, FileText, RotateCcw, PlusCircle, Search, Pencil } from "lucide-react";
+import { Calculator, Save, FileText, RotateCcw, PlusCircle, Search, Pencil, Edit } from "lucide-react";
 import HSCodeAssistant from "@/components/ai/HSCodeAssistant";
 import "../../styles/cost-breakdown-form.css";
 
@@ -1060,6 +1060,19 @@ const NewCostForm = () => {
                       {formValues.transportMode === "Air" ? "10-15" : formValues.transportMode === "Sea" ? "30-40" : "20-35"} days total
                     </span>
                   </div>
+                </div>
+                
+                {/* Modify Button at bottom of results section */}
+                <div className="mt-8 flex justify-center">
+                  <Button 
+                    onClick={handleModifyDetails}
+                    variant="outline"
+                    size="lg"
+                    className="w-full md:w-auto border-amber-500 text-amber-600 hover:bg-amber-50"
+                  >
+                    <Edit className="mr-2 h-4 w-4" />
+                    Modify Product & Shipping Details
+                  </Button>
                 </div>
               </div>
             </div>
