@@ -1992,7 +1992,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
       };
       
       try {
-        // First attempt to use OpenAI for classification (if available)
+        // First try using Perplexity API for more accurate classification
+        if (process.env.PERPLEXITY_API_KEY) {
+          try {
+            console.log('Attempting Perplexity API for HS code classification');
+            const perplexityResult = await perplexityService.classifyProduct(
+              productDescription,
+              category,
+              Array.isArray(detectedTerms) ? detectedTerms : []
+            );
+            
+            // If Perplexity returned a valid result
+            if (perplexityResult && perplexityResult.hsCode) {
+              console.log('Successfully classified with Perplexity API');
+              return res.json(perplexityResult);
+            }
+          } catch (perplexityError) {
+            console.error('Perplexity API error:', perplexityError.message);
+            // Continue to OpenAI fallback
+          }
+        }
+        
+        // Fallback to OpenAI if Perplexity fails or isn't available
+        console.log('Falling back to OpenAI for classification');
         const aiResult = await openaiService.getHSCodeSuggestion(productDescription);
         
         // If OpenAI returned a valid result
