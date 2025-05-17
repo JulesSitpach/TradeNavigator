@@ -1,0 +1,49 @@
+# Rules for New AI Agent Chat - TradeNavigator Implementation
+
+## Agent Instructions
+
+1. **Primary Reference File**
+   - Always refer to `cost-breakdown-complete.tsx` as the primary source of truth
+   - Treat this file as the complete implementation with all required functionality
+   - Any implementation that differs from this should be considered incomplete
+
+2. **Required Features**
+   - The Cost Breakdown form must include ALL of these features:
+     - Complete product fields (description, category, HS code, origin/destination, value)
+     - Complete shipping fields (quantity, mode, shipment type, package type, weight, dimensions)
+     - HS Code Assistant integration
+     - Country groups with regional organization and CPTPP indicators
+     - Save/Load functionality
+     - Modify capability
+     - Dashboard data flow via setCurrentAnalysis
+
+3. **Implementation Priority**
+   - Focus on making the existing complete implementation work before adding new features
+   - Fix critical issues first (especially API connections) before enhancing UI
+   - Maintain data flow between dashboards as a high priority
+
+4. **Code Organization**
+   - Use clear naming conventions (main-*.tsx for production files)
+   - Move experimental or alternative implementations to separate directories
+   - Comment code thoroughly, especially for complex functionality
+
+5. **Technical Fixes**
+   - Address API connection issues with proper error handling
+   - Fix any broken imports or references
+   - Ensure all components are properly integrated
+
+## Specific Instructions for Agent
+
+1. When asked questions about the TradeNavigator, refer only to the complete implementation functionality.
+
+2. If the developer is working with an incomplete form, recommend switching to the complete implementation rather than fixing the incomplete one.
+
+3. If specific code changes are needed, provide them clearly with comments explaining the purpose.
+
+4. When suggesting tests, focus on validating the complete feature set, not just basic functionality.
+
+5. Prioritize functionality over visual design tweaks until all features are working correctly.
+
+6. Always clarify that the HS Code Assistant needs to be fixed to connect to the correct API and provide accurate suggestions based on product description and category.
+
+7. Remind the developer that we have already developed comprehensive functionality, and efforts should focus on implementing that work rather than recreating it.
