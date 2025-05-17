@@ -3,9 +3,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import PageHeader from "@/components/common/PageHeader";
 import { useQuery } from "@tanstack/react-query";
 import { FaCircleInfo, FaMagnifyingGlass } from "react-icons/fa6";
+import { AlertCircle } from "lucide-react";
 import CopilotAssistant from "@/components/ai/CopilotAssistant";
 import { Button } from "@/components/ui/button";
 import { useAnalysis } from "@/contexts/AnalysisContext";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   Form,
   FormControl,
@@ -686,6 +688,8 @@ const CostBreakdownDashboard = () => {
   const [saveName, setSaveName] = useState("");
   const [formData, setFormData] = useState<ProductInfoFormValues | null>(null);
   const [results, setResults] = useState<any>(null);
+  const [isModifying, setIsModifying] = useState(false);
+  const [lastAnalysis, setLastAnalysis] = useState<ProductInfoFormValues | null>(null);
   const { setCurrentAnalysis } = useAnalysis();
   
   // Form reference to programmatically update form values
@@ -842,6 +846,27 @@ const CostBreakdownDashboard = () => {
     alert("Analysis saved successfully!");
   };
   
+  // Handle the modify action to reuse the most recent analysis
+  const handleModify = () => {
+    if (!formData) {
+      alert("No analysis available to modify");
+      return;
+    }
+    
+    // Store the original analysis for comparison
+    setLastAnalysis(formData);
+    setIsModifying(true);
+    setShowResults(false);
+    
+    // Scroll to form section
+    setTimeout(() => {
+      const formElement = document.getElementById('product-info-form');
+      if (formElement) {
+        formElement.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 100);
+  };
+  
   // Load a saved analysis
   const loadAnalysis = (analysis: SavedAnalysis) => {
     setFormData(analysis.formData);
@@ -918,7 +943,15 @@ const CostBreakdownDashboard = () => {
             </p>
           </CardHeader>
           <CardContent className="p-5">
-            <ProductInformationForm onCalculate={handleCalculate} />
+            <ProductInformationForm 
+              onCalculate={handleCalculate}
+              isModified={isModifying}
+              lastAnalysis={lastAnalysis}
+              onReset={() => {
+                setIsModifying(false);
+                setLastAnalysis(null);
+              }}
+            />
           </CardContent>
         </Card>
         
