@@ -1,0 +1,59 @@
+# User Experience Recommendation: Modify Button Placement
+
+From a user experience perspective, I recommend implementing the modify functionality in **both locations** but with slightly different behaviors to match user expectations in each context:
+
+## 1. Modify in Saved Analyses Section
+
+**Best For:** Users browsing their saved analyses who want to make adjustments to a previous calculation.
+
+**Implementation:**
+- Include a clear "Modify" button next to each saved analysis
+- When clicked:
+  - Pre-populate the input form with the saved values
+  - Automatically scroll/navigate to the input form
+  - Set a clear visual indicator showing "Modifying Analysis #12345"
+  - Keep the Calculate button in focus for immediate recalculation
+
+**User Benefit:**
+- Provides a direct path from viewing saved analyses to making modifications
+- Creates a clear connection between the saved analysis and the modification process
+- Allows quick comparison shopping between different saved scenarios
+
+## 2. Modify in Input Form Section
+
+**Best For:** Users who have just calculated results and want to make small adjustments without navigating away.
+
+**Implementation:**
+- After calculation, transform the Calculate button into a split button:
+  - Main action: "Recalculate" (primary button)
+  - Secondary option: "Save As New" (dropdown option)
+- Add a subtle indicator showing whether they're working on a new analysis or modifying an existing one
+- Include a "Reset Form" option to clear all fields if desired
+- Show a mini-summary of the currently loaded analysis if modifying an existing one
+
+**User Benefit:**
+- Provides immediate ability to iterate on calculations
+- Maintains workflow momentum within the input form
+- Avoids unnecessary navigation when making small adjustments
+
+## 3. Why Both Is Better Than Either Alone
+
+Implementing modify functionality in both locations creates a more intuitive experience because:
+
+1. **It matches different user workflows:**
+   - Some users work primarily from saved analyses (comparison shoppers)
+   - Others prefer to iterate continuously from the input form (optimizers)
+
+2. **It reduces friction at key decision points:**
+   - When browsing analyses: "I want to modify this one" → immediate path forward
+   - When viewing calculation results: "Let me try changing just one value" → immediate path forward
+
+3. **It supports different mental models:**
+   - Some users think in terms of "documents" (saved analyses)
+   - Others think in terms of "tools" (the calculator interface)
+
+4. **It accommodates different scales of modification:**
+   - Major changes (multiple fields) often start from saved analyses
+   - Minor tweaks often occur immediately after seeing calculation results
+
+The key to making this dual-placement approach work well is maintaining consistent behavior and clear context indicators so users always understand which analysis they're working with and what will happen when they click Calculate/Recalculate.

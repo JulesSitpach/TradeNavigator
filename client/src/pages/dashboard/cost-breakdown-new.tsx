@@ -3,12 +3,20 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import PageHeader from "@/components/common/PageHeader";
 import { useQuery } from "@tanstack/react-query";
 import { FaCircleInfo, FaMagnifyingGlass } from "react-icons/fa6";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, ChevronDown } from "lucide-react";
 import CopilotAssistant from "@/components/ai/CopilotAssistant";
 import { Button } from "@/components/ui/button";
 import { useAnalysis } from "@/contexts/AnalysisContext";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
+import { Badge } from "@/components/ui/badge";
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
 import {
   Form,
   FormControl,
@@ -579,8 +587,26 @@ const ProductInformationForm = ({
               Reset Form
             </Button>
           )}
-          <Button type="submit" className="bg-blue-600 hover:bg-blue-700">
-            Calculate
+          {/* Standard Calculate/Recalculate Button */}
+          <Button 
+            type="submit" 
+            className={isModifyingAnalysis ? "bg-green-600 hover:bg-green-700" : "bg-blue-600 hover:bg-blue-700"}
+          >
+            {isModifyingAnalysis ? (
+              <>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                </svg>
+                Recalculate
+              </>
+            ) : (
+              <>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+                </svg>
+                Calculate
+              </>
+            )}
           </Button>
         </div>
       </form>
@@ -928,6 +954,42 @@ const CostBreakdownDashboard = () => {
     }, 100);
   };
   
+  // Function to modify a saved analysis
+  const modifyAnalysis = (analysis: SavedAnalysis) => {
+    // Set form data and update the form with the analysis data
+    setFormData(analysis.formData);
+    form.reset(analysis.formData);
+    
+    // Set modification state
+    setIsModifying(true);
+    setCurrentAnalysisId(analysis.id);
+    setModificationInfo({
+      originalName: analysis.name,
+      date: analysis.date
+    });
+    
+    // Hide results to focus on the form
+    setShowResults(false);
+    
+    // Store the original analysis for comparison
+    setLastAnalysis(analysis.formData);
+    
+    // Show success toast
+    toast({
+      title: "Modifying Analysis",
+      description: `You are now modifying "${analysis.name}". Make your changes and click "Recalculate".`,
+      variant: "default"
+    });
+    
+    // Scroll to form section
+    setTimeout(() => {
+      const formElement = document.getElementById('product-info-form');
+      if (formElement) {
+        formElement.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 100);
+  };
+  
   // Load a saved analysis with complete data reload functionality
   const loadAnalysis = (analysis: SavedAnalysis) => {
     // Step 1: Set application state for the form and results
@@ -1032,12 +1094,34 @@ const CostBreakdownDashboard = () => {
       <div className="flex flex-col space-y-6 mt-6">
         <Card className="bg-white shadow-sm border border-neutral-200">
           <CardHeader className="border-b border-neutral-200 px-5 py-4">
-            <CardTitle className="text-lg font-medium text-neutral-900">
-              Information Form
+            <CardTitle className="text-lg font-medium text-neutral-900 flex items-center">
+              {isModifying && modificationInfo ? (
+                <>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-green-600" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                  </svg>
+                  Modifying Analysis: {modificationInfo.originalName}
+                </>
+              ) : (
+                "Information Form"
+              )}
             </CardTitle>
             <p className="text-sm text-neutral-500 mt-1">
-              Enter product and shipping details to calculate your trade costs
+              {isModifying && modificationInfo 
+                ? `Created on ${new Date(modificationInfo.date).toLocaleDateString()} - Make your changes and click Recalculate`
+                : "Enter product and shipping details to calculate your trade costs"
+              }
             </p>
+            {isModifying && (
+              <div className="mt-2">
+                <Badge variant="outline" className="text-amber-600 border-amber-300 bg-amber-50">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                  </svg>
+                  Modification Mode
+                </Badge>
+              </div>
+            )}
           </CardHeader>
           <CardContent className="p-5">
             <ProductInformationForm 
@@ -1083,6 +1167,22 @@ const CostBreakdownDashboard = () => {
                       <span className="text-sm font-medium text-neutral-700">Total:</span>
                       <span className="text-sm font-bold text-primary">$38,222</span>
                     </div>
+                    
+                    {/* Quick Modify Button in Results Section */}
+                    {!isModifying && (
+                      <div className="flex justify-center mt-4">
+                        <Button 
+                          onClick={handleModify}
+                          variant="outline" 
+                          className="w-full text-green-600 border-green-600 hover:bg-green-50"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                          </svg>
+                          Modify Values
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -1193,14 +1293,24 @@ const CostBreakdownDashboard = () => {
                           </div>
                         </div>
                         <div className="flex gap-2">
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
-                            onClick={() => loadAnalysis(analysis)}
-                            className="text-blue-600 border-blue-600"
-                          >
-                            Load
-                          </Button>
+                          <div className="flex flex-col gap-1">
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              onClick={() => loadAnalysis(analysis)}
+                              className="text-blue-600 border-blue-600"
+                            >
+                              Load
+                            </Button>
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              onClick={() => modifyAnalysis(analysis)}
+                              className="text-green-600 border-green-600"
+                            >
+                              Modify
+                            </Button>
+                          </div>
 
                           <Button 
                             variant="outline" 

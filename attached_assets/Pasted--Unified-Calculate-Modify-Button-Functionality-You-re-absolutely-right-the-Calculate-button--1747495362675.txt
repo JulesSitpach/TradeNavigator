@@ -1,0 +1,115 @@
+# Unified Calculate/Modify Button Functionality
+
+You're absolutely right - the "Calculate" button should function consistently whether users are creating a new analysis or modifying an existing one. Here's how to implement this unified functionality:
+
+## 1. Intelligent Calculate Button Implementation
+
+**Implementation Steps:**
+- Enhance the Calculate button to detect whether it's processing a new analysis or modifying an existing one
+- Implement state tracking to maintain the analysis ID when modifying
+- Create unified calculation pipeline that handles both scenarios
+- Include version tracking when modifications are made to existing analyses
+- Ensure all dashboards are updated regardless of whether it's a new or modified calculation
+
+```javascript
+function enhancedCalculateHandler() {
+  // Get current form values
+  const currentFormValues = getAllFormValues();
+  
+  // Check if we're modifying an existing analysis
+  const isModification = !!getCurrentAnalysisId();
+  
+  // Perform the calculation
+  const calculationResults = performCalculations(currentFormValues);
+  
+  // If modifying, maintain history and relationships
+  if (isModification) {
+    const originalAnalysisId = getCurrentAnalysisId();
+    
+    // Create modified version with relationship to original
+    saveAnalysisState({
+      id: generateNewAnalysisId(),
+      originalId: originalAnalysisId,
+      timestamp: getCurrentTimestamp(),
+      isModified: true,
+      modificationDate: getCurrentTimestamp(),
+      inputForm: currentFormValues,
+      costBreakdown: calculationResults,
+      dashboardData: generateDashboardData(currentFormValues, calculationResults)
+    });
+    
+    // Optionally track modification history
+    addToModificationHistory(originalAnalysisId, getCurrentAnalysisId());
+  } else {
+    // Save as new analysis
+    saveAnalysisState({
+      id: generateNewAnalysisId(),
+      timestamp: getCurrentTimestamp(),
+      inputForm: currentFormValues,
+      costBreakdown: calculationResults,
+      dashboardData: generateDashboardData(currentFormValues, calculationResults)
+    });
+  }
+  
+  // Update all UI components with new data
+  updateAllComponents(calculationResults);
+}
+```
+
+## 2. UI Adaptations for Context Awareness
+
+**Implementation Steps:**
+- Modify the Calculate button to show context-aware text:
+  - When creating new analysis: "Calculate"
+  - When modifying existing analysis: "Recalculate"
+- Add visual indicators showing modification state:
+  - "New Analysis" vs. "Modifying Analysis from [date]"
+- Include modification tracking in the saved analyses list
+- Add a "Revert to Original" option when viewing modified analyses
+
+## 3. Dashboard Update Process
+
+**Implementation Steps:**
+- Implement a unified update system for dashboards that works for both new and modified analyses
+- Ensure all dashboards are refreshed when Calculate/Recalculate is clicked
+- Add consistent versioning indicators across dashboards
+- Include modification history if applicable ("Modified from analysis created on [date]")
+- Create a notification system to ensure users know data has been refreshed
+
+```javascript
+function updateAllDashboards(calculationResults) {
+  // Get derived data for all dashboards
+  const dashboardData = generateAllDashboardData(calculationResults);
+  
+  // Update each dashboard
+  for (const [dashboard, data] of Object.entries(dashboardData)) {
+    updateDashboardState(dashboard, data);
+  }
+  
+  // Update version indicators
+  updateVersionIndicators(getCurrentAnalysisId());
+  
+  // Show notification of successful update
+  showNotification("All dashboards updated with latest calculations");
+}
+```
+
+## 4. Data Consistency Safeguards
+
+**Implementation Steps:**
+- Implement validation to ensure all required fields are filled before calculation
+- Add data persistence to prevent loss during navigation
+- Create an auto-save feature for works in progress
+- Implement warning dialogs for destructive actions (e.g., modifying without saving)
+- Add conflict resolution for simultaneous modifications
+
+## 5. User Experience Enhancements
+
+**Implementation Steps:**
+- Add a visual indication during calculation process (loading spinner)
+- Implement smooth transitions when dashboards update with new data
+- Create a "Changes Preview" that shows which values have changed from the original
+- Add success confirmation when calculation completes
+- Implement keyboard shortcuts for calculate/recalculate (e.g., Ctrl+Enter)
+
+This unified approach ensures the Calculate button works consistently and intelligently regardless of whether users are creating a new analysis or modifying an existing one, maintaining data integrity throughout the application while providing clear context about what's happening.
