@@ -33,6 +33,7 @@ import CostBreakdownOriginal from "@/pages/dashboard/cost-breakdown";
 import CostBreakdownEnhanced from "@/pages/dashboard/cost-breakdown-enhanced";
 import AlternativeRoutesDashboard from "@/pages/dashboard/alternative-routes";
 import TariffAnalysisDashboard from "@/pages/dashboard/tariff-analysis";
+import ExactScreenshotMatch from "@/pages/dashboard/exact-screenshot-match";
 import NewAnalysis from "@/pages/dashboard/new-analysis";
 import ProductInfoForm from "@/pages/dashboard/product-info-form";
 import NewCostForm from "@/pages/dashboard/new-cost-form";
@@ -93,7 +94,7 @@ function Router() {
       
       {/* Dashboard Flexible Tabs Routes */}
       <PrivateRoute exact path="/dashboard/overview" component={Dashboard} />
-      <PrivateRoute exact path="/dashboard/cost-breakdown" component={NewAnalysis} />
+      <PrivateRoute exact path="/dashboard/cost-breakdown" component={ExactScreenshotMatch} />
       <PrivateRoute exact path="/dashboard/cost-breakdown-original" component={CostBreakdownDashboard} />
       <PrivateRoute exact path="/dashboard/cost-breakdown-complete" component={CostBreakdownComplete} />
       <PrivateRoute exact path="/dashboard/cost-breakdown-calculator" component={CostBreakdownCalculator} />
