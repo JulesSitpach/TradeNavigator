@@ -1,0 +1,80 @@
+# Additional Rules for File Management and Project Cleanup
+
+## Archive Process
+
+1. **Structured Archive System:**
+   - Create an `/archive` directory with dated subdirectories
+   - Move unused files to appropriate archive subdirectory
+   - Include a manifest file in each archive listing contents and reason for archiving
+
+2. **Archiving Schedule:**
+   - Archive any file not actively used for 14+ days
+   - Perform mandatory archive review at end of each sprint
+   - Document archiving decisions in sprint notes
+
+3. **Archive Command Tool:**
+   - Create a utility script `archive-file.sh` that:
+     - Moves file to correct archive location
+     - Updates imports in other files
+     - Logs the archive action
+     - Prevents accidental use of archived file
+
+## Bloat Prevention
+
+1. **File Size Monitoring:**
+   - Run weekly checks for project bloat
+   - Flag directories exceeding size thresholds
+   - Report file count in each directory
+
+2. **Dependency Tracking:**
+   - Maintain a dependency graph for all components
+   - Automatically identify unused or redundant files
+   - Generate alerts for circular dependencies
+
+3. **Import Auditing:**
+   - Run regular scans for unused imports
+   - Flag components with excessive imports
+   - Ensure imports use specific paths rather than entire libraries
+
+## End-of-Project Cleanup
+
+1. **Cleanup Protocol:**
+   - Create a formal cleanup checklist as part of project completion
+   - Schedule dedicated cleanup sprint before final delivery
+   - Document cleanup verification process
+
+2. **Safe Deletion Process:**
+   - Follow three-stage deletion process:
+     1. Move to `/to-delete` directory
+     2. Run full test suite to verify no dependencies
+     3. Permanently remove after 7-day waiting period
+
+3. **Final Delivery Package:**
+   - Create a streamlined delivery package containing only:
+     - Production files with `main-` prefix
+     - Essential assets and libraries
+     - Documentation
+     - No experimental or deprecated code
+
+4. **Project Archive:**
+   - Create a complete project archive for historical reference
+   - Store separately from production codebase
+   - Include development history and decision documentation
+
+## Implementation Controls
+
+1. **Repository Size Limits:**
+   - Set CI/CD pipeline to fail if repository exceeds size thresholds
+   - Enforce regular cleanup through automated checks
+
+2. **File Ownership:**
+   - Assign clear ownership of each directory
+   - Require owner approval for adding new files
+   - Make owners responsible for directory cleanup
+
+3. **Deletion Authorization:**
+   - Require two-person authorization for permanent deletion
+   - Create file deletion request template
+   - Maintain deletion log with justification
+
+These additional rules will ensure your project remains clean and maintainable, without the bloat that leads to confusion and the issues you've been experiencing. By following a systematic archiving and cleanup process, you'll have a much more manageable codebase at the end of the project.

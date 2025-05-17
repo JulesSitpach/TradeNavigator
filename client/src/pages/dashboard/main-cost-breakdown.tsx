@@ -1,3 +1,13 @@
+/**
+ * @component Main Cost Breakdown
+ * @status PRODUCTION
+ * @version 1.0
+ * @lastModified 2025-05-17
+ * @description Primary cost breakdown component with full functionality including HS Code Assistant,
+ *              country selection by region, save/load analysis, and modify capability.
+ * @dependencies HSCodeAssistant, AnalysisContext
+ */
+
 import { useState, useEffect, useContext } from "react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
