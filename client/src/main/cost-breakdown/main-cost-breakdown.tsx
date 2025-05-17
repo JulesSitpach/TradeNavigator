@@ -412,7 +412,7 @@ const NewCostForm = () => {
                   <div className="flex space-x-2">
                     <Input 
                       id="hs-code" 
-                      placeholder="8471.30" 
+                      placeholder="e.g., 5204.11" 
                       value={formValues.hsCode}
                       onChange={(e) => handleInputChange('hsCode', e.target.value)} 
                     />
