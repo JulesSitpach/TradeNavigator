@@ -1,0 +1,31 @@
+  app.post('/api/ai/classify-product', async (req, res) => {
+    try {
+      const { productDescription, category, detectedTerms } = req.body;
+      
+      // Logging for debugging purposes
+      console.log('HS Classification request:', { 
+        category, 
+        descriptionLength: productDescription ? productDescription.length : 0,
+        detectedTerms 
+      });
+      
+      // Verify required parameters
+      if (!productDescription || !category) {
+        console.log('Missing required parameters for HS classification');
+        return res.status(400).json({ 
+          message: 'Product description and category are required',
+          success: false
+        });
+      }
+      
+      // Define category-specific HS code mappings with explanations
+      const categoryHSCodeMap = {
+        'Electronics': {
+          primary: { code: '8471.30', description: 'Portable automatic data processing machines' },
+          alternatives: [
+            { code: '8517.12', description: 'Mobile phones and communication devices' },
+            { code: '8518.30', description: 'Audio equipment and headphones' },
+            { code: '8471.41', description: 'Computing machines with CPU and I/O units' }
+          ]
+        },
+        'Textiles & Apparel': {
