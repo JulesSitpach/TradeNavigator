@@ -207,6 +207,27 @@ const NewCostForm = () => {
     });
   };
   
+  // Handler function for modifying product and shipping details
+  const handleModifyDetails = () => {
+    // Preserve the current form values (prevent clearing)
+    // This uses the existing form data that produced the current results
+    
+    // Scroll back up to the input form
+    const formElement = document.getElementById('product-info-form');
+    if (formElement) {
+      formElement.scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    // Set state to indicate we're in modification mode
+    setIsModifying(true);
+    
+    // Show a message indicating modification mode
+    toast({
+      title: "Modifying Details",
+      description: "Make your changes and click Calculate to update the analysis"
+    });
+  };
+  
   // Save the current analysis
   const saveAnalysis = () => {
     if (!results) {
@@ -385,7 +406,7 @@ const NewCostForm = () => {
       )}
 
       {/* Main Form */}
-      <Card className="bg-white shadow-sm mb-8">
+      <Card className="bg-white shadow-sm mb-8" id="product-info-form">
         <CardContent className="p-6">
           <div className="form-section">
             {isModifying && (
@@ -712,8 +733,8 @@ const NewCostForm = () => {
                 </Button>
               )}
               
-              <div className="flex space-x-3">
-                {isModifying && (
+              {isModifying ? (
+                <div className="flex space-x-3">
                   <Button 
                     variant="outline" 
                     onClick={newAnalysis}
@@ -721,16 +742,40 @@ const NewCostForm = () => {
                     <PlusCircle className="mr-2 h-4 w-4" />
                     New Analysis
                   </Button>
-                )}
-                
-                <Button 
-                  className="calculate-btn"
-                  onClick={calculateCosts}
-                >
-                  <Calculator className="mr-2 h-4 w-4" />
-                  {isModifying ? "Recalculate Analysis" : "Calculate Cost Analysis"}
-                </Button>
-              </div>
+                  
+                  <Button 
+                    className="calculate-btn"
+                    onClick={calculateCosts}
+                  >
+                    <Calculator className="mr-2 h-4 w-4" />
+                    Recalculate Analysis
+                  </Button>
+                </div>
+              ) : (
+                <div className="flex gap-3">
+                  <button 
+                    onClick={handleModifyDetails} 
+                    className="px-4 py-2 border border-green-600 rounded-md text-green-600 hover:bg-green-50 flex items-center"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                    Modify Product & Shipping Details
+                  </button>
+                  
+                  <button 
+                    onClick={() => {
+                      setSaveDialogOpen(true);
+                    }} 
+                    className="px-4 py-2 bg-blue-600 rounded-md text-white hover:bg-blue-700 flex items-center"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                    </svg>
+                    Save Analysis
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </CardContent>
