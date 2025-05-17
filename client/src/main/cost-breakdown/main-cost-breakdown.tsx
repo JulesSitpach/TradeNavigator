@@ -859,7 +859,7 @@ const NewCostForm = () => {
                     </div>
                   </div>
                   
-                  <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+                  <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm mb-6">
                     <h3 className="text-lg font-medium mb-4">Save Analysis</h3>
                     <div className="space-y-3">
                       <p className="text-sm text-gray-600">Save this breakdown to reference later or share with your team</p>
@@ -876,6 +876,58 @@ const NewCostForm = () => {
                         <Save className="h-4 w-4 mr-2" />
                         Save Analysis
                       </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* SMB Value Insights Section */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                {/* Trade Program Benefits */}
+                <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+                  <h3 className="text-lg font-medium mb-4">Trade Program Benefits</h3>
+                  <div className="space-y-4">
+                    {formValues.originCountry && formValues.destinationCountry && (
+                      <div className="bg-green-50 p-4 rounded-md border border-green-200">
+                        <h4 className="font-medium text-green-800">Free Trade Agreement Opportunity</h4>
+                        <p className="text-sm text-green-700 mt-1">
+                          Your shipment from {formValues.originCountry} to {formValues.destinationCountry} may qualify for reduced duties 
+                          under applicable trade agreements, saving approximately 
+                          ${(results.components.find(c => c.name === "Duties")?.value * 0.3 || 0).toFixed(2)} (30% reduction).
+                        </p>
+                        <a href="#" className="text-sm text-green-700 font-medium mt-2 inline-block hover:underline">How to claim this benefit →</a>
+                      </div>
+                    )}
+                    
+                    <div className="bg-blue-50 p-4 rounded-md border border-blue-200">
+                      <h4 className="font-medium text-blue-800">Duty Deferral Program</h4>
+                      <p className="text-sm text-blue-700 mt-1">
+                        {formValues.productCategory} items may qualify for duty deferral in certain regions, 
+                        improving cash flow by up to ${(results.components.find(c => c.name === "Duties")?.value || 0).toFixed(2)}.
+                      </p>
+                      <a href="#" className="text-sm text-blue-700 font-medium mt-2 inline-block hover:underline">Eligibility requirements →</a>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Cost Optimization */}
+                <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+                  <h3 className="text-lg font-medium mb-4">Cost Optimization Opportunities</h3>
+                  <div className="space-y-4">
+                    <div className="bg-amber-50 p-4 rounded-md border border-amber-200">
+                      <h4 className="font-medium text-amber-800">Shipping Cost Reduction</h4>
+                      <p className="text-sm text-amber-700 mt-1">
+                        Consolidating with other shipments could reduce your per-unit shipping costs by up to 15%, 
+                        saving approximately ${(results.components.find(c => c.name === "Shipping")?.value * 0.15 || 0).toFixed(2)}.
+                      </p>
+                    </div>
+                    
+                    <div className="bg-purple-50 p-4 rounded-md border border-purple-200">
+                      <h4 className="font-medium text-purple-800">Insurance Optimization</h4>
+                      <p className="text-sm text-purple-700 mt-1">
+                        Custom insurance policies for {formValues.productCategory} items typically offer better rates than general cargo insurance, 
+                        potentially saving 30% (${(results.components.find(c => c.name === "Insurance")?.value * 0.3 || 0).toFixed(2)}).
+                      </p>
                     </div>
                   </div>
                 </div>
