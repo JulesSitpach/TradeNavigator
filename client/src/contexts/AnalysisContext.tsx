@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { normalizeAnalysisData } from '@/utils/analysisDataHelper';
 
 // Define the Analysis data structure
 type CostComponent = {
@@ -9,10 +10,44 @@ type CostComponent = {
   details?: any;
 };
 
-type AnalysisData = {
+// Form values structure used in the input form
+export type AnalysisFormValues = {
+  productDescription: string;
+  productCategory: string;
+  hsCode: string;
+  originCountry: string;
+  destinationCountry: string;
+  productValue: string;
+  quantity: string;
+  weight: string;
+  width?: string;
+  length?: string;
+  height?: string;
+  transportMode: string;
+  incoterm?: string;
+};
+
+// Results structure returned from calculations
+export type AnalysisResults = {
   totalCost: number;
   components: CostComponent[];
-  productDetails: {
+  timestamp?: string | Date;
+};
+
+// Complete analysis data structure that combines form values and results
+// This unified structure is what should be used across all dashboard components
+export type AnalysisData = {
+  id?: string;
+  name?: string;
+  date?: string | Date;
+  // Original form values (string-based for form compatibility)
+  formValues: AnalysisFormValues;
+  // Calculation results
+  results: AnalysisResults;
+  // Legacy flattened fields for backward compatibility 
+  totalCost?: number;
+  components?: CostComponent[];
+  productDetails?: {
     description: string;
     hsCode: string;
     category: string;
@@ -29,8 +64,7 @@ type AnalysisData = {
     }
   };
   analysisId?: string;
-  timestamp: Date;
-  name?: string;
+  timestamp?: Date;
 };
 
 // Define the context type
@@ -70,9 +104,32 @@ export const AnalysisProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   // Update saved analyses when data changes
   useEffect(() => {
     if (savedAnalysesData) {
-      setSavedAnalyses(savedAnalysesData);
+      // Normalize all analyses from API before storing
+      const normalizedData = savedAnalysesData.map(analysis => normalizeAnalysisData(analysis));
+      setSavedAnalyses(normalizedData);
     }
   }, [savedAnalysesData]);
+
+  // Load current analysis from localStorage on mount
+  useEffect(() => {
+    // Try to load and restore current analysis from localStorage
+    const localCurrentAnalysis = localStorage.getItem('currentAnalysis');
+    if (localCurrentAnalysis) {
+      try {
+        const parsedData = JSON.parse(localCurrentAnalysis);
+        // Normalize the analysis data to ensure consistent structure
+        const normalizedData = normalizeAnalysisData(parsedData);
+        
+        if (normalizedData) {
+          console.log('Restored current analysis from localStorage:', normalizedData);
+          setCurrentAnalysis(normalizedData);
+          setLastUpdated(new Date());
+        }
+      } catch (e) {
+        console.error('Error parsing current analysis from localStorage', e);
+      }
+    }
+  }, []);
 
   // Check for saved analyses in localStorage on mount
   useEffect(() => {
@@ -80,11 +137,14 @@ export const AnalysisProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     if (localSavedAnalyses) {
       try {
         const parsedData = JSON.parse(localSavedAnalyses);
-        // Convert string timestamps back to Date objects
-        const processedData = parsedData.map((analysis: any) => ({
-          ...analysis,
-          timestamp: new Date(analysis.timestamp)
-        }));
+        // Convert string timestamps and normalize all saved analyses
+        const processedData = parsedData.map((analysis: any) => 
+          normalizeAnalysisData({
+            ...analysis,
+            timestamp: analysis.timestamp ? new Date(analysis.timestamp) : new Date(),
+            date: analysis.date ? new Date(analysis.date) : new Date()
+          })
+        );
         setSavedAnalyses(processedData);
       } catch (e) {
         console.error('Error parsing saved analyses from localStorage', e);
@@ -96,18 +156,22 @@ export const AnalysisProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const saveAnalysis = (name: string) => {
     if (!currentAnalysis) return;
     
-    const newAnalysis = {
+    // Create a new normalized analysis object
+    const newAnalysis = normalizeAnalysisData({
       ...currentAnalysis,
       name,
-      analysisId: `analysis-${Date.now()}`,
-      timestamp: new Date()
-    };
+      id: `analysis-${Date.now()}`,
+      date: new Date(),
+      analysisId: `analysis-${Date.now()}`, // for backwards compatibility
+      timestamp: new Date() // for backwards compatibility
+    });
     
     const updatedSavedAnalyses = [...savedAnalyses, newAnalysis];
     setSavedAnalyses(updatedSavedAnalyses);
     
-    // Also save to localStorage for persistence
+    // Save both to localStorage for persistence
     localStorage.setItem('savedAnalyses', JSON.stringify(updatedSavedAnalyses));
+    localStorage.setItem('currentAnalysis', JSON.stringify(newAnalysis));
     
     // In a real implementation, save to the API
     // fetch('/api/analysis', {
@@ -117,20 +181,29 @@ export const AnalysisProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     //   },
     //   body: JSON.stringify(newAnalysis),
     // });
+    
+    console.log('Analysis saved:', newAnalysis);
   };
 
   // Load a saved analysis
   const loadAnalysis = (id: string) => {
-    const analysis = savedAnalyses.find(a => a.analysisId === id);
+    const analysis = savedAnalyses.find(a => (a.id === id || a.analysisId === id));
     if (analysis) {
-      setCurrentAnalysis(analysis);
+      // Normalize before setting as current
+      const normalizedAnalysis = normalizeAnalysisData(analysis);
+      setCurrentAnalysis(normalizedAnalysis);
+      
+      // Save current analysis to localStorage
+      localStorage.setItem('currentAnalysis', JSON.stringify(normalizedAnalysis));
+      
       setLastUpdated(new Date());
+      console.log('Analysis loaded:', normalizedAnalysis);
     }
   };
 
   // Delete a saved analysis
   const deleteAnalysis = (id: string) => {
-    const updatedSavedAnalyses = savedAnalyses.filter(a => a.analysisId !== id);
+    const updatedSavedAnalyses = savedAnalyses.filter(a => (a.id !== id && a.analysisId !== id));
     setSavedAnalyses(updatedSavedAnalyses);
     
     // Update localStorage
@@ -140,18 +213,33 @@ export const AnalysisProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     // fetch(`/api/analysis/${id}`, {
     //   method: 'DELETE',
     // });
+    
+    console.log('Analysis deleted, ID:', id);
   };
 
   // Refresh data from API
   const refreshData = () => {
     setLastUpdated(new Date());
     refetch();
+    console.log('Data refresh requested');
   };
 
   // Update current analysis with fresh data
   const updateCurrentAnalysis = (analysis: AnalysisData) => {
-    setCurrentAnalysis(analysis);
-    setLastUpdated(new Date());
+    // Always normalize data before storing in context
+    const normalizedAnalysis = normalizeAnalysisData(analysis);
+    
+    if (normalizedAnalysis) {
+      setCurrentAnalysis(normalizedAnalysis);
+      
+      // Save to localStorage for persistence across page refreshes
+      localStorage.setItem('currentAnalysis', JSON.stringify(normalizedAnalysis));
+      
+      setLastUpdated(new Date());
+      console.log('Current analysis updated:', normalizedAnalysis);
+    } else {
+      console.error('Failed to normalize analysis data:', analysis);
+    }
   };
 
   return (

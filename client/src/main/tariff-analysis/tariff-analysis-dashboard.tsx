@@ -61,23 +61,20 @@ const TariffAnalysisDashboard = () => {
   const [searchQuery, setSearchQuery] = useState('');
   
   useEffect(() => {
-    // Import utility functions for data validation and normalization
-    import('@/utils/analysisDataHelper').then(({ isValidAnalysisData, normalizeAnalysisData, getAnalysisDataErrorMessage }) => {
-      // Get the current analysis from the context
-      if (analysisContext?.currentAnalysis) {
-        // Normalize data to ensure it has a consistent structure
-        const normalizedData = normalizeAnalysisData(analysisContext.currentAnalysis);
+    // Import enhanced utility functions for reliable data access
+    import('@/utils/analysisDataHelper').then(({ getAnalysisData, isValidAnalysisData, getAnalysisDataErrorMessage }) => {
+      // Get analysis data with fallback to localStorage if needed
+      const analysisData = getAnalysisData(analysisContext);
+      
+      // Check if we have valid data
+      if (analysisData && isValidAnalysisData(analysisData)) {
+        console.log('Tariff Analysis Dashboard: Analysis data loaded successfully');
+        setCurrentAnalysis(analysisData);
         
-        // Validate the data before using it
-        if (isValidAnalysisData(normalizedData)) {
-          setCurrentAnalysis(normalizedData);
-          
-          // Analyze tariff data based on normalized analysis data
-          analyzeTariffData(normalizedData);
-        } else {
-          toast(getAnalysisDataErrorMessage());
-        }
+        // Analyze tariff data based on the valid analysis data
+        analyzeTariffData(analysisData);
       } else {
+        console.warn('Tariff Analysis Dashboard: No valid analysis data available');
         toast(getAnalysisDataErrorMessage());
       }
     });

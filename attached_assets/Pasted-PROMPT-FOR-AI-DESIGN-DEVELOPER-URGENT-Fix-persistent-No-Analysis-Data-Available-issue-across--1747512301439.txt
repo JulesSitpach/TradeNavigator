@@ -1,0 +1,58 @@
+PROMPT FOR AI DESIGN DEVELOPER:
+
+URGENT: Fix persistent "No Analysis Data Available" issue across all dashboard tabs
+
+OBSERVED ISSUE:
+After multiple fix attempts, dashboards (Alternative Routes, Regulations & Compliance, etc.) still display "No Analysis Data Available" despite completing the cost analysis. This indicates a fundamental disconnect in the data pipeline.
+
+TECHNICAL DIAGNOSIS NEEDED:
+
+1. COMPONENT ARCHITECTURE INVESTIGATION:
+   - Examine React component hierarchy - specifically how dashboard tabs receive props
+   - Check for proper prop drilling or context usage between parent container and dashboard tabs
+   - Verify if dashboards are using outdated references to data structure
+
+2. DATA FLOW TRACING:
+   - Add explicit logging in this sequence:
+     a) When cost analysis data is saved
+     b) When dashboard container component mounts/updates
+     c) When individual dashboard tabs mount/render
+     d) When data availability is checked in each tab
+   - Log the exact data structure at each point to pinpoint where the chain breaks
+
+3. STATE MANAGEMENT AUDIT:
+   - If using Redux/Context: Check store structure and subscription methods
+   - If using local state: Verify parent-child prop passing
+   - Check for state initialization issues causing dashboards to render before data loads
+   - Verify no state reset occurs during tab navigation
+
+4. CODE-LEVEL FIXES:
+   - Update all dashboard components to use consistent data path reference
+   - Example, if new structure is: 
+     ```
+     {
+       formValues: {...},
+       results: {...}
+     }
+     ```
+   - Ensure ALL components check for data like:
+     ```
+     const hasData = data && data.results && Object.keys(data.results).length > 0;
+     ```
+   - Apply this consistent check pattern across ALL dashboard components
+   
+5. IMMEDIATE TESTING PROCEDURE:
+   - After implementing fixes, test this exact sequence:
+     a) Complete a cost analysis
+     b) WITHOUT refreshing page, navigate directly to Regulations dashboard
+     c) Confirm data appears
+     d) Navigate to Alternative Routes
+     e) Confirm data appears
+     f) Systematically check all other tabs
+   
+6. PERSISTENCE MECHANISM:
+   - Consider implementing localStorage backup for dashboard data
+   - Add data timestamp and version to help debug
+   - Implement fallback data retrieval if primary method fails
+
+This appears to be a systematic issue in how React components access shared data. The fix must ensure ALL dashboard components consistently access and verify data availability using the exact same pattern and data structure paths.
