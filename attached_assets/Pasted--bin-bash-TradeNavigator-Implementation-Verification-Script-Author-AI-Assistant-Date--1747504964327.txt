@@ -1,0 +1,484 @@
+#!/bin/bash
+
+# TradeNavigator Implementation Verification Script
+# Author: AI Assistant
+# Date: May 17, 2025
+# Description: Verifies and assists with implementing all required functionality
+
+# Text colors for better readability
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+BLUE='\033[0;34m'
+PURPLE='\033[0;35m'
+NC='\033[0m' # No Color
+
+echo -e "${BLUE}============================================${NC}"
+echo -e "${BLUE}   TradeNavigator Implementation Verifier   ${NC}"
+echo -e "${BLUE}============================================${NC}"
+
+# Create output directory
+TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
+OUTPUT_DIR="tradenavigator_verification_${TIMESTAMP}"
+mkdir -p $OUTPUT_DIR
+
+# Step 1: Identify Current Active Files
+echo -e "\n${GREEN}Step 1: Identifying active files...${NC}"
+
+ACTIVE_FILES=()
+COST_BREAKDOWN_IMPORTS=()
+
+# Check main application files
+MAIN_APP_FILES=("src/App.tsx" "src/main.tsx" "src/index.tsx" "src/dashboard.tsx")
+echo -e "${YELLOW}Checking main application files for imports...${NC}"
+
+for file in "${MAIN_APP_FILES[@]}"; do
+  if [ -f "$file" ]; then
+    echo -e "Analyzing ${PURPLE}$file${NC}:"
+    IMPORTS=$(grep -n "import.*from" "$file" | grep -i "cost.*breakdown")
+    if [ -n "$IMPORTS" ]; then
+      echo -e "${GREEN}Found cost breakdown imports:${NC}"
+      echo "$IMPORTS"
+      ACTIVE_FILES+=("$file")
+      COST_BREAKDOWN_IMPORTS+=("$IMPORTS")
+    else
+      echo -e "${YELLOW}No cost breakdown imports found.${NC}"
+    fi
+  else
+    echo -e "${RED}File not found: $file${NC}"
+  fi
+done
+
+# Check router configuration
+echo -e "\n${YELLOW}Checking router configuration...${NC}"
+ROUTER_FILES=$(find src -name "*router*" -o -name "*routes*" -type f)
+
+for file in $ROUTER_FILES; do
+  echo -e "Analyzing ${PURPLE}$file${NC}:"
+  ROUTES=$(grep -n -A 3 -B 3 "cost.*breakdown" "$file")
+  if [ -n "$ROUTES" ]; then
+    echo -e "${GREEN}Found cost breakdown routes:${NC}"
+    echo "$ROUTES"
+    ACTIVE_FILES+=("$file")
+  else
+    echo -e "${YELLOW}No cost breakdown routes found.${NC}"
+  fi
+done
+
+# Save active files list
+echo "${ACTIVE_FILES[@]}" > $OUTPUT_DIR/active_files.txt
+echo "${COST_BREAKDOWN_IMPORTS[@]}" > $OUTPUT_DIR/cost_breakdown_imports.txt
+
+echo -e "${GREEN}✓ Active files identified and saved to $OUTPUT_DIR/active_files.txt${NC}"
+
+# Step 2: Find all Cost Breakdown implementation files
+echo -e "\n${GREEN}Step 2: Finding all Cost Breakdown implementations...${NC}"
+
+CB_FILES=$(find src -name "*cost*breakdown*.tsx" -type f)
+echo -e "${YELLOW}Found Cost Breakdown implementations:${NC}"
+for file in $CB_FILES; do
+  echo -e "📄 ${PURPLE}$file${NC}"
+done
+
+# Save cost breakdown files list
+echo "$CB_FILES" > $OUTPUT_DIR/cost_breakdown_files.txt
+
+echo -e "${GREEN}✓ Cost Breakdown implementations found and saved to $OUTPUT_DIR/cost_breakdown_files.txt${NC}"
+
+# Step 3: Identify Complete Implementation
+echo -e "\n${GREEN}Step 3: Identifying the complete implementation...${NC}"
+
+# Look for specific features in each implementation
+echo -e "${YELLOW}Analyzing features in each implementation...${NC}"
+
+COMPLETE_IMPL=""
+MAX_FEATURES=0
+
+for file in $CB_FILES; do
+  FEATURE_COUNT=0
+  FEATURES=()
+  
+  echo -e "\nChecking ${PURPLE}$file${NC} for features:"
+  
+  # Check for save functionality
+  if grep -q "saveAnalysis" "$file"; then
+    echo -e "${GREEN}✓ Save functionality found${NC}"
+    FEATURE_COUNT=$((FEATURE_COUNT+1))
+    FEATURES+=("Save")
+  else
+    echo -e "${RED}✗ Save functionality missing${NC}"
+  fi
+  
+  # Check for load functionality
+  if grep -q "loadAnalysis" "$file"; then
+    echo -e "${GREEN}✓ Load functionality found${NC}"
+    FEATURE_COUNT=$((FEATURE_COUNT+1))
+    FEATURES+=("Load")
+  else
+    echo -e "${RED}✗ Load functionality missing${NC}"
+  fi
+  
+  # Check for modify functionality
+  if grep -q "modifyAnalysis" "$file" || grep -q "handleModify" "$file"; then
+    echo -e "${GREEN}✓ Modify functionality found${NC}"
+    FEATURE_COUNT=$((FEATURE_COUNT+1))
+    FEATURES+=("Modify")
+  else
+    echo -e "${RED}✗ Modify functionality missing${NC}"
+  fi
+  
+  # Check for HS Code Assistant
+  if grep -q "HSCodeAssistant" "$file"; then
+    echo -e "${GREEN}✓ HS Code Assistant integration found${NC}"
+    FEATURE_COUNT=$((FEATURE_COUNT+1))
+    FEATURES+=("HS Code Assistant")
+  else
+    echo -e "${RED}✗ HS Code Assistant integration missing${NC}"
+  fi
+  
+  # Check for country groups
+  if grep -q "countryGroups" "$file"; then
+    echo -e "${GREEN}✓ Country groups found${NC}"
+    FEATURE_COUNT=$((FEATURE_COUNT+1))
+    FEATURES+=("Country Groups")
+  else
+    echo -e "${RED}✗ Country groups missing${NC}"
+  fi
+  
+  # Check for dashboard data flow
+  if grep -q "setCurrentAnalysis" "$file"; then
+    echo -e "${GREEN}✓ Dashboard data flow found${NC}"
+    FEATURE_COUNT=$((FEATURE_COUNT+1))
+    FEATURES+=("Dashboard Data Flow")
+  else
+    echo -e "${RED}✗ Dashboard data flow missing${NC}"
+  fi
+  
+  echo -e "Total features: $FEATURE_COUNT"
+  
+  # Update if this has more features
+  if [ $FEATURE_COUNT -gt $MAX_FEATURES ]; then
+    MAX_FEATURES=$FEATURE_COUNT
+    COMPLETE_IMPL=$file
+  fi
+  
+  # Save features for this file
+  echo "${FEATURES[@]}" > $OUTPUT_DIR/features_$(basename "$file" .tsx).txt
+done
+
+echo -e "\n${GREEN}Most complete implementation appears to be: ${PURPLE}$COMPLETE_IMPL${NC}"
+echo -e "With $MAX_FEATURES features detected."
+
+# Save most complete implementation path
+echo "$COMPLETE_IMPL" > $OUTPUT_DIR/most_complete_impl.txt
+
+echo -e "${GREEN}✓ Complete implementation identified${NC}"
+
+# Step 4: Extract Key Functionality
+echo -e "\n${GREEN}Step 4: Extracting key functionality from complete implementation...${NC}"
+
+mkdir -p $OUTPUT_DIR/extracted-functionality
+
+if [ -n "$COMPLETE_IMPL" ] && [ -f "$COMPLETE_IMPL" ]; then
+  echo -e "${YELLOW}Extracting from ${PURPLE}$COMPLETE_IMPL${NC}..."
+  
+  # Extract save/load functionality
+  grep -n -A 30 "const saveAnalysis" "$COMPLETE_IMPL" > $OUTPUT_DIR/extracted-functionality/save-functionality.js
+  grep -n -A 50 "const loadAnalysis" "$COMPLETE_IMPL" > $OUTPUT_DIR/extracted-functionality/load-functionality.js
+  
+  # Extract modification functionality
+  grep -n -A 40 "const modifyAnalysis" "$COMPLETE_IMPL" > $OUTPUT_DIR/extracted-functionality/modify-functionality.js
+  
+  # Extract dashboard data flow
+  grep -n -A 30 "const handleCalculate" "$COMPLETE_IMPL" > $OUTPUT_DIR/extracted-functionality/data-flow.js
+  grep -n -A 20 "setCurrentAnalysis" "$COMPLETE_IMPL" > $OUTPUT_DIR/extracted-functionality/current-analysis-update.js
+  
+  # Extract country groups
+  grep -n -A 100 "const countryGroups" "$COMPLETE_IMPL" > $OUTPUT_DIR/extracted-functionality/country-groups.js
+  
+  # Extract HS Code Assistant integration
+  grep -n -A 20 "HSCodeAssistant" "$COMPLETE_IMPL" > $OUTPUT_DIR/extracted-functionality/hs-code-assistant.js
+  
+  echo -e "${GREEN}✓ Key functionality extracted to $OUTPUT_DIR/extracted-functionality/${NC}"
+else
+  echo -e "${RED}Error: Could not extract functionality. No complete implementation identified.${NC}"
+fi
+
+# Step 5: Check for Currently Active Implementation
+echo -e "\n${GREEN}Step 5: Identifying currently active implementation...${NC}"
+
+ACTIVE_IMPL=""
+
+# Parse imports to find the active implementation
+for import in "${COST_BREAKDOWN_IMPORTS[@]}"; do
+  FILE_PATH=$(echo "$import" | grep -o "'.*'" | tr -d "'" | grep -o "\..*" | tr -d "\"'")
+  if [ -n "$FILE_PATH" ]; then
+    # Try to resolve the path
+    POSSIBLE_PATHS=()
+    POSSIBLE_PATHS+=("src$FILE_PATH.tsx")
+    POSSIBLE_PATHS+=("src$FILE_PATH/index.tsx")
+    POSSIBLE_PATHS+=("src/components$FILE_PATH.tsx")
+    POSSIBLE_PATHS+=("src/pages$FILE_PATH.tsx")
+    
+    for path in "${POSSIBLE_PATHS[@]}"; do
+      if [ -f "$path" ]; then
+        ACTIVE_IMPL=$path
+        break
+      fi
+    done
+  fi
+done
+
+if [ -n "$ACTIVE_IMPL" ]; then
+  echo -e "${GREEN}Currently active implementation appears to be: ${PURPLE}$ACTIVE_IMPL${NC}"
+else
+  echo -e "${YELLOW}Could not determine currently active implementation from imports.${NC}"
+fi
+
+# Save active implementation path
+echo "$ACTIVE_IMPL" > $OUTPUT_DIR/active_impl.txt
+
+# Step 6: Check API Connection for HS Code Assistant
+echo -e "\n${GREEN}Step 6: Checking HS Code Assistant API connection...${NC}"
+
+# Find HSCodeAssistant component
+HS_ASSISTANT_FILES=$(find src -name "HSCodeAssistant*.tsx" -type f)
+
+if [ -n "$HS_ASSISTANT_FILES" ]; then
+  echo -e "${YELLOW}Found HS Code Assistant components:${NC}"
+  for file in $HS_ASSISTANT_FILES; do
+    echo -e "📄 ${PURPLE}$file${NC}"
+    
+    # Check for API calls
+    API_CALLS=$(grep -n "fetch" "$file" || grep -n "axios" "$file" || grep -n "http" "$file")
+    if [ -n "$API_CALLS" ]; then
+      echo -e "${GREEN}API calls found:${NC}"
+      echo "$API_CALLS"
+    else
+      echo -e "${RED}No API calls found. This may indicate an implementation issue.${NC}"
+    fi
+    
+    # Check for error handling
+    ERROR_HANDLING=$(grep -n "catch" "$file" || grep -n "error" "$file")
+    if [ -n "$ERROR_HANDLING" ]; then
+      echo -e "${GREEN}Error handling found:${NC}"
+      echo "$ERROR_HANDLING"
+    else
+      echo -e "${RED}No error handling found. This may be causing the 400 errors.${NC}"
+    fi
+  done
+else
+  echo -e "${RED}No HS Code Assistant component found. This is a critical missing component.${NC}"
+fi
+
+# Save HS Assistant files list
+echo "$HS_ASSISTANT_FILES" > $OUTPUT_DIR/hs_assistant_files.txt
+
+# Step 7: Generate Integration Plan
+echo -e "\n${GREEN}Step 7: Generating integration plan...${NC}"
+
+cat > $OUTPUT_DIR/integration-plan.md << EOF
+# TradeNavigator Integration Plan
+
+## Current Status
+- Most complete implementation: $(basename "$COMPLETE_IMPL")
+- Currently active implementation: $(basename "$ACTIVE_IMPL")
+- Features in complete implementation: $MAX_FEATURES
+- API connection status: $([ -n "$HS_ASSISTANT_FILES" ] && echo "Component found, check API calls" || echo "Component missing")
+
+## Integration Steps
+
+### 1. Backup Current Implementation
+\`\`\`bash
+# Backup active implementation
+cp "$ACTIVE_IMPL" "$ACTIVE_IMPL.bak"
+\`\`\`
+
+### 2. Option A: Switch to Complete Implementation
+If the complete implementation is not currently active, update imports:
+
+\`\`\`bash
+# For each file importing Cost Breakdown
+for file in "${ACTIVE_FILES[@]}"; do
+  # Replace imports to point to complete implementation
+  sed -i 's|import.*cost.*breakdown.*|import CostBreakdown from "./$COMPLETE_IMPL_RELATIVE_PATH";|' "\$file"
+done
+\`\`\`
+
+### 3. Option B: Add Missing Functionality to Current Implementation
+If you prefer to keep the current implementation, add these missing features:
+
+EOF
+
+# Check which features are missing from active implementation
+if [ -n "$ACTIVE_IMPL" ] && [ -f "$ACTIVE_IMPL" ]; then
+  echo "#### Missing Features in Current Implementation:" >> $OUTPUT_DIR/integration-plan.md
+  
+  # Check for save functionality
+  if ! grep -q "saveAnalysis" "$ACTIVE_IMPL"; then
+    echo "- Save functionality (add from extracted-functionality/save-functionality.js)" >> $OUTPUT_DIR/integration-plan.md
+  fi
+  
+  # Check for load functionality
+  if ! grep -q "loadAnalysis" "$ACTIVE_IMPL"; then
+    echo "- Load functionality (add from extracted-functionality/load-functionality.js)" >> $OUTPUT_DIR/integration-plan.md
+  fi
+  
+  # Check for modify functionality
+  if ! grep -q "modifyAnalysis" "$ACTIVE_IMPL" && ! grep -q "handleModify" "$ACTIVE_IMPL"; then
+    echo "- Modify functionality (add from extracted-functionality/modify-functionality.js)" >> $OUTPUT_DIR/integration-plan.md
+  fi
+  
+  # Check for HS Code Assistant
+  if ! grep -q "HSCodeAssistant" "$ACTIVE_IMPL"; then
+    echo "- HS Code Assistant integration (add from extracted-functionality/hs-code-assistant.js)" >> $OUTPUT_DIR/integration-plan.md
+  fi
+  
+  # Check for country groups
+  if ! grep -q "countryGroups" "$ACTIVE_IMPL"; then
+    echo "- Country groups (add from extracted-functionality/country-groups.js)" >> $OUTPUT_DIR/integration-plan.md
+  fi
+  
+  # Check for dashboard data flow
+  if ! grep -q "setCurrentAnalysis" "$ACTIVE_IMPL"; then
+    echo "- Dashboard data flow (add from extracted-functionality/current-analysis-update.js)" >> $OUTPUT_DIR/integration-plan.md
+  fi
+else
+  echo "Current implementation not found or could not be determined." >> $OUTPUT_DIR/integration-plan.md
+fi
+
+cat >> $OUTPUT_DIR/integration-plan.md << 'EOF'
+
+### 4. Fix HS Code Assistant API Connection
+1. Check API configuration in the HSCodeAssistant component
+2. Verify environment variables for API keys are set correctly
+3. Add proper error handling to the API calls
+4. Implement a fallback system for when the API is unavailable
+
+### 5. Test Implementation
+Use this test example to verify functionality:
+
+#### Product Information
+- **Description**: High-capacity portable power bank, 20000mAh, with dual USB-C ports
+- **Category**: Electronics
+- **HS Code**: 8507.60.00 (Lithium-ion accumulators)
+- **Origin**: Vietnam - CPTPP member
+- **Destination**: Canada - CPTPP member
+- **Value**: $3,500.00
+
+#### Shipping Details
+- **Quantity**: 200 units
+- **Transport Mode**: Air Freight
+- **Shipment Type**: Express Parcel
+- **Package Type**: Cardboard Box
+- **Weight**: 125 kg
+- **Dimensions**: 40 × 30 × 25 cm
+
+Verify these features work:
+1. Form input and validation
+2. HS Code Assistant
+3. Cost breakdown calculation
+4. Save/load functionality
+5. Modify capability
+6. Cross-dashboard data flow
+EOF
+
+# Step 8: Generate Verification Checklist
+echo -e "\n${GREEN}Step 8: Generating verification checklist...${NC}"
+
+cat > $OUTPUT_DIR/verification-checklist.md << 'EOF'
+# TradeNavigator Implementation Verification Checklist
+
+## Data Entry
+- [ ] All form fields accept input
+- [ ] Validation works correctly
+- [ ] Country dropdowns show organized lists with CPTPP indicators
+- [ ] Product category selection affects HS code suggestions
+
+## HS Code Assistant
+- [ ] Assistant button opens suggestion panel
+- [ ] Suggestions are displayed based on product description
+- [ ] Can select a suggested code to populate form field
+- [ ] API connection is working without 400 errors
+
+## Calculation
+- [ ] Calculate button works
+- [ ] Cost breakdown displays with correct components
+- [ ] Percentage calculations are accurate
+- [ ] Total adds up to 100%
+
+## Save/Load
+- [ ] Can save analysis with name
+- [ ] Saved analyses are listed in interface
+- [ ] Can load a saved analysis
+- [ ] Form populates with all loaded data correctly
+
+## Modify
+- [ ] Can modify existing analysis
+- [ ] Changed fields are tracked and highlighted
+- [ ] Recalculate updates with new values
+- [ ] Can revert changes if needed
+
+## Dashboard Connection
+- [ ] Alternative Routes dashboard shows data from calculation
+- [ ] Tariff Analysis dashboard shows correct duty information
+- [ ] Other dashboards display relevant information
+- [ ] Changes in Cost Breakdown update other dashboards
+
+## Key Elements
+- [ ] Dropdown options are complete (countries, transport modes, etc.)
+- [ ] Buttons have correct styling and positioning
+- [ ] Form layout is clean and organized
+- [ ] Error messages display appropriately
+EOF
+
+# Step 9: Summary
+echo -e "\n${GREEN}Step 9: Generating summary...${NC}"
+
+cat > $OUTPUT_DIR/summary.md << EOF
+# TradeNavigator Implementation Analysis Summary
+
+Analysis completed on $(date)
+
+## Key Findings
+
+1. Most complete implementation: ${COMPLETE_IMPL}
+   - Contains $MAX_FEATURES out of 6 key features
+
+2. Currently active implementation: ${ACTIVE_IMPL}
+   - Active in files: ${ACTIVE_FILES[@]}
+
+3. HS Code Assistant status:
+   - Components found: $([ -n "$HS_ASSISTANT_FILES" ] && echo "Yes" || echo "No")
+   - API connection issues may be causing 400 errors
+
+## Recommendations
+
+1. $([ "$COMPLETE_IMPL" = "$ACTIVE_IMPL" ] && echo "Keep using current implementation but fix missing features" || echo "Switch to the most complete implementation")
+
+2. Fix HS Code Assistant API connection issues
+
+3. Follow the integration plan to ensure all functionality is available
+
+4. Use the verification checklist to confirm implementation
+
+## Next Steps
+
+1. Review the extracted functionality to understand key components
+
+2. Implement the integration plan
+
+3. Test with the provided example case
+
+4. Complete the verification checklist to ensure all features work
+EOF
+
+# Print final message
+echo -e "\n${BLUE}============================================${NC}"
+echo -e "${GREEN}Analysis complete!${NC}"
+echo -e "${GREEN}All files saved to: $OUTPUT_DIR${NC}"
+echo -e "${YELLOW}Next steps:${NC}"
+echo -e "1. Review the $OUTPUT_DIR/summary.md file"
+echo -e "2. Follow the integration plan in $OUTPUT_DIR/integration-plan.md"
+echo -e "3. Use the verification checklist in $OUTPUT_DIR/verification-checklist.md"
+echo -e "${BLUE}============================================${NC}"

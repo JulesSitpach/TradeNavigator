@@ -4,6 +4,7 @@ import { storage } from "./storage";
 import { comtradeApi } from "./api/comtrade";
 import { shippoApi } from "./api/shippo";
 import { openaiService } from "./api/openai";
+import { perplexityService } from "./api/perplexity";
 import { exchangeRateApi } from "./api/exchange";
 import * as costCalculator from "./api/cost-calculator";
 import bcrypt from "bcrypt";
