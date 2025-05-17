@@ -622,8 +622,22 @@ const ProductInformationForm = ({
                   {!isModifyingAnalysis && (
                     <DropdownMenuItem 
                       onClick={() => {
+                        // Enable modification mode
+                        setIsModifying(true);
+                        setIsModifyingAnalysis(true);
+                        
+                        // Store original data for potential revert
                         if (formData) {
-                          handleModify();
+                          setLastAnalysis(formData);
+                          
+                          // Pre-fill form with current data
+                          form.reset(formData);
+                          
+                          // Set modification info for UI
+                          setModificationInfo({
+                            originalName: saveName || "Current Analysis",
+                            date: new Date().toLocaleDateString()
+                          });
                         }
                       }}
                       className="cursor-pointer flex items-center"
@@ -637,11 +651,16 @@ const ProductInformationForm = ({
                   {isModifyingAnalysis && (
                     <DropdownMenuItem 
                       onClick={() => {
+                        // Reset modification states
                         setIsModifying(false);
                         setIsModifyingAnalysis(false);
+                        
+                        // Reset form to original data
                         if (lastAnalysis) {
                           form.reset(lastAnalysis);
                         }
+                        
+                        // Clear modification info
                         setModificationInfo(null);
                       }}
                       className="cursor-pointer flex items-center text-amber-600"
