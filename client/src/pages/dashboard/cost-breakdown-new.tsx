@@ -606,9 +606,29 @@ const CostBreakdownTable = () => {
   );
 };
 
+// Type for saved analysis
+interface SavedAnalysis {
+  id: string;
+  name: string;
+  date: string;
+  formData: ProductInfoFormValues;
+  results: any;
+}
+
 // Cost Breakdown Dashboard - Main Component
 const CostBreakdownDashboard = () => {
   const [showResults, setShowResults] = useState(false);
+  const [savedAnalyses, setSavedAnalyses] = useState<SavedAnalysis[]>([]);
+  const [saveName, setSaveName] = useState("");
+  const [formData, setFormData] = useState<ProductInfoFormValues | null>(null);
+
+  // Load saved analyses from local storage on mount
+  useEffect(() => {
+    const savedAnalysesFromStorage = localStorage.getItem('savedCostAnalyses');
+    if (savedAnalysesFromStorage) {
+      setSavedAnalyses(JSON.parse(savedAnalysesFromStorage));
+    }
+  }, []);
 
   const { data } = useQuery({
     queryKey: ['/api/cost-breakdown'],
@@ -643,7 +663,62 @@ const CostBreakdownDashboard = () => {
     });
   }
   
-  const handleCalculate = () => {
+  // Save current analysis
+  const saveAnalysis = () => {
+    if (!data) {
+      alert("Please calculate a cost breakdown first");
+      return;
+    }
+
+    if (!saveName.trim()) {
+      alert("Please enter a name for this analysis");
+      return;
+    }
+
+    if (!formData) {
+      alert("No form data available to save");
+      return;
+    }
+    
+    const newAnalysis: SavedAnalysis = {
+      id: Date.now().toString(),
+      name: saveName,
+      date: new Date().toISOString(),
+      formData: formData,
+      results: data
+    };
+    
+    const updatedSavedAnalyses = [...savedAnalyses, newAnalysis];
+    setSavedAnalyses(updatedSavedAnalyses);
+    localStorage.setItem('savedCostAnalyses', JSON.stringify(updatedSavedAnalyses));
+    
+    setSaveName("");
+    alert("Analysis saved successfully!");
+  };
+
+  // Load a saved analysis
+  const loadAnalysis = (analysis: SavedAnalysis) => {
+    setFormData(analysis.formData);
+    setTimeout(() => {
+      const form = document.querySelector("form");
+      if (form) {
+        // Reset the form with the saved values
+        const event = new Event("submit", { cancelable: true, bubbles: true });
+        form.dispatchEvent(event);
+      }
+    }, 500);
+  };
+
+  // Delete a saved analysis
+  const deleteAnalysis = (id: string) => {
+    const updatedSavedAnalyses = savedAnalyses.filter(analysis => analysis.id !== id);
+    setSavedAnalyses(updatedSavedAnalyses);
+    localStorage.setItem('savedCostAnalyses', JSON.stringify(updatedSavedAnalyses));
+    alert("Analysis deleted!");
+  };
+  
+  const handleCalculate = (values: ProductInfoFormValues) => {
+    setFormData(values);
     setShowResults(true);
     // Scroll to results section after calculation
     setTimeout(() => {
