@@ -18,9 +18,10 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogT
 import { ScrollArea } from "@/components/ui/scroll-area";
 import PageHeader from "@/components/common/PageHeader";
 import { useToast } from "@/hooks/use-toast";
-import { AnalysisContext } from "@/contexts/AnalysisContext";
+import { AnalysisContext, useAnalysis } from "@/contexts/AnalysisContext";
 import { Calculator, Save, FileText, RotateCcw, PlusCircle, Search, Pencil, Edit } from "lucide-react";
 import HSCodeAssistant from "@/components/ai/HSCodeAssistant";
+import { normalizeAnalysisData } from "@/utils/analysisDataHelper";
 import "../../styles/cost-breakdown-form.css";
 
 // Country lists organized by region with CPTPP indicators
@@ -78,14 +79,14 @@ const countryGroups = {
 };
 
 const NewCostForm = () => {
-  // Import the custom context hook instead of using useContext directly
-  // This ensures we get proper error checking and type safety
-  const { 
-    currentAnalysis,
-    savedAnalyses: contextSavedAnalyses,
-    setCurrentAnalysis,
-    isLoading: analysisLoading
-  } = useAnalysis();
+  // Use context directly since the custom hook is not working properly
+  const context = useContext(AnalysisContext);
+  
+  // Safe access to context properties with fallbacks
+  const currentAnalysis = context?.currentAnalysis || null;
+  const contextSavedAnalyses = context?.savedAnalyses || [];
+  const setCurrentAnalysis = context?.setCurrentAnalysis || null;
+  const analysisLoading = context?.isLoading || false;
   
   // Initialize form values from context or with defaults
   const initialFormValues = () => {
