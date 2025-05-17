@@ -87,8 +87,22 @@ Important: For electronics usually check chapters 84-85, for textiles check chap
       }
 
       // Extract the JSON from the response (handle potential text wrapping)
-      const jsonMatch = content.match(/\{[\s\S]*\}/);
-      const jsonStr = jsonMatch ? jsonMatch[0] : content;
+      let jsonStr = content;
+      
+      // Sometimes the API returns JSON with comments, which isn't valid JSON
+      // Remove any JSON comments that might exist in the response
+      jsonStr = jsonStr.replace(/\/\/.*$/gm, ''); // Remove single-line comments
+      
+      // Try to extract just the JSON object if there's text around it
+      const jsonMatch = jsonStr.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        jsonStr = jsonMatch[0];
+      }
+      
+      // Additional cleanup for stray characters
+      jsonStr = jsonStr.replace(/\\n/g, ' ').trim();
+      
+      console.log("Cleaned JSON string:", jsonStr);
       
       // Parse the JSON result
       const result = JSON.parse(jsonStr);
