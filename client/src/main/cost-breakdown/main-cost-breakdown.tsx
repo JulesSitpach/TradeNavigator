@@ -320,9 +320,13 @@ const NewCostForm = () => {
                     <div>
                       <h3 className="font-medium">{analysis.name}</h3>
                       <p className="text-sm text-gray-500">
-                        {new Date(analysis.date).toLocaleDateString()} • 
-                        {analysis.formValues.productDescription} • 
-                        {analysis.formValues.originCountry} to {analysis.formValues.destinationCountry}
+                        {new Date(analysis.date).toLocaleDateString()} 
+                        {analysis.formValues && analysis.formValues.productDescription && (
+                          <> • {analysis.formValues.productDescription}</>
+                        )}
+                        {analysis.formValues && analysis.formValues.originCountry && analysis.formValues.destinationCountry && (
+                          <> • {analysis.formValues.originCountry} to {analysis.formValues.destinationCountry}</>
+                        )}
                       </p>
                     </div>
                     <div className="flex space-x-2">
