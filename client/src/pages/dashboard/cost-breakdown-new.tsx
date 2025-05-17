@@ -71,19 +71,63 @@ const productCategories = [
   { label: "Toys & Games", value: "Toys & Games" },
 ];
 
-// Sample country list for dropdowns
-const countries = [
-  { label: "Canada - CPTPP member", value: "Canada" },
-  { label: "China", value: "China" },
-  { label: "Germany", value: "Germany" },
-  { label: "India", value: "India" },
-  { label: "Japan - CPTPP member", value: "Japan" },
-  { label: "Mexico - CPTPP member", value: "Mexico" },
-  { label: "South Korea", value: "South Korea" },
-  { label: "United Kingdom", value: "United Kingdom" },
-  { label: "United States", value: "United States" },
-  { label: "Vietnam - CPTPP member", value: "Vietnam" },
-];
+// Country lists organized by region
+// CPTPP members are marked accordingly
+const countryGroups = {
+  'ASIA-PACIFIC REGION': [
+    { label: "Japan - CPTPP member", value: "Japan", region: "ASIA-PACIFIC REGION", isCPTPP: true },
+    { label: "South Korea", value: "South Korea", region: "ASIA-PACIFIC REGION", isCPTPP: false },
+    { label: "China", value: "China", region: "ASIA-PACIFIC REGION", isCPTPP: false },
+    { label: "India", value: "India", region: "ASIA-PACIFIC REGION", isCPTPP: false },
+    { label: "Vietnam - CPTPP member", value: "Vietnam", region: "ASIA-PACIFIC REGION", isCPTPP: true },
+    { label: "Singapore - CPTPP member", value: "Singapore", region: "ASIA-PACIFIC REGION", isCPTPP: true },
+    { label: "Malaysia - CPTPP member", value: "Malaysia", region: "ASIA-PACIFIC REGION", isCPTPP: true },
+    { label: "Australia - CPTPP member", value: "Australia", region: "ASIA-PACIFIC REGION", isCPTPP: true },
+    { label: "Indonesia", value: "Indonesia", region: "ASIA-PACIFIC REGION", isCPTPP: false },
+    { label: "Taiwan", value: "Taiwan", region: "ASIA-PACIFIC REGION", isCPTPP: false },
+    { label: "New Zealand - CPTPP member", value: "New Zealand", region: "ASIA-PACIFIC REGION", isCPTPP: true },
+    { label: "Thailand", value: "Thailand", region: "ASIA-PACIFIC REGION", isCPTPP: false },
+    { label: "Philippines", value: "Philippines", region: "ASIA-PACIFIC REGION", isCPTPP: false },
+  ],
+  'EUROPE': [
+    { label: "European Union", value: "European Union", region: "EUROPE", isCPTPP: false },
+    { label: "Germany", value: "Germany", region: "EUROPE", isCPTPP: false },
+    { label: "United Kingdom - CPTPP member", value: "United Kingdom", region: "EUROPE", isCPTPP: true },
+    { label: "France", value: "France", region: "EUROPE", isCPTPP: false },
+    { label: "Spain", value: "Spain", region: "EUROPE", isCPTPP: false },
+    { label: "Italy", value: "Italy", region: "EUROPE", isCPTPP: false },
+    { label: "Netherlands", value: "Netherlands", region: "EUROPE", isCPTPP: false },
+    { label: "Switzerland", value: "Switzerland", region: "EUROPE", isCPTPP: false },
+    { label: "Sweden", value: "Sweden", region: "EUROPE", isCPTPP: false },
+    { label: "Belgium", value: "Belgium", region: "EUROPE", isCPTPP: false },
+    { label: "Poland", value: "Poland", region: "EUROPE", isCPTPP: false },
+  ],
+  'NORTH & CENTRAL AMERICA': [
+    { label: "United States", value: "United States", region: "NORTH & CENTRAL AMERICA", isCPTPP: false },
+    { label: "Canada - CPTPP member", value: "Canada", region: "NORTH & CENTRAL AMERICA", isCPTPP: true },
+    { label: "Mexico - CPTPP member", value: "Mexico", region: "NORTH & CENTRAL AMERICA", isCPTPP: true },
+    { label: "Costa Rica", value: "Costa Rica", region: "NORTH & CENTRAL AMERICA", isCPTPP: false },
+    { label: "Panama", value: "Panama", region: "NORTH & CENTRAL AMERICA", isCPTPP: false },
+  ],
+  'SOUTH AMERICA': [
+    { label: "Brazil", value: "Brazil", region: "SOUTH AMERICA", isCPTPP: false },
+    { label: "Chile - CPTPP member", value: "Chile", region: "SOUTH AMERICA", isCPTPP: true },
+    { label: "Peru - CPTPP member", value: "Peru", region: "SOUTH AMERICA", isCPTPP: true },
+    { label: "Colombia", value: "Colombia", region: "SOUTH AMERICA", isCPTPP: false },
+    { label: "Argentina", value: "Argentina", region: "SOUTH AMERICA", isCPTPP: false },
+  ],
+  'MIDDLE EAST & AFRICA': [
+    { label: "United Arab Emirates", value: "United Arab Emirates", region: "MIDDLE EAST & AFRICA", isCPTPP: false },
+    { label: "Saudi Arabia", value: "Saudi Arabia", region: "MIDDLE EAST & AFRICA", isCPTPP: false },
+    { label: "Israel", value: "Israel", region: "MIDDLE EAST & AFRICA", isCPTPP: false },
+    { label: "South Africa", value: "South Africa", region: "MIDDLE EAST & AFRICA", isCPTPP: false },
+    { label: "Nigeria", value: "Nigeria", region: "MIDDLE EAST & AFRICA", isCPTPP: false },
+    { label: "Egypt", value: "Egypt", region: "MIDDLE EAST & AFRICA", isCPTPP: false },
+  ]
+};
+
+// Flatten for use in dropdowns when regional grouping isn't needed
+const countries = Object.values(countryGroups).flat();
 
 // Transport modes for dropdown
 const transportModes = [
@@ -273,11 +317,16 @@ const ProductInformationForm = ({
                       <SelectValue placeholder="Select origin country" />
                     </SelectTrigger>
                   </FormControl>
-                  <SelectContent>
-                    {countries.map((country) => (
-                      <SelectItem key={country.value} value={country.value}>
-                        {country.label}
-                      </SelectItem>
+                  <SelectContent className="max-h-80">
+                    {Object.entries(countryGroups).map(([region, regionCountries]) => (
+                      <div key={region}>
+                        <div className="px-2 py-1.5 text-sm font-semibold bg-gray-100">{region}</div>
+                        {regionCountries.map((country) => (
+                          <SelectItem key={country.value} value={country.value}>
+                            {country.label}
+                          </SelectItem>
+                        ))}
+                      </div>
                     ))}
                   </SelectContent>
                 </Select>
@@ -302,11 +351,16 @@ const ProductInformationForm = ({
                       <SelectValue placeholder="Select destination country" />
                     </SelectTrigger>
                   </FormControl>
-                  <SelectContent>
-                    {countries.map((country) => (
-                      <SelectItem key={country.value} value={country.value}>
-                        {country.label}
-                      </SelectItem>
+                  <SelectContent className="max-h-80">
+                    {Object.entries(countryGroups).map(([region, regionCountries]) => (
+                      <div key={region}>
+                        <div className="px-2 py-1.5 text-sm font-semibold bg-gray-100">{region}</div>
+                        {regionCountries.map((country) => (
+                          <SelectItem key={country.value} value={country.value}>
+                            {country.label}
+                          </SelectItem>
+                        ))}
+                      </div>
                     ))}
                   </SelectContent>
                 </Select>
