@@ -185,6 +185,11 @@ const NewCostForm = () => {
     
     // Update the global analysis context so other dashboards can access this data
     setCurrentAnalysis({
+      // Include the original form values for other dashboards to reference
+      formValues: formValues,
+      // Include the calculation results
+      results: mockResults,
+      // Include structured data for dashboards that expect specific formats
       totalCost: mockResults.totalCost,
       components: mockResults.components,
       productDetails: {

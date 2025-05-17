@@ -1,0 +1,39 @@
+PROMPT FOR AI DESIGN DEVELOPER:
+
+Check and fix data distribution from Cost Breakdown to all dashboard tabs
+
+ISSUE:
+The Cost Breakdown form collects necessary data, but dashboard tabs (Alternative Routes, Tariff Analysis, etc.) show "No Analysis Data Available" despite the data existing in the system.
+
+ACTION ITEMS:
+1. INVESTIGATION PHASE (CRITICAL FIRST STEP):
+   - Examine existing data store/state management implementation
+   - Check for existing event listeners or data broadcast mechanisms
+   - Inspect current tab component initialization code
+   - Verify if data paths between Cost Breakdown and other tabs are configured
+   - Identify if data transformations are already defined but not triggered
+
+2. DIAGNOSTIC CHECKS:
+   - Add logging to trace data flow after Cost Breakdown completion
+   - Verify if data is being stored but not accessed by dashboard tabs
+   - Check if dashboard tabs are attempting to access data with incorrect keys/paths
+   - Validate if conditional rendering logic is working properly
+
+3. IMPLEMENTATION STRATEGY (Based on investigation findings):
+   - If data store exists but connection is broken: Fix connection points
+   - If event system exists but not triggered: Add missing event dispatches
+   - If transformations exist but not called: Connect transformation pipeline
+   - If nothing exists: Implement minimal required components as outlined in design doc
+
+4. FOR EACH DASHBOARD TAB:
+   - Test data accessibility from existing store
+   - Verify transformation functions are receiving data
+   - Ensure visualization components are triggered when data exists
+   - Update conditional rendering to properly check for data availability
+
+5. GLOBAL IMPROVEMENTS:
+   - Add proper loading states during data processing
+   - Implement better error handling for missing data
+   - Ensure consistent user experience across all tabs
+
+Remember to leverage existing code and infrastructure wherever possible and avoid redundant implementations. The primary goal is to connect the dots between already-built components rather than creating new systems if they already exist.
