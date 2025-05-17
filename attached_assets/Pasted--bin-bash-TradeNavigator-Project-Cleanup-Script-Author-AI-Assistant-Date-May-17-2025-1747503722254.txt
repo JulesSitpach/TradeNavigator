@@ -1,0 +1,291 @@
+#!/bin/bash
+
+# TradeNavigator Project Cleanup Script
+# Author: AI Assistant
+# Date: May 17, 2025
+# Description: Identifies unused files, duplicates, and helps organize the codebase
+
+# Text colors for better readability
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+BLUE='\033[0;34m'
+PURPLE='\033[0;35m'
+NC='\033[0m' # No Color
+
+echo -e "${BLUE}============================================${NC}"
+echo -e "${BLUE}   TradeNavigator Project Cleanup Script    ${NC}"
+echo -e "${BLUE}============================================${NC}"
+
+# Create log directory
+TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
+LOG_DIR="cleanup_logs_${TIMESTAMP}"
+mkdir -p $LOG_DIR
+
+# Step 1: Create directory structure
+echo -e "\n${GREEN}Step 1: Creating directory structure...${NC}"
+mkdir -p src/main
+mkdir -p src/experimental
+mkdir -p src/deprecated
+mkdir -p src/archive/$(date +"%Y-%m-%d")
+
+# Create README for archive
+cat > src/archive/$(date +"%Y-%m-%d")/README.md << EOFREADME
+# Archived Files ($(date +"%Y-%m-%d"))
+
+This directory contains files that are no longer actively used in the project.
+
+## Archiving Reason
+
+Files in this directory were identified as:
+- Duplicate or similar to other files
+- Not imported by any other files
+- Superseded by newer implementations
+
+## Files
+
+| Filename | Original Location | Reason | Safe to Delete? |
+|----------|-------------------|--------|----------------|
+| (filename) | (path) | (reason) | (yes/no) |
+
+## Recovery
+
+If a file needs to be recovered:
+1. Move it back to its original location
+2. Update any imports in other files
+3. Test thoroughly to ensure functionality
+EOFREADME
+
+echo -e "${GREEN}✓ Directory structure created${NC}"
+
+# Step 2: Find unused files
+echo -e "\n${GREEN}Step 2: Finding unused files...${NC}"
+
+# Get all tsx files in the project
+ALL_FILES=$(find src -name "*.tsx" -type f | sort)
+echo "Total TSX files found: $(echo "$ALL_FILES" | wc -l)"
+
+# Get list of imports from all files
+echo "Analyzing imports..."
+IMPORTED_FILES=$(grep -r "import .* from " src --include="*.tsx" --include="*.ts" | 
+  sed -n "s/.*from [\'\"]\(\..*\)[\'\"]/\1/p" | 
+  sed 's/\.\///' | 
+  sed 's/\.\.//' | 
+  grep -v "^@" | 
+  sed 's/;$//' | 
+  sort | uniq)
+
+# Convert relative paths to full paths
+WORKING_DIR=$(pwd)
+NORMALIZED_IMPORTS=()
+for IMPORT in $IMPORTED_FILES; do
+  # Process imports to normalize paths
+  NORMALIZED_PATH=$(realpath --relative-to="$WORKING_DIR" "$IMPORT.tsx" 2>/dev/null || echo "")
+  if [ -n "$NORMALIZED_PATH" ]; then
+    NORMALIZED_IMPORTS+=("$NORMALIZED_PATH")
+  fi
+done
+
+# Find files not imported anywhere
+echo -e "${YELLOW}Files potentially not being used:${NC}"
+UNUSED_FILES=()
+for FILE in $ALL_FILES; do
+  NORMALIZED_FILE=$(realpath --relative-to="$WORKING_DIR" "$FILE")
+  
+  # Skip main entry files, index files and clearly important files
+  if [[ "$FILE" == *"index.tsx"* || "$FILE" == *"App.tsx"* || "$FILE" == *"main.tsx"* || "$FILE" == *"dashboard.tsx"* ]]; then
+    continue
+  fi
+  
+  # Check if file is imported
+  IMPORTED=false
+  for IMPORT in "${NORMALIZED_IMPORTS[@]}"; do
+    if [[ "$NORMALIZED_FILE" == *"$IMPORT"* ]]; then
+      IMPORTED=true
+      break
+    fi
+  done
+  
+  if [ "$IMPORTED" = false ]; then
+    echo -e "❌ ${RED}$FILE${NC}"
+    UNUSED_FILES+=("$FILE")
+  fi
+done
+
+# Save unused files to log
+echo "${UNUSED_FILES[@]}" > $LOG_DIR/unused_files.txt
+echo -e "${GREEN}✓ Unused files analysis complete. Results saved to $LOG_DIR/unused_files.txt${NC}"
+
+# Step 3: Identify duplicate or similar files
+echo -e "\n${GREEN}Step 3: Finding similar files...${NC}"
+
+# Create temporary directory for file contents
+mkdir -p .tmp-compare
+
+# Process all tsx files
+for file in $(find src -name "*.tsx" -type f); do
+  # Create a simplified version of the file (removing comments, whitespace)
+  basename=$(basename "$file" .tsx)
+  grep -v "^\s*//" "$file" | grep -v "^\s*\*" | tr -s '[:space:]' ' ' > .tmp-compare/"$basename".txt
+done
+
+# Compare files for similarity
+echo -e "${YELLOW}Potential duplicate or similar files:${NC}"
+SIMILAR_FILES=()
+for file1 in .tmp-compare/*.txt; do
+  basename1=$(basename "$file1" .txt)
+  for file2 in .tmp-compare/*.txt; do
+    basename2=$(basename "$file2" .txt)
+    
+    # Skip comparing a file to itself
+    if [[ "$file1" == "$file2" ]]; then
+      continue
+    fi
+    
+    # Only process each pair once
+    if [[ "$basename1" > "$basename2" ]]; then
+      continue
+    fi
+    
+    # Calculate similarity score
+    similarity=$(diff -y --suppress-common-lines "$file1" "$file2" | wc -l)
+    filesize=$(wc -l < "$file1")
+    
+    # If files are very similar (less than 25% different)
+    if [[ "$filesize" -gt 0 && "$similarity" -lt $(($filesize / 4)) ]]; then
+      echo -e "⚠️ ${PURPLE}Possible duplication: $basename1.tsx and $basename2.tsx ($similarity differences)${NC}"
+      SIMILAR_FILES+=("$basename1.tsx and $basename2.tsx ($similarity differences)")
+    fi
+  done
+done
+
+# Save similar files to log
+echo "${SIMILAR_FILES[@]}" > $LOG_DIR/similar_files.txt
+echo -e "${GREEN}✓ Similar files analysis complete. Results saved to $LOG_DIR/similar_files.txt${NC}"
+
+# Clean up
+rm -rf .tmp-compare
+
+# Step 4: Analyze cost breakdown related files
+echo -e "\n${GREEN}Step 4: Analyzing cost breakdown related files...${NC}"
+CB_FILES=$(find src -name "*cost*breakdown*.tsx" -type f)
+echo -e "${YELLOW}Cost breakdown related files:${NC}"
+for file in $CB_FILES; do
+  echo -e "📄 ${PURPLE}$file${NC}"
+done
+
+# Save cost breakdown files to log
+echo "$CB_FILES" > $LOG_DIR/cost_breakdown_files.txt
+
+# Step 5: Check imports in dashboard file
+echo -e "\n${GREEN}Step 5: Checking dashboard file imports...${NC}"
+DASHBOARD_FILES=$(find src -name "*dashboard*.tsx" -type f)
+
+for DASHBOARD_FILE in $DASHBOARD_FILES; do
+  echo -e "${YELLOW}Examining $DASHBOARD_FILE...${NC}"
+  
+  # Create backup
+  cp "$DASHBOARD_FILE" "$DASHBOARD_FILE.bak"
+  echo "Backup created: $DASHBOARD_FILE.bak"
+  
+  # Identify all cost breakdown related imports
+  CB_IMPORTS=$(grep -n "import.*cost.*breakdown" "$DASHBOARD_FILE")
+  if [ -n "$CB_IMPORTS" ]; then
+    echo -e "${PURPLE}Cost breakdown related imports:${NC}"
+    echo "$CB_IMPORTS"
+  else
+    echo -e "${PURPLE}No cost breakdown imports found.${NC}"
+  fi
+done
+
+# Save dashboard analysis to log
+echo "$CB_IMPORTS" > $LOG_DIR/dashboard_imports.txt
+
+# Step 6: Generate recommendations
+echo -e "\n${GREEN}Step 6: Generating recommendations...${NC}"
+
+# Generate file for recommended actions
+cat > $LOG_DIR/recommended_actions.md << EOFREC
+# Recommended Actions for Project Cleanup
+
+## Cost Breakdown Component Standardization
+
+Based on analysis of your codebase, here are recommended actions:
+
+### 1. Standardize on Primary Cost Breakdown Component
+
+\`\`\`bash
+# Rename the main implementation to follow naming convention
+mv src/components/cost-breakdown-complete.tsx src/main/main-cost-breakdown.tsx
+
+# Update import in dashboard file
+sed -i 's/import.*cost-breakdown-complete/import CostBreakdown from ".\/..\/main\/main-cost-breakdown"/' src/path/to/dashboard.tsx
+\`\`\`
+
+### 2. Move Experimental Versions
+
+\`\`\`bash
+# Move experimental versions to appropriate directory
+mv src/components/cost-breakdown-enhanced.tsx src/experimental/
+mv src/components/cost-breakdown-new.tsx src/experimental/
+\`\`\`
+
+### 3. Archive Unused Versions
+
+\`\`\`bash
+# Move unused versions to archive
+mv src/components/cost-breakdown.tsx src/archive/$(date +"%Y-%m-%d")/
+mv src/components/cost-breakdown-fixed.tsx src/archive/$(date +"%Y-%m-%d")/
+\`\`\`
+
+### 4. Update README with Archive Details
+
+Edit the README.md file in the archive directory with details of each archived file.
+
+### 5. Test After Changes
+
+After making these changes, thoroughly test the application to ensure everything works correctly.
+EOFREC
+
+# Step 7: Summary
+echo -e "\n${GREEN}Step 7: Generating summary...${NC}"
+
+cat > $LOG_DIR/summary.md << EOFSUM
+# TradeNavigator Project Cleanup Summary
+
+Analysis completed on $(date)
+
+## Statistics
+
+- Total TSX files found: $(echo "$ALL_FILES" | wc -l)
+- Potentially unused files: $(echo "${UNUSED_FILES[@]}" | wc -w)
+- Similar/duplicate files identified: $(echo "${SIMILAR_FILES[@]}" | wc -w)
+- Cost breakdown related files: $(echo "$CB_FILES" | wc -l)
+
+## Key Findings
+
+1. The project has multiple implementations of the cost breakdown component
+2. The dashboard is importing files that may cause confusion
+3. There are potentially unused files that could be archived
+4. Several files have high similarity and may be duplicating functionality
+
+## Recommended Next Steps
+
+1. Review the unused files list and determine which can be archived
+2. Standardize on a single main implementation of each component
+3. Move experimental and deprecated versions to appropriate directories
+4. Update import statements in the dashboard and other files
+5. Test thoroughly after making changes
+
+See the recommended_actions.md file for specific commands and steps.
+EOFSUM
+
+# Print final message
+echo -e "\n${BLUE}============================================${NC}"
+echo -e "${GREEN}Analysis complete!${NC}"
+echo -e "${GREEN}All logs and recommendations saved to: $LOG_DIR${NC}"
+echo -e "${YELLOW}Next steps:${NC}"
+echo -e "1. Review the $LOG_DIR/summary.md file"
+echo -e "2. Follow recommendations in $LOG_DIR/recommended_actions.md"
+echo -e "3. Test thoroughly after making changes"
+echo -e "${BLUE}============================================${NC}"
