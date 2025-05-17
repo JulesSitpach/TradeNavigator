@@ -19,7 +19,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import PageHeader from "@/components/common/PageHeader";
 import { useToast } from "@/hooks/use-toast";
 import { AnalysisContext } from "@/contexts/AnalysisContext";
-import { Calculator, Save, FileText, RotateCcw, PlusCircle, Search } from "lucide-react";
+import { Calculator, Save, FileText, RotateCcw, PlusCircle, Search, Pencil } from "lucide-react";
 import HSCodeAssistant from "@/components/ai/HSCodeAssistant";
 import "../../styles/cost-breakdown-form.css";
 
@@ -735,25 +735,148 @@ const NewCostForm = () => {
           </div>
         </CardContent>
         
-        {/* Results Card (shown after calculation) */}
+        {/* Enhanced Results Card (shown after calculation) */}
         {results && (
           <CardFooter className="border-t p-6 bg-gray-50">
             <div className="w-full">
-              <h3 className="text-lg font-semibold mb-3">Calculation Results</h3>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="p-4 bg-white rounded border">
-                  <p className="text-sm text-gray-500">Total Landed Cost</p>
-                  <p className="text-2xl font-bold">${results.totalCost.toFixed(2)}</p>
+              <h3 className="text-lg font-semibold mb-4">Calculation Results</h3>
+              
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                {/* Left Column: Detailed Cost Breakdown */}
+                <div className="lg:col-span-2">
+                  <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+                    <h3 className="text-lg font-medium mb-4">Detailed Cost Breakdown</h3>
+                    
+                    <div className="text-sm text-amber-700 bg-amber-50 p-3 rounded-md mb-4 border border-amber-200">
+                      <strong>Disclaimer:</strong> These calculations provide an estimate based on current data and standard rates. 
+                      Actual costs may vary based on specific product details, current regulatory changes, exchange rate fluctuations, 
+                      and carrier pricing. We recommend verifying critical figures with your customs broker or freight forwarder.
+                    </div>
+                    
+                    <table className="w-full">
+                      <thead>
+                        <tr className="bg-gray-50 text-left text-gray-600 text-sm">
+                          <th className="py-2 px-4 font-medium">Cost Component</th>
+                          <th className="py-2 px-4 font-medium text-right">Amount (USD)</th>
+                          <th className="py-2 px-4 font-medium text-right">Percentage</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-200">
+                        <tr>
+                          <td className="py-3 px-4">
+                            <div className="font-medium">Product Value</div>
+                            <div className="text-xs text-gray-500">Base value of goods</div>
+                          </td>
+                          <td className="py-3 px-4 text-right font-medium">${parseFloat(formValues.productValue).toFixed(2)}</td>
+                          <td className="py-3 px-4 text-right text-gray-600">
+                            {(parseFloat(formValues.productValue) / results.totalCost * 100).toFixed(1)}%
+                          </td>
+                        </tr>
+                        
+                        {results.components.map((component, index) => (
+                          <tr key={index}>
+                            <td className="py-3 px-4">
+                              <div className="font-medium">{component.name}</div>
+                              <div className="text-xs text-gray-500">
+                                {component.name === "Duties" && `Based on HS code ${formValues.hsCode}`}
+                                {component.name === "Taxes" && "Import VAT and other taxes"}
+                                {component.name === "Shipping" && `${formValues.transportMode} transport`}
+                                {component.name === "Insurance" && "Cargo protection"}
+                                {component.name === "Handling" && "Documentation and processing"}
+                              </div>
+                            </td>
+                            <td className="py-3 px-4 text-right font-medium">${component.value.toFixed(2)}</td>
+                            <td className="py-3 px-4 text-right text-gray-600">
+                              {(component.value / results.totalCost * 100).toFixed(1)}%
+                            </td>
+                          </tr>
+                        ))}
+                        
+                        <tr className="bg-blue-50">
+                          <td className="py-3 px-4 font-medium">Total Landed Cost</td>
+                          <td className="py-3 px-4 text-right font-bold">${results.totalCost.toFixed(2)}</td>
+                          <td className="py-3 px-4 text-right font-medium">100%</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
-                <div className="p-4 bg-white rounded border">
-                  <p className="text-sm text-gray-500">Cost Breakdown</p>
-                  <div className="space-y-2 mt-2">
-                    {results.components.map((component, index) => (
-                      <div key={index} className="flex justify-between">
-                        <span className="text-sm">{component.name}:</span>
-                        <span className="text-sm font-medium">${component.value.toFixed(2)}</span>
+
+                {/* Right Column: Summary and Actions */}
+                <div>
+                  <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm mb-6">
+                    <h3 className="text-lg font-medium mb-4">Cost Summary</h3>
+                    <div className="space-y-3">
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Product Value:</span>
+                        <span className="font-medium">${parseFloat(formValues.productValue).toFixed(2)}</span>
                       </div>
-                    ))}
+                      
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Total Duties & Taxes:</span>
+                        <span className="font-medium">
+                          ${((results.components.find(c => c.name === "Duties")?.value || 0) + 
+                            (results.components.find(c => c.name === "Taxes")?.value || 0)).toFixed(2)}
+                        </span>
+                      </div>
+                      
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Shipping & Handling:</span>
+                        <span className="font-medium">
+                          ${((results.components.find(c => c.name === "Shipping")?.value || 0) + 
+                            (results.components.find(c => c.name === "Handling")?.value || 0)).toFixed(2)}
+                        </span>
+                      </div>
+                      
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Insurance & Other:</span>
+                        <span className="font-medium">
+                          ${(results.components.find(c => c.name === "Insurance")?.value || 0).toFixed(2)}
+                        </span>
+                      </div>
+                      
+                      <div className="pt-2 mt-2 border-t border-gray-200 flex justify-between">
+                        <span className="font-medium">Total Landed Cost:</span>
+                        <span className="font-bold text-blue-700">${results.totalCost.toFixed(2)}</span>
+                      </div>
+                      
+                      <div className="pt-4">
+                        <Button 
+                          variant="outline"
+                          className="w-full border-green-600 text-green-600 hover:bg-green-50"
+                          onClick={() => {
+                            setIsModifying(true);
+                            toast({
+                              title: "Modifying Analysis",
+                              description: "You can now make changes to your analysis."
+                            });
+                          }}
+                        >
+                          <Pencil className="h-4 w-4 mr-2" />
+                          Modify Analysis
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+                    <h3 className="text-lg font-medium mb-4">Save Analysis</h3>
+                    <div className="space-y-3">
+                      <p className="text-sm text-gray-600">Save this breakdown to reference later or share with your team</p>
+                      <Input
+                        type="text"
+                        placeholder="Analysis name"
+                        value={saveName}
+                        onChange={(e) => setSaveName(e.target.value)}
+                      />
+                      <Button 
+                        className="w-full"
+                        onClick={saveAnalysis}
+                      >
+                        <Save className="h-4 w-4 mr-2" />
+                        Save Analysis
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </div>
