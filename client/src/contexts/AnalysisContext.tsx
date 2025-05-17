@@ -86,17 +86,18 @@ export const AnalysisContext = createContext<AnalysisContextType | undefined>(un
 
 // Create a provider component
 export const AnalysisProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Force clear demo data right at component initialization
-  useEffect(() => {
-    // Clear demo data from localStorage to ensure we start with clean user data
-    localStorage.removeItem('currentAnalysis');
-    localStorage.removeItem('hasAnalysisData');
-    console.log('Cleared any demo data from localStorage');
-  }, []);
-
   const [currentAnalysis, setCurrentAnalysis] = useState<AnalysisData | null>(null);
   const [savedAnalyses, setSavedAnalyses] = useState<AnalysisData[]>([]);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  
+  // Force clear demo data right at component initialization - do this first before any other effects
+  useEffect(() => {
+    // Clear ALL localStorage data to ensure we start completely fresh
+    localStorage.removeItem('currentAnalysis');
+    localStorage.removeItem('hasAnalysisData');
+    localStorage.removeItem('savedAnalyses');
+    console.log('Reset application data - removed all demo data');
+  }, []);
 
   // Use tanstack/react-query to fetch saved analyses
   const { 
