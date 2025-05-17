@@ -78,14 +78,20 @@ const countryGroups = {
 };
 
 const NewCostForm = () => {
-  // Get the analysis context to potentially load saved values
-  const analysisContext = useContext(AnalysisContext);
+  // Import the custom context hook instead of using useContext directly
+  // This ensures we get proper error checking and type safety
+  const { 
+    currentAnalysis,
+    savedAnalyses: contextSavedAnalyses,
+    setCurrentAnalysis,
+    isLoading: analysisLoading
+  } = useAnalysis();
   
   // Initialize form values from context or with defaults
   const initialFormValues = () => {
-    if (analysisContext?.currentAnalysis?.formValues) {
+    if (currentAnalysis?.formValues) {
       console.log("Loading initial form values from context");
-      return analysisContext.currentAnalysis.formValues;
+      return currentAnalysis.formValues;
     }
     
     // Default empty form values
@@ -131,9 +137,8 @@ const NewCostForm = () => {
   // UI state
   const [calculationComplete, setCalculationComplete] = useState(false);
   
-  // Context and hooks
+  // Additional hooks
   const { toast } = useToast();
-  const { setCurrentAnalysis } = useContext(AnalysisContext);
   
   // Load saved analyses and form data from localStorage on component mount
   useEffect(() => {
