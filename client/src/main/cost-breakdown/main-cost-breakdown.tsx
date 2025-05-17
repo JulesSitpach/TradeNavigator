@@ -932,6 +932,90 @@ const NewCostForm = () => {
                   </div>
                 </div>
               </div>
+              
+              {/* Import Timeline & Next Steps */}
+              <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm mb-6">
+                <h3 className="text-lg font-medium mb-4">Import Timeline & Next Steps</h3>
+                
+                <div className="relative">
+                  <div className="absolute left-4 h-full w-0.5 bg-gray-200"></div>
+                  
+                  <div className="relative flex items-start mb-6">
+                    <div className="flex-shrink-0 h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center -ml-4 mr-3 z-10">
+                      <span className="text-white font-medium">1</span>
+                    </div>
+                    <div>
+                      <h4 className="font-medium">Documentation Preparation</h4>
+                      <p className="text-sm text-gray-600 mt-1">
+                        Prepare all required documents including Certificate of Origin 
+                        {formValues.originCountry && formValues.destinationCountry && 
+                          ` for shipping from ${formValues.originCountry} to ${formValues.destinationCountry}`}.
+                      </p>
+                      <p className="text-sm font-medium text-blue-600 mt-1">Estimated time: 1-2 weeks</p>
+                    </div>
+                  </div>
+                  
+                  <div className="relative flex items-start mb-6">
+                    <div className="flex-shrink-0 h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center -ml-4 mr-3 z-10">
+                      <span className="text-white font-medium">2</span>
+                    </div>
+                    <div>
+                      <h4 className="font-medium">Shipping & Transit</h4>
+                      <p className="text-sm text-gray-600 mt-1">
+                        {formValues.transportMode === "Air" ? "Air freight" : formValues.transportMode === "Sea" ? "Sea freight" : "Transport"} 
+                        {formValues.originCountry && formValues.destinationCountry && 
+                          ` from ${formValues.originCountry} to ${formValues.destinationCountry}`} with current port conditions.
+                      </p>
+                      <p className="text-sm font-medium text-blue-600 mt-1">
+                        Estimated time: {formValues.transportMode === "Air" ? "5-7 days" : formValues.transportMode === "Sea" ? "25-30 days" : "15-30 days"}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="relative flex items-start mb-6">
+                    <div className="flex-shrink-0 h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center -ml-4 mr-3 z-10">
+                      <span className="text-white font-medium">3</span>
+                    </div>
+                    <div>
+                      <h4 className="font-medium">Customs Clearance</h4>
+                      <p className="text-sm text-gray-600 mt-1">
+                        Processing through {formValues.destinationCountry ? `${formValues.destinationCountry} customs` : 'destination customs'} 
+                        with applicable trade agreement benefits.
+                      </p>
+                      <p className="text-sm font-medium text-blue-600 mt-1">Estimated time: 3-5 days</p>
+                    </div>
+                  </div>
+                  
+                  <div className="relative flex items-start">
+                    <div className="flex-shrink-0 h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center -ml-4 mr-3 z-10">
+                      <span className="text-white font-medium">4</span>
+                    </div>
+                    <div>
+                      <h4 className="font-medium">Delivery & Installation</h4>
+                      <p className="text-sm text-gray-600 mt-1">Final delivery to destination and installation setup.</p>
+                      <p className="text-sm font-medium text-blue-600 mt-1">Estimated time: 1-2 days</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="mt-6 pt-6 border-t border-gray-200">
+                  <p className="font-medium mb-2">Total Estimated Timeline</p>
+                  <div className="h-4 bg-gray-100 rounded-full overflow-hidden">
+                    <div className="flex h-full">
+                      <div className="bg-blue-200 w-1/4" title="Documentation"></div>
+                      <div className="bg-blue-400 w-2/4" title="Shipping"></div>
+                      <div className="bg-blue-500 w-1/8" title="Customs"></div>
+                      <div className="bg-blue-600 w-1/8" title="Delivery"></div>
+                    </div>
+                  </div>
+                  <div className="flex justify-between text-xs text-gray-500 mt-1">
+                    <span>Start</span>
+                    <span>
+                      {formValues.transportMode === "Air" ? "10-15" : formValues.transportMode === "Sea" ? "30-40" : "20-35"} days total
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
           </CardFooter>
         )}
