@@ -15,7 +15,7 @@ import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AnalysisContext } from "@/contexts/AnalysisContext";
 import { useToast } from "@/hooks/use-toast";
-import { BarChart, PieChart, LineChart, Bar, Pie, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import { BarChart, PieChart, LineChart, Bar, Pie, Cell, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { Plane, Ship, Truck, Clock, DollarSign, AlertTriangle, MapPin, Calendar, BarChart3 } from "lucide-react";
 import PageHeader from "@/components/common/PageHeader";
 
