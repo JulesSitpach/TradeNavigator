@@ -610,8 +610,8 @@ const ProductInformationForm = ({
               )}
             </Button>
             
-            {/* Actions Dropdown */}
-            {results && (
+            {/* Actions Dropdown - only visible when results exist */}
+            {formData && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" className="px-2">
@@ -623,12 +623,7 @@ const ProductInformationForm = ({
                     <DropdownMenuItem 
                       onClick={() => {
                         if (formData) {
-                          setIsModifyingAnalysis(true);
-                          setLastAnalysis(formData);
-                          setModificationInfo({
-                            originalName: saveName || "Unnamed Analysis",
-                            date: new Date().toLocaleDateString()
-                          });
+                          handleModify();
                         }
                       }}
                       className="cursor-pointer flex items-center"
@@ -642,8 +637,11 @@ const ProductInformationForm = ({
                   {isModifyingAnalysis && (
                     <DropdownMenuItem 
                       onClick={() => {
+                        setIsModifying(false);
                         setIsModifyingAnalysis(false);
-                        form.reset(lastAnalysis || {});
+                        if (lastAnalysis) {
+                          form.reset(lastAnalysis);
+                        }
                         setModificationInfo(null);
                       }}
                       className="cursor-pointer flex items-center text-amber-600"
@@ -837,6 +835,7 @@ const CostBreakdownDashboard = () => {
   const [results, setResults] = useState<any>(null);
   const { toast } = useToast();
   const [isModifying, setIsModifying] = useState(false);
+  const [isModifyingAnalysis, setIsModifyingAnalysis] = useState(false);
   const [lastAnalysis, setLastAnalysis] = useState<ProductInfoFormValues | null>(null);
   const [modificationInfo, setModificationInfo] = useState<{originalName: string, date: string} | null>(null);
   const { setCurrentAnalysis } = useAnalysis();
