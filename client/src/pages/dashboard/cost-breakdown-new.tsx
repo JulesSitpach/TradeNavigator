@@ -921,20 +921,28 @@ const CostBreakdownDashboard = () => {
     }, 100);
   };
   
-  // Load a saved analysis
+  // Load a saved analysis with complete data reload functionality
   const loadAnalysis = (analysis: SavedAnalysis) => {
+    // Step 1: Set application state for the form and results
     setFormData(analysis.formData);
     setResults(analysis.results);
     setShowResults(true);
+    setCurrentAnalysisId(analysis.id);
     
-    // Reset form with loaded values to populate the input fields
+    // Step 2: Reset form with loaded values to populate all input fields
     form.reset(analysis.formData);
     
-    // Update the central analysis context to synchronize all dashboards
+    // Step 3: Update the central analysis context to synchronize all dashboards
     if (analysis.results) {
-      setCurrentAnalysis({
+      // Create a comprehensive analysis object with all required data
+      const completeAnalysis = {
+        id: analysis.id,
         totalCost: analysis.results.totalCost,
         components: analysis.results.components,
+        currency: analysis.results.currency || 'USD',
+        exchangeRatesDate: analysis.results.exchangeRatesDate || new Date(),
+        disclaimer: analysis.results.disclaimer,
+        breakdown: analysis.results.breakdown,
         productDetails: {
           description: analysis.formData.productDescription,
           hsCode: analysis.formData.hsCode,
@@ -951,10 +959,44 @@ const CostBreakdownDashboard = () => {
             height: analysis.formData.height
           }
         },
-        timestamp: new Date()
-      });
+        shippingDetails: {
+          transportMode: analysis.formData.transportMode,
+          incoterm: analysis.formData.incoterm,
+          weight: analysis.formData.weight,
+          dimensions: {
+            length: analysis.formData.length,
+            width: analysis.formData.width,
+            height: analysis.formData.height
+          },
+          quantity: analysis.formData.quantity,
+          packageType: analysis.formData.packageType,
+          shipmentType: analysis.formData.shipmentType
+        },
+        timestamp: new Date(),
+        loadedFrom: {
+          savedAnalysisId: analysis.id,
+          name: analysis.name,
+          savedOn: new Date(analysis.date)
+        }
+      };
+      
+      // Set the complete analysis in the global context
+      setCurrentAnalysis(completeAnalysis);
+      
+      // Update any dependent context or state
+      if (setLastUpdated) {
+        setLastUpdated(new Date());
+      }
     }
     
+    // Step 4: Show success message
+    toast({
+      title: "Analysis Loaded",
+      description: `${analysis.name || 'Analysis'} has been loaded successfully with all data`,
+      variant: "default"
+    });
+    
+    // Step 5: Scroll to results section for better UX
     setTimeout(() => {
       const resultsElement = document.getElementById('cost-breakdown-results');
       if (resultsElement) {
