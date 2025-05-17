@@ -86,6 +86,14 @@ export const AnalysisContext = createContext<AnalysisContextType | undefined>(un
 
 // Create a provider component
 export const AnalysisProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  // Force clear demo data right at component initialization
+  useEffect(() => {
+    // Clear demo data from localStorage to ensure we start with clean user data
+    localStorage.removeItem('currentAnalysis');
+    localStorage.removeItem('hasAnalysisData');
+    console.log('Cleared any demo data from localStorage');
+  }, []);
+
   const [currentAnalysis, setCurrentAnalysis] = useState<AnalysisData | null>(null);
   const [savedAnalyses, setSavedAnalyses] = useState<AnalysisData[]>([]);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
@@ -112,14 +120,21 @@ export const AnalysisProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   // Load current analysis from localStorage on mount
   useEffect(() => {
-    // Try to load and restore current analysis from localStorage
+    // Clear any demo data that might be in localStorage
     const localCurrentAnalysis = localStorage.getItem('currentAnalysis');
     if (localCurrentAnalysis) {
       try {
         const parsedData = JSON.parse(localCurrentAnalysis);
-        // Normalize the analysis data to ensure consistent structure
-        const normalizedData = normalizeAnalysisData(parsedData);
         
+        // Check if this is demo data and remove it
+        if (parsedData.isDemo || parsedData.name?.includes('[DEMO]')) {
+          console.log('Removing demo data from localStorage');
+          localStorage.removeItem('currentAnalysis');
+          return; // Don't process demo data
+        }
+        
+        // For real user data, normalize and use it
+        const normalizedData = normalizeAnalysisData(parsedData);
         if (normalizedData) {
           console.log('Restored current analysis from localStorage:', normalizedData);
           setCurrentAnalysis(normalizedData);
@@ -127,6 +142,8 @@ export const AnalysisProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         }
       } catch (e) {
         console.error('Error parsing current analysis from localStorage', e);
+        // If there's an error with the stored data, clear it
+        localStorage.removeItem('currentAnalysis');
       }
     } else {
       console.log('No saved analysis found in localStorage.');
