@@ -14,15 +14,32 @@ export function calculateDutyRate(hsCode: string, originCountry: string, destina
     else if (hsPrefix === '8517') return 0; // Phones
     else if (hsPrefix === '6109') return 16.5; // T-shirts
     else if (hsPrefix === '2208') return 14.0; // Spirits
+    else if (hsPrefix === '9403') return 2.5; // Wooden furniture
     else return 3.5; // Default US rate
   } else if (destinationCountry === 'UK') {
     if (hsPrefix === '8471' || hsPrefix === '8517') return 0; // Electronics
     else if (hsPrefix === '6109') return 12.0; // Textiles
+    else if (hsPrefix === '9403') return 3.7; // Wooden furniture
     else return 4.0; // Default UK rate
   } else if (destinationCountry === 'CN') {
     if (hsPrefix === '8471') return 9.0;
     else if (hsPrefix === '8517') return 11.0;
+    else if (hsPrefix === '9403') return 10.0; // Wooden furniture
     else return 7.5; // Default China rate
+  } else if (destinationCountry === 'EU' || destinationCountry === 'European Union') {
+    if (hsPrefix === '8471' || hsPrefix === '8517') return 0; // Electronics
+    else if (hsPrefix === '6109') return 12.0; // Textiles
+    else if (hsPrefix === '9403') return 2.7; // Wooden furniture
+    else return 3.8; // Default EU rate
+  }
+  
+  // Check if this is a CPTPP trade agreement route
+  const cptppOrigins = ['Japan', 'Australia', 'Canada', 'Mexico', 'Singapore', 'Vietnam', 'Peru', 'Chile', 'Malaysia', 'New Zealand'];
+  const cptppDestinations = ['Japan', 'Australia', 'Canada', 'Mexico', 'Singapore', 'Vietnam', 'Peru', 'Chile', 'Malaysia', 'New Zealand', 'United Kingdom'];
+  
+  if (cptppOrigins.includes(originCountry) && cptppDestinations.includes(destinationCountry)) {
+    if (hsPrefix === '9403') return 0; // Duty-free furniture within CPTPP
+    return 0.5; // Preferential rate for CPTPP members
   }
   
   // Default international rate
