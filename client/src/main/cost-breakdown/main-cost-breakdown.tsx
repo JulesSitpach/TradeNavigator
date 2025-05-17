@@ -120,11 +120,35 @@ const NewCostForm = () => {
   const { toast } = useToast();
   const { setCurrentAnalysis } = useContext(AnalysisContext);
   
-  // Load saved analyses from localStorage on component mount
+  // Load saved analyses and form data from localStorage on component mount
   useEffect(() => {
+    // Load saved analyses
     const savedAnalysesFromStorage = localStorage.getItem('savedCostAnalyses');
     if (savedAnalysesFromStorage) {
       setSavedAnalyses(JSON.parse(savedAnalysesFromStorage));
+    }
+    
+    // Load any previously saved form data if it exists
+    const savedFormData = localStorage.getItem('currentFormData');
+    if (savedFormData) {
+      try {
+        const parsedFormData = JSON.parse(savedFormData);
+        setFormValues(parsedFormData);
+      } catch (error) {
+        console.error("Error loading saved form data:", error);
+      }
+    }
+    
+    // Load any previous calculation results
+    const savedResults = localStorage.getItem('calculationResults');
+    if (savedResults) {
+      try {
+        const parsedResults = JSON.parse(savedResults);
+        setResults(parsedResults);
+        setCalculationComplete(true);
+      } catch (error) {
+        console.error("Error loading saved results:", error);
+      }
     }
   }, []);
   
@@ -136,8 +160,11 @@ const NewCostForm = () => {
     }));
   };
   
-  // Calculate costs
+  // Calculate costs without clearing the form
   const calculateCosts = () => {
+    // Store current form data in localStorage to preserve it
+    localStorage.setItem('currentFormData', JSON.stringify(formValues));
+    
     // For demo purposes, we'll generate mock results
     // In a real implementation, this would call your API or perform the calculation
     const mockResults = {
@@ -151,8 +178,10 @@ const NewCostForm = () => {
       ]
     };
     
+    // Store calculation results
     setResults(mockResults);
     setCalculationComplete(true);
+    localStorage.setItem('calculationResults', JSON.stringify(mockResults));
     
     // Update the global analysis context so other dashboards can access this data
     setCurrentAnalysis({
