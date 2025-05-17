@@ -402,6 +402,7 @@ const NewCostForm = () => {
                       <SelectItem value="food">Food & Beverages</SelectItem>
                       <SelectItem value="chemicals">Chemicals</SelectItem>
                       <SelectItem value="machinery">Machinery</SelectItem>
+                      <SelectItem value="others">Others</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
