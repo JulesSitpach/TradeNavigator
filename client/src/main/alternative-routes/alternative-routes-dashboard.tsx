@@ -504,6 +504,8 @@ const AlternativeRoutesDashboard = () => {
         icon={<MapPin className="h-6 w-6 text-blue-600" />}
       />
       
+
+      
       {isLoading ? (
         <Card className="w-full my-6">
           <CardContent className="p-6 flex justify-center items-center min-h-[400px]">

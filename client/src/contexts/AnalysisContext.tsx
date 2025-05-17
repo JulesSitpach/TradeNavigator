@@ -129,56 +129,7 @@ export const AnalysisProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         console.error('Error parsing current analysis from localStorage', e);
       }
     } else {
-      console.log('No saved analysis found in localStorage. Checking if we need to create demo data.');
-      
-      // If no analysis exists, we'll create a demo one for testing purposes
-      const hasAnalysisData = localStorage.getItem('hasAnalysisData');
-      if (!hasAnalysisData || hasAnalysisData !== 'true') {
-        console.log('Creating demo analysis data for development purposes');
-        
-        // Create a demo analysis with example data that matches our structure
-        const demoAnalysis = {
-          id: 'demo-analysis-123',
-          name: 'Demo Analysis',
-          date: new Date(),
-          formValues: {
-            productDescription: 'Organic Cotton T-Shirts',
-            productCategory: 'Textiles & Apparel',
-            hsCode: '6109.10',
-            originCountry: 'IN',
-            destinationCountry: 'US',
-            productValue: '5000',
-            quantity: '250',
-            weight: '150',
-            length: '40',
-            width: '30',
-            height: '20',
-            transportMode: 'Sea',
-            incoterm: 'FOB'
-          },
-          results: {
-            totalCost: 7850,
-            components: [
-              { name: 'Duty', amount: 750, percentage: 9.55, details: { category: 'Customs' } },
-              { name: 'VAT/Sales Tax', amount: 500, percentage: 6.37, details: { category: 'Tax' } },
-              { name: 'Freight', amount: 1200, percentage: 15.29, details: { category: 'Logistics' } },
-              { name: 'Insurance', amount: 150, percentage: 1.91, details: { category: 'Logistics' } },
-              { name: 'Documentation', amount: 250, percentage: 3.18, details: { category: 'Administration' } }
-            ],
-            timestamp: new Date()
-          }
-        };
-        
-        // Normalize it to ensure it has all needed fields
-        const normalizedDemo = normalizeAnalysisData(demoAnalysis);
-        console.log('Created normalized demo data:', normalizedDemo);
-        
-        // Set as current analysis and save to localStorage
-        setCurrentAnalysis(normalizedDemo);
-        localStorage.setItem('currentAnalysis', JSON.stringify(normalizedDemo));
-        localStorage.setItem('hasAnalysisData', 'true');
-        setLastUpdated(new Date());
-      }
+      console.log('No saved analysis found in localStorage.');
     }
   }, []);
 

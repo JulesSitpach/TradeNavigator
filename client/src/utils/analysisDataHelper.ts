@@ -145,7 +145,8 @@ export const normalizeAnalysisData = (analysis: any): AnalysisData => {
   normalized.date = normalized.date || normalized.timestamp || new Date();
 
   // Step 2: Ensure formValues exists with all required fields
-  if (!normalized.formValues || typeof normalized.formValues !== 'object') {
+  // This is critical to fix data distribution issues between dashboards
+  if (!normalized.formValues || typeof normalized.formValues !== 'object' || Object.keys(normalized.formValues).length === 0) {
     normalized.formValues = createDefaultFormValues();
     
     // Extract form values from productDetails if available
@@ -170,6 +171,10 @@ export const normalizeAnalysisData = (analysis: any): AnalysisData => {
         normalized.formValues.height = normalized.productDetails.dimensions.height?.toString() || '';
       }
     }
+    
+    console.log('Created formValues from productDetails', normalized.formValues);
+  } else {
+    console.log('Using existing formValues', normalized.formValues);
   }
 
   // Step 3: Ensure results exists with all required fields
