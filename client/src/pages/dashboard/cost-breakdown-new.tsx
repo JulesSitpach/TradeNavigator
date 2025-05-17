@@ -619,24 +619,32 @@ const ProductInformationForm = ({
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  {!isModifyingAnalysis && (
+                  {!isModifying && (
                     <DropdownMenuItem 
                       onClick={() => {
-                        // Enable modification mode
-                        setIsModifying(true);
-                        setIsModifyingAnalysis(true);
-                        
-                        // Store original data for potential revert
+                        // Only proceed if we have form data
                         if (formData) {
+                          // Enable modification mode with both state variables
+                          setIsModifying(true);
+                          setIsModifyingAnalysis(true);
+                          
+                          // Store original data for potential revert
                           setLastAnalysis(formData);
                           
                           // Pre-fill form with current data
                           form.reset(formData);
                           
-                          // Set modification info for UI
+                          // Set modification info for UI feedback
                           setModificationInfo({
                             originalName: saveName || "Current Analysis",
                             date: new Date().toLocaleDateString()
+                          });
+
+                          // Show success toast
+                          toast({
+                            title: "Modifying Analysis",
+                            description: "Make your changes and click Recalculate when done.",
+                            variant: "default"
                           });
                         }
                       }}
@@ -648,20 +656,27 @@ const ProductInformationForm = ({
                       Modify Values
                     </DropdownMenuItem>
                   )}
-                  {isModifyingAnalysis && (
+                  {isModifying && (
                     <DropdownMenuItem 
                       onClick={() => {
-                        // Reset modification states
+                        // Reset both modification states
                         setIsModifying(false);
                         setIsModifyingAnalysis(false);
                         
-                        // Reset form to original data
+                        // Reset form to original data if available
                         if (lastAnalysis) {
                           form.reset(lastAnalysis);
                         }
                         
-                        // Clear modification info
+                        // Clear modification info UI display
                         setModificationInfo(null);
+                        
+                        // Notify user
+                        toast({
+                          title: "Changes Reverted",
+                          description: "Returned to the original analysis values",
+                          variant: "default"
+                        });
                       }}
                       className="cursor-pointer flex items-center text-amber-600"
                     >
@@ -671,17 +686,15 @@ const ProductInformationForm = ({
                       Revert Changes
                     </DropdownMenuItem>
                   )}
-                  {formData && (
-                    <DropdownMenuItem 
-                      onClick={() => setSaveDialogOpen(true)}
-                      className="cursor-pointer flex items-center text-blue-600"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                        <path d="M7.707 10.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V6h5a2 2 0 012 2v7a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2h5v5.586l-1.293-1.293zM9 4a1 1 0 012 0v2H9V4z" />
-                      </svg>
-                      Save Analysis
-                    </DropdownMenuItem>
-                  )}
+                  <DropdownMenuItem 
+                    onClick={() => setSaveDialogOpen(true)}
+                    className="cursor-pointer flex items-center text-blue-600"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                      <path d="M7.707 10.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V6h5a2 2 0 012 2v7a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2h5v5.586l-1.293-1.293zM9 4a1 1 0 012 0v2H9V4z" />
+                    </svg>
+                    Save Analysis
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             )}
