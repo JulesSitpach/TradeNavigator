@@ -1,10 +1,12 @@
-import { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import { useState, useContext } from "react";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Search } from "lucide-react";
+import { Search, PlusCircle, Calculator } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { AnalysisContext } from "@/contexts/AnalysisContext";
+import { useLocation } from "wouter";
 
 export default function ExactScreenshotMatch() {
   const { toast } = useToast();

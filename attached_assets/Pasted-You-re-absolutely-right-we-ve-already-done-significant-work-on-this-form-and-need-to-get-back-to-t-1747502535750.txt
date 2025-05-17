@@ -1,0 +1,47 @@
+You're absolutely right - we've already done significant work on this form and need to get back to that point rather than redoing everything. Here's what I recommend for your developer:
+Implementation Instructions: Restore Existing Cost Breakdown Form
+Current Status
+We've identified the correct form in cost-breakdown-complete.tsx which contains all our previous work, including:
+
+Comprehensive product information fields
+Shipping details
+HS code assistant integration
+Analysis saving/loading functionality
+
+Required Actions for Developer
+1. Restore Component Usage in Main Navigation
+javascript// In your main router/navigation file (likely dashboard.tsx)
+// Find the import for the Cost Breakdown component
+import CostBreakdown from './components/[current-path]';
+
+// Change to:
+import CostBreakdown from './components/cost-breakdown-complete';
+
+// Make sure this component is used in your route definition or navigation mapping
+2. Verify Form Submission Button
+
+Ensure the "Calculate" button at the bottom of the form is present
+The button should be within the ProductInformationForm component
+It should be connected to the form submission handler (onCalculate)
+
+3. Confirm "New Analysis" Button
+
+Verify the "New Analysis" button exists in the page header
+Check that it correctly resets the form when clicked
+Validate it's visible at the top right as shown in our previous implementation
+
+4. Test Save/Load Functionality
+
+Confirm that the "Save Analysis" functionality works
+Test that the "Load" button properly loads saved analyses
+Verify that the "Modify" functionality correctly pre-fills the form
+
+5. Render Full Component
+
+Make sure the component renders in its entirety without cutting off
+Verify all fields are visible and the button appears at the bottom
+Check that the form scrolls properly if content is long
+
+Important Note:
+DO NOT create a new implementation or modify the existing code substantially. The goal is to restore access to our previous work, NOT to create a new version or start over.
+By focusing on restoring the component we already developed rather than making significant changes, we'll avoid losing our progress and can continue enhancing the functionality from where we left off.
