@@ -22,6 +22,7 @@ import Profile from "@/pages/profile";
 import Subscription from "@/pages/subscription";
 import SpecialPrograms from "@/pages/special-programs";
 import SpecialProgramsRedesigned from "@/pages/dashboard/special-programs-redesigned";
+import SimpleTradeCostBreakdown from "@/pages/dashboard/simple-trade-cost-breakdown";
 
 // Dashboard pages
 import CostBreakdownDashboard from "@/pages/dashboard/cost-breakdown-fixed";
