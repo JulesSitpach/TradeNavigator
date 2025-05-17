@@ -216,6 +216,9 @@ const ProductInformationForm = ({
     onReset();
   };
   
+  // Check if this form is currently in modification mode
+  const isModifyingAnalysis = isModified && lastAnalysis !== null;
+  
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -747,6 +750,7 @@ const CostBreakdownDashboard = () => {
   const { toast } = useToast();
   const [isModifying, setIsModifying] = useState(false);
   const [lastAnalysis, setLastAnalysis] = useState<ProductInfoFormValues | null>(null);
+  const [modificationInfo, setModificationInfo] = useState<{originalName: string, date: string} | null>(null);
   const { setCurrentAnalysis } = useAnalysis();
   
   // Form reference to programmatically update form values
@@ -1197,6 +1201,7 @@ const CostBreakdownDashboard = () => {
                           >
                             Load
                           </Button>
+
                           <Button 
                             variant="outline" 
                             size="sm" 
