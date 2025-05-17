@@ -6,43 +6,119 @@
  * Calculate duty rate based on HS code, origin and destination
  */
 export function calculateDutyRate(hsCode: string, originCountry: string, destinationCountry: string): number {
-  // Apply realistic duty rates based on HS code and country pairs
+  // Get the first 4 digits of the HS code for category matching
   const hsPrefix = hsCode.substring(0, 4);
   
-  if (destinationCountry === 'US') {
-    if (hsPrefix === '8471') return 0; // Computers
-    else if (hsPrefix === '8517') return 0; // Phones
-    else if (hsPrefix === '6109') return 16.5; // T-shirts
-    else if (hsPrefix === '2208') return 14.0; // Spirits
-    else if (hsPrefix === '9403') return 2.5; // Wooden furniture
-    else return 3.5; // Default US rate
-  } else if (destinationCountry === 'UK') {
-    if (hsPrefix === '8471' || hsPrefix === '8517') return 0; // Electronics
-    else if (hsPrefix === '6109') return 12.0; // Textiles
-    else if (hsPrefix === '9403') return 3.7; // Wooden furniture
-    else return 4.0; // Default UK rate
-  } else if (destinationCountry === 'CN') {
-    if (hsPrefix === '8471') return 9.0;
-    else if (hsPrefix === '8517') return 11.0;
-    else if (hsPrefix === '9403') return 10.0; // Wooden furniture
-    else return 7.5; // Default China rate
-  } else if (destinationCountry === 'EU' || destinationCountry === 'European Union') {
-    if (hsPrefix === '8471' || hsPrefix === '8517') return 0; // Electronics
-    else if (hsPrefix === '6109') return 12.0; // Textiles
-    else if (hsPrefix === '9403') return 2.7; // Wooden furniture
-    else return 3.8; // Default EU rate
+  // Trade agreement detection - these define preferential rates between countries
+  const tradeAgreements = {
+    'CPTPP': {
+      'members': ['Japan', 'Australia', 'Canada', 'Mexico', 'Singapore', 'Vietnam', 'Peru', 'Chile', 'Malaysia', 'New Zealand', 'United Kingdom'],
+      'preferentialRate': 0.5,
+      'zeroRateCategories': ['8471', '8517', '9403'] // Categories with zero duty in this agreement
+    },
+    'USMCA': {
+      'members': ['United States', 'Canada', 'Mexico'],
+      'preferentialRate': 0,
+      'zeroRateCategories': ['8471', '8517', '8708', '9403']
+    },
+    'ASEAN': {
+      'members': ['Indonesia', 'Malaysia', 'Philippines', 'Singapore', 'Thailand', 'Brunei', 'Vietnam', 'Laos', 'Myanmar', 'Cambodia'],
+      'preferentialRate': 0,
+      'zeroRateCategories': ['9403', '8471', '6109', '8517'] // Free trade for furniture and electronics within ASEAN
+    },
+    'Indonesia-Australia': {
+      'members': ['Indonesia', 'Australia'],
+      'preferentialRate': 0,
+      'zeroRateCategories': ['9403'] // Zero duty on furniture between Indonesia and Australia
+    }
+  };
+  
+  // Base rates by destination country and HS category
+  const countryRates = {
+    'US': {
+      'defaultRate': 3.5,
+      'categoryRates': {
+        '8471': 0, // Computers
+        '8517': 0, // Phones
+        '6109': 16.5, // T-shirts
+        '2208': 14.0, // Spirits
+        '9403': 2.5, // Wooden furniture
+        '8708': 2.5, // Auto parts
+        '3004': 0, // Pharmaceuticals
+        '8544': 5.0, // Cables
+      }
+    },
+    'UK': {
+      'defaultRate': 4.0,
+      'categoryRates': {
+        '8471': 0, // Electronics
+        '8517': 0, // Electronics
+        '6109': 12.0, // Textiles
+        '9403': 3.7, // Wooden furniture
+        '8708': 4.5, // Auto parts
+        '3004': 0, // Pharmaceuticals
+      }
+    },
+    'European Union': {
+      'defaultRate': 3.8,
+      'categoryRates': {
+        '8471': 0, // Electronics
+        '8517': 0, // Electronics
+        '6109': 12.0, // Textiles
+        '9403': 2.7, // Wooden furniture
+        '8708': 3.9, // Auto parts
+        '3004': 0, // Pharmaceuticals
+      }
+    },
+    'China': {
+      'defaultRate': 7.5,
+      'categoryRates': {
+        '8471': 9.0, // Electronics
+        '8517': 11.0, // Electronics
+        '9403': 10.0, // Wooden furniture
+      }
+    }
+  };
+  
+  // Set EU as alias for European Union
+  countryRates['EU'] = countryRates['European Union'];
+  
+  // Add Indonesia-specific rates
+  countryRates['Indonesia'] = {
+    'defaultRate': 5.0,
+    'categoryRates': {
+      '9403': 3.0, // Wooden furniture
+      '6109': 15.0, // Textiles
+      '8471': 2.5, // Electronics
+    }
+  };
+  
+  // Check for trade agreements first - they take precedence
+  for (const [agreementName, agreement] of Object.entries(tradeAgreements)) {
+    if (agreement.members.includes(originCountry) && agreement.members.includes(destinationCountry)) {
+      // If this product category has zero duty under this agreement
+      if (agreement.zeroRateCategories.includes(hsPrefix)) {
+        console.log(`Zero duty applied: ${originCountry} to ${destinationCountry} for HS ${hsPrefix} under ${agreementName}`);
+        return 0;
+      }
+      // Otherwise apply the preferential rate
+      console.log(`Preferential rate applied: ${originCountry} to ${destinationCountry} under ${agreementName}`);
+      return agreement.preferentialRate;
+    }
   }
   
-  // Check if this is a CPTPP trade agreement route
-  const cptppOrigins = ['Japan', 'Australia', 'Canada', 'Mexico', 'Singapore', 'Vietnam', 'Peru', 'Chile', 'Malaysia', 'New Zealand'];
-  const cptppDestinations = ['Japan', 'Australia', 'Canada', 'Mexico', 'Singapore', 'Vietnam', 'Peru', 'Chile', 'Malaysia', 'New Zealand', 'United Kingdom'];
-  
-  if (cptppOrigins.includes(originCountry) && cptppDestinations.includes(destinationCountry)) {
-    if (hsPrefix === '9403') return 0; // Duty-free furniture within CPTPP
-    return 0.5; // Preferential rate for CPTPP members
+  // If no trade agreement applies, use the destination country's standard rates
+  if (countryRates[destinationCountry]) {
+    const countryRate = countryRates[destinationCountry];
+    // Check if this specific category has a defined rate
+    if (countryRate.categoryRates[hsPrefix] !== undefined) {
+      return countryRate.categoryRates[hsPrefix];
+    }
+    // Otherwise use the default rate for that country
+    return countryRate.defaultRate;
   }
   
-  // Default international rate
+  // Default international rate if no specific rules match
   return 5.0;
 }
 

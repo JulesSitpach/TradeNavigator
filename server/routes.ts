@@ -1726,7 +1726,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           name: `Import Duty (${dutyRate.toFixed(1)}%)`,
           value: parseFloat(dutyAmount.toFixed(2)),
           percentage: parseFloat(((dutyAmount / totalLandedCost) * 100).toFixed(1)),
-          description: `Import duty calculated at ${dutyRate.toFixed(1)}% of product value`,
+          description: `Import duty for HS code ${productDetails.hsCode} (${productDetails.productCategory}) from ${productDetails.originCountry} to ${productDetails.destinationCountry} at ${dutyRate.toFixed(1)}%`,
           category: "duty"
         },
         {
