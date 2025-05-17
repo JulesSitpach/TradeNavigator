@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { FaCircleInfo, FaMagnifyingGlass } from "react-icons/fa6";
 import CopilotAssistant from "@/components/ai/CopilotAssistant";
 import { Button } from "@/components/ui/button";
+import { useAnalysis } from "@/contexts/AnalysisContext";
 import {
   Form,
   FormControl,
@@ -633,6 +634,28 @@ const CostBreakdownDashboard = () => {
   const [saveName, setSaveName] = useState("");
   const [formData, setFormData] = useState<ProductInfoFormValues | null>(null);
   const [results, setResults] = useState<any>(null);
+  const { setCurrentAnalysis } = useAnalysis();
+  
+  // Form reference to programmatically update form values
+  const form = useForm<ProductInfoFormValues>({
+    resolver: zodResolver(productInfoFormSchema),
+    defaultValues: {
+      productDescription: "",
+      productCategory: "",
+      hsCode: "",
+      originCountry: "",
+      destinationCountry: "",
+      productValue: 0,
+      quantity: 1,
+      weight: 0,
+      transportMode: "",
+      shipmentType: "",
+      packageType: "",
+      length: 0,
+      width: 0,
+      height: 0
+    }
+  });
 
   // Load saved analyses from local storage on mount
   useEffect(() => {
@@ -686,21 +709,49 @@ const CostBreakdownDashboard = () => {
     const sampleResults = {
       totalCost: 38222,
       components: [
-        { name: "Product Value", value: 20000, category: "product" },
-        { name: "Import Duty", value: 2000, category: "duty" },
-        { name: "VAT", value: 560, category: "tax" },
-        { name: "Ocean Freight", value: 8500, category: "shipping" },
-        { name: "Insurance", value: 950, category: "shipping" },
-        { name: "Port Handling", value: 1200, category: "shipping" },
-        { name: "Customs Clearance", value: 1802, category: "shipping" },
-        { name: "Documentation Fees", value: 350, category: "other" },
-        { name: "Last Mile Delivery", value: 1860, category: "shipping" },
-        { name: "Other Fees", value: 1000, category: "other" }
+        { name: "Product Value", value: 20000, category: "product", percentage: 52.3 },
+        { name: "Import Duty", value: 2000, category: "duty", percentage: 5.2 },
+        { name: "VAT", value: 560, category: "tax", percentage: 1.5 },
+        { name: "Ocean Freight", value: 8500, category: "shipping", percentage: 22.2 },
+        { name: "Insurance", value: 950, category: "shipping", percentage: 2.5 },
+        { name: "Port Handling", value: 1200, category: "shipping", percentage: 3.1 },
+        { name: "Customs Clearance", value: 1802, category: "shipping", percentage: 4.7 },
+        { name: "Documentation Fees", value: 350, category: "other", percentage: 0.9 },
+        { name: "Last Mile Delivery", value: 1860, category: "shipping", percentage: 4.9 },
+        { name: "Other Fees", value: 1000, category: "other", percentage: 2.6 }
       ]
     };
     
     setResults(sampleResults);
     setShowResults(true);
+    
+    // Update the central analysis context to synchronize all dashboards
+    setCurrentAnalysis({
+      totalCost: sampleResults.totalCost,
+      components: sampleResults.components.map(c => ({
+        name: c.name,
+        amount: c.value,
+        percentage: c.percentage,
+        details: { category: c.category }
+      })),
+      productDetails: {
+        description: values.productDescription,
+        hsCode: values.hsCode,
+        category: values.productCategory,
+        originCountry: values.originCountry,
+        destinationCountry: values.destinationCountry,
+        productValue: values.productValue,
+        weight: values.weight,
+        transportMode: values.transportMode,
+        quantity: values.quantity,
+        dimensions: {
+          length: values.length,
+          width: values.width,
+          height: values.height
+        }
+      },
+      timestamp: new Date()
+    });
     
     // Scroll to results section after calculation
     setTimeout(() => {
@@ -744,6 +795,34 @@ const CostBreakdownDashboard = () => {
     setFormData(analysis.formData);
     setResults(analysis.results);
     setShowResults(true);
+    
+    // Reset form with loaded values to populate the input fields
+    form.reset(analysis.formData);
+    
+    // Update the central analysis context to synchronize all dashboards
+    if (analysis.results) {
+      setCurrentAnalysis({
+        totalCost: analysis.results.totalCost,
+        components: analysis.results.components,
+        productDetails: {
+          description: analysis.formData.productDescription,
+          hsCode: analysis.formData.hsCode,
+          category: analysis.formData.productCategory,
+          originCountry: analysis.formData.originCountry,
+          destinationCountry: analysis.formData.destinationCountry,
+          productValue: analysis.formData.productValue,
+          weight: analysis.formData.weight,
+          transportMode: analysis.formData.transportMode,
+          quantity: analysis.formData.quantity,
+          dimensions: {
+            length: analysis.formData.length,
+            width: analysis.formData.width,
+            height: analysis.formData.height
+          }
+        },
+        timestamp: new Date()
+      });
+    }
     
     setTimeout(() => {
       const resultsElement = document.getElementById('cost-breakdown-results');
