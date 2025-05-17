@@ -622,6 +622,7 @@ const CostBreakdownDashboard = () => {
   const [savedAnalyses, setSavedAnalyses] = useState<SavedAnalysis[]>([]);
   const [saveName, setSaveName] = useState("");
   const [formData, setFormData] = useState<ProductInfoFormValues | null>(null);
+  const [results, setResults] = useState<any>(null);
 
   // Load saved analyses from local storage on mount
   useEffect(() => {
