@@ -82,7 +82,7 @@ const NewCostForm = () => {
   const [formValues, setFormValues] = useState({
     productDescription: "",
     productCategory: "",
-    hsCode: "8471.30", // Default value for demo
+    hsCode: "", // No default value
     originCountry: "",
     destinationCountry: "",
     productValue: "",
@@ -274,7 +274,7 @@ const NewCostForm = () => {
     setFormValues({
       productDescription: "",
       productCategory: "",
-      hsCode: "8471.30", // Default value for demo
+      hsCode: "", // No default value
       originCountry: "",
       destinationCountry: "",
       productValue: "",
