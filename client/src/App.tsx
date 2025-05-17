@@ -24,10 +24,11 @@ import SpecialPrograms from "@/pages/special-programs";
 import SpecialProgramsRedesigned from "@/pages/dashboard/special-programs-redesigned";
 
 // Dashboard pages
-import CostBreakdownDashboard from "@/pages/dashboard/cost-breakdown";
+import CostBreakdownDashboard from "@/pages/dashboard/cost-breakdown-fixed";
 import CostBreakdownComplete from "@/pages/dashboard/cost-breakdown-complete";
 import CostBreakdownNew from "@/pages/dashboard/cost-breakdown-new";
 import CostBreakdownCalculator from "@/pages/dashboard/cost-breakdown-calculator";
+import CostBreakdownOriginal from "@/pages/dashboard/cost-breakdown";
 import CostBreakdownEnhanced from "@/pages/dashboard/cost-breakdown-enhanced";
 import AlternativeRoutesDashboard from "@/pages/dashboard/alternative-routes";
 import TariffAnalysisDashboard from "@/pages/dashboard/tariff-analysis";
@@ -91,11 +92,11 @@ function Router() {
       
       {/* Dashboard Flexible Tabs Routes */}
       <PrivateRoute exact path="/dashboard/overview" component={Dashboard} />
-      <PrivateRoute exact path="/dashboard/cost-breakdown" component={CostBreakdownEnhanced} />
+      <PrivateRoute exact path="/dashboard/cost-breakdown" component={CostBreakdownDashboard} />
       <PrivateRoute exact path="/dashboard/cost-breakdown-original" component={CostBreakdownDashboard} />
       <PrivateRoute exact path="/dashboard/cost-breakdown-complete" component={CostBreakdownComplete} />
       <PrivateRoute exact path="/dashboard/cost-breakdown-calculator" component={CostBreakdownCalculator} />
-      <PrivateRoute exact path="/dashboard/cost-breakdown-new" component={CostBreakdownNew} />
+      <PrivateRoute exact path="/dashboard/cost-breakdown-enhanced" component={CostBreakdownEnhanced} />
       <PrivateRoute exact path="/dashboard/alternative-routes" component={AlternativeRoutesDashboard} />
       <PrivateRoute exact path="/dashboard/tariff-analysis" component={TariffAnalysisDashboard} />
       <PrivateRoute exact path="/dashboard/regulations" component={Dashboard} />

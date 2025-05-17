@@ -24,6 +24,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -31,55 +32,32 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import HSCodeAssistant from "@/components/ai/HSCodeAssistant";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogFooter, 
-  DialogHeader, 
-  DialogTitle,
-  DialogDescription
-} from "@/components/ui/dialog";
 
-// Define form schema for validation
+// Form schema for product information
 const productInfoFormSchema = z.object({
-  // Product details
-  productName: z.string().min(2, { message: "Product name must be at least 2 characters." }),
-  productCategory: z.string().min(1, { message: "Product category is required." }),
-  hsCode: z.string().min(4, { message: "HS code must be at least 4 characters." }),
-  productDescription: z.string().min(5, { message: "Description must be at least 5 characters." }),
-  unitValue: z.string().min(1, { message: "Unit value is required." }),
-  quantity: z.string().min(1, { message: "Quantity is required." }),
-  
-  // Origin and destination
-  originCountry: z.string().min(1, { message: "Origin country is required." }),
-  destinationCountry: z.string().min(1, { message: "Destination country is required." }),
-  
-  // Shipping details
-  transportMode: z.string().min(1, { message: "Transport mode is required." }),
-  packageType: z.string().min(1, { message: "Package type is required." }),
-  weight: z.string().min(1, { message: "Weight is required." }),
-  dimensions: z.string().optional(),
-  
-  // Commercial terms
-  incoterm: z.string().min(1, { message: "Incoterm is required." }),
-  paymentTerms: z.string().optional(),
-  
-  // Additional information
-  specialPrograms: z.string().array().optional(),
-  additionalNotes: z.string().optional(),
+  productDescription: z.string().min(5, "Product description is required"),
+  productCategory: z.string().min(1, "Product category is required"),
+  hsCode: z.string().min(4, "HS Code is required"),
+  originCountry: z.string().min(1, "Origin country is required"),
+  destinationCountry: z.string().min(1, "Destination country is required"),
+  productValue: z.coerce.number().min(0, "Product value must be a positive number"),
+  quantity: z.coerce.number().min(1, "Quantity must be at least 1"),
+  weight: z.coerce.number().min(0, "Weight must be a positive number"),
+  transportMode: z.string().min(1, "Transport mode is required"),
+  shipmentType: z.string().min(1, "Shipment type is required"),
+  packageType: z.string().min(1, "Package type is required"),
+  length: z.coerce.number().min(0, "Length must be a positive number"),
+  width: z.coerce.number().min(0, "Width must be a positive number"),
+  height: z.coerce.number().min(0, "Height must be a positive number"),
 });
 
 type ProductInfoFormValues = z.infer<typeof productInfoFormSchema>;
 
+// Type for saved analysis
 interface SavedAnalysis {
   id: string;
   name: string;
@@ -88,30 +66,136 @@ interface SavedAnalysis {
   results: any;
 }
 
-// Form component with validation
-const ProductInfoForm = ({ 
-  defaultValues = {},
-  onCalculate,
-  isModifyingAnalysis = false,
+// Product categories for dropdown
+const productCategories = [
+  { label: "Electronics", value: "Electronics" },
+  { label: "Textiles & Apparel", value: "Textiles & Apparel" },
+  { label: "Chemicals", value: "Chemicals" },
+  { label: "Machinery", value: "Machinery" },
+  { label: "Food & Beverages", value: "Food & Beverages" },
+  { label: "Pharmaceuticals", value: "Pharmaceuticals" },
+  { label: "Automotive", value: "Automotive" },
+  { label: "Furniture", value: "Furniture" },
+  { label: "Toys & Games", value: "Toys & Games" },
+];
+
+// Country lists organized by region
+// CPTPP members are marked accordingly
+const countryGroups = {
+  'ASIA-PACIFIC REGION': [
+    { label: "Japan - CPTPP member", value: "Japan", region: "ASIA-PACIFIC REGION", isCPTPP: true },
+    { label: "South Korea", value: "South Korea", region: "ASIA-PACIFIC REGION", isCPTPP: false },
+    { label: "China", value: "China", region: "ASIA-PACIFIC REGION", isCPTPP: false },
+    { label: "India", value: "India", region: "ASIA-PACIFIC REGION", isCPTPP: false },
+    { label: "Vietnam - CPTPP member", value: "Vietnam", region: "ASIA-PACIFIC REGION", isCPTPP: true },
+    { label: "Singapore - CPTPP member", value: "Singapore", region: "ASIA-PACIFIC REGION", isCPTPP: true },
+    { label: "Malaysia - CPTPP member", value: "Malaysia", region: "ASIA-PACIFIC REGION", isCPTPP: true },
+    { label: "Australia - CPTPP member", value: "Australia", region: "ASIA-PACIFIC REGION", isCPTPP: true },
+    { label: "Indonesia", value: "Indonesia", region: "ASIA-PACIFIC REGION", isCPTPP: false },
+    { label: "Taiwan", value: "Taiwan", region: "ASIA-PACIFIC REGION", isCPTPP: false },
+    { label: "New Zealand - CPTPP member", value: "New Zealand", region: "ASIA-PACIFIC REGION", isCPTPP: true },
+    { label: "Thailand", value: "Thailand", region: "ASIA-PACIFIC REGION", isCPTPP: false },
+    { label: "Philippines", value: "Philippines", region: "ASIA-PACIFIC REGION", isCPTPP: false },
+  ],
+  'EUROPE': [
+    { label: "European Union", value: "European Union", region: "EUROPE", isCPTPP: false },
+    { label: "Germany", value: "Germany", region: "EUROPE", isCPTPP: false },
+    { label: "United Kingdom - CPTPP member", value: "United Kingdom", region: "EUROPE", isCPTPP: true },
+    { label: "France", value: "France", region: "EUROPE", isCPTPP: false },
+    { label: "Spain", value: "Spain", region: "EUROPE", isCPTPP: false },
+    { label: "Italy", value: "Italy", region: "EUROPE", isCPTPP: false },
+    { label: "Netherlands", value: "Netherlands", region: "EUROPE", isCPTPP: false },
+    { label: "Switzerland", value: "Switzerland", region: "EUROPE", isCPTPP: false },
+    { label: "Sweden", value: "Sweden", region: "EUROPE", isCPTPP: false },
+    { label: "Belgium", value: "Belgium", region: "EUROPE", isCPTPP: false },
+    { label: "Poland", value: "Poland", region: "EUROPE", isCPTPP: false },
+  ],
+  'NORTH & CENTRAL AMERICA': [
+    { label: "United States", value: "United States", region: "NORTH & CENTRAL AMERICA", isCPTPP: false },
+    { label: "Canada - CPTPP member", value: "Canada", region: "NORTH & CENTRAL AMERICA", isCPTPP: true },
+    { label: "Mexico - CPTPP member", value: "Mexico", region: "NORTH & CENTRAL AMERICA", isCPTPP: true },
+    { label: "Costa Rica", value: "Costa Rica", region: "NORTH & CENTRAL AMERICA", isCPTPP: false },
+    { label: "Panama", value: "Panama", region: "NORTH & CENTRAL AMERICA", isCPTPP: false },
+  ],
+  'SOUTH AMERICA': [
+    { label: "Brazil", value: "Brazil", region: "SOUTH AMERICA", isCPTPP: false },
+    { label: "Chile - CPTPP member", value: "Chile", region: "SOUTH AMERICA", isCPTPP: true },
+    { label: "Peru - CPTPP member", value: "Peru", region: "SOUTH AMERICA", isCPTPP: true },
+    { label: "Colombia", value: "Colombia", region: "SOUTH AMERICA", isCPTPP: false },
+    { label: "Argentina", value: "Argentina", region: "SOUTH AMERICA", isCPTPP: false },
+  ],
+  'MIDDLE EAST & AFRICA': [
+    { label: "United Arab Emirates", value: "United Arab Emirates", region: "MIDDLE EAST & AFRICA", isCPTPP: false },
+    { label: "Saudi Arabia", value: "Saudi Arabia", region: "MIDDLE EAST & AFRICA", isCPTPP: false },
+    { label: "Israel", value: "Israel", region: "MIDDLE EAST & AFRICA", isCPTPP: false },
+    { label: "South Africa", value: "South Africa", region: "MIDDLE EAST & AFRICA", isCPTPP: false },
+    { label: "Nigeria", value: "Nigeria", region: "MIDDLE EAST & AFRICA", isCPTPP: false },
+    { label: "Egypt", value: "Egypt", region: "MIDDLE EAST & AFRICA", isCPTPP: false },
+  ]
+};
+
+// Flatten for use in dropdowns when regional grouping isn't needed
+const countries = Object.values(countryGroups).flat();
+
+// Transport modes for dropdown
+const transportModes = [
+  { label: "Air Freight", value: "Air Freight" },
+  { label: "Sea Freight", value: "Sea Freight" },
+  { label: "Rail Freight", value: "Rail Freight" },
+  { label: "Road Transport", value: "Road Transport" },
+];
+
+// Shipment types for dropdown
+const shipmentTypes = [
+  { label: "Less than Container Load (LCL)", value: "LCL" },
+  { label: "Full Container Load (FCL)", value: "FCL" },
+  { label: "Express Parcel", value: "Express" },
+  { label: "Bulk Cargo", value: "Bulk" },
+];
+
+// Package types for dropdown
+const packageTypes = [
+  { label: "Cardboard Box", value: "Cardboard Box" },
+  { label: "Wooden Crate", value: "Wooden Crate" },
+  { label: "Pallet", value: "Pallet" },
+  { label: "Drum", value: "Drum" },
+  { label: "Bag", value: "Bag" },
+];
+
+// Product Information Form Component
+const ProductInformationForm = ({ 
+  onCalculate, 
+  isModified = false,
   lastAnalysis = null,
-  modificationInfo = null
+  onReset = () => {}
 }: { 
-  defaultValues?: Partial<ProductInfoFormValues>,
   onCalculate: (values: ProductInfoFormValues) => void,
-  isModifyingAnalysis?: boolean,
+  isModified?: boolean,
   lastAnalysis?: ProductInfoFormValues | null,
-  modificationInfo?: { originalName: string, date: string } | null
+  onReset?: () => void
 }) => {
-  const [selectedTab, setSelectedTab] = useState("productDetails");
-  const [isModified, setIsModified] = useState(false);
+  const [showHSAssistant, setShowHSAssistant] = useState(false);
   const [modifiedFields, setModifiedFields] = useState<string[]>([]);
-  const [showHSCodeAssistant, setShowHSCodeAssistant] = useState(false);
-  const [saveDialogOpen, setSaveDialogOpen] = useState(false);
   
-  // Initialize form with React Hook Form and zod validation
+  // Initialize form with default values or modified values
   const form = useForm<ProductInfoFormValues>({
     resolver: zodResolver(productInfoFormSchema),
-    defaultValues: defaultValues
+    defaultValues: lastAnalysis || {
+      productDescription: "",
+      productCategory: "",
+      hsCode: "",
+      originCountry: "",
+      destinationCountry: "",
+      productValue: 0,
+      quantity: 1,
+      weight: 0,
+      transportMode: "",
+      shipmentType: "",
+      packageType: "",
+      length: 0,
+      width: 0,
+      height: 0,
+    },
   });
   
   // When form values change, track which fields are different from lastAnalysis
@@ -134,538 +218,426 @@ const ProductInfoForm = ({
   
   // Handle form reset
   const handleReset = () => {
-    if (lastAnalysis) {
-      form.reset(lastAnalysis);
-      setIsModified(false);
-      setModifiedFields([]);
-    } else {
-      form.reset();
-    }
+    form.reset();
+    setModifiedFields([]);
+    onReset();
   };
   
-  // If this is a modification, set modified flag when form values change
-  useEffect(() => {
-    if (isModifyingAnalysis && lastAnalysis) {
-      setIsModified(true);
-    }
-  }, [form.watch(), isModifyingAnalysis, lastAnalysis]);
-  
-  // Dummy data for select fields
-  const categories = [
-    { value: "electronics", label: "Electronics" },
-    { value: "furniture", label: "Furniture" },
-    { value: "clothing", label: "Clothing & Textiles" },
-    { value: "food", label: "Food & Beverages" },
-    { value: "machinery", label: "Machinery & Equipment" },
-    { value: "chemicals", label: "Chemicals & Materials" },
-    { value: "automotive", label: "Automotive Parts" },
-    { value: "pharmaceuticals", label: "Pharmaceuticals" },
-  ];
-  
-  const countries = [
-    { value: "us", label: "United States" },
-    { value: "cn", label: "China" },
-    { value: "in", label: "India" },
-    { value: "jp", label: "Japan" },
-    { value: "kr", label: "South Korea" },
-    { value: "mx", label: "Mexico" },
-    { value: "ca", label: "Canada" },
-    { value: "uk", label: "United Kingdom" },
-    { value: "de", label: "Germany" },
-    { value: "fr", label: "France" },
-    { value: "it", label: "Italy" },
-    { value: "au", label: "Australia" },
-    { value: "nz", label: "New Zealand" },
-    { value: "sg", label: "Singapore" },
-    { value: "id", label: "Indonesia" },
-    { value: "my", label: "Malaysia" },
-    { value: "th", label: "Thailand" },
-    { value: "vn", label: "Vietnam" },
-    { value: "ph", label: "Philippines" },
-    { value: "eu", label: "European Union" },
-  ];
-  
-  const transportModes = [
-    { value: "air", label: "Air Freight" },
-    { value: "sea", label: "Sea Freight" },
-    { value: "road", label: "Road Transport" },
-    { value: "rail", label: "Rail Transport" },
-    { value: "multimodal", label: "Multimodal" },
-  ];
-  
-  const packageTypes = [
-    { value: "pallet", label: "Palletized" },
-    { value: "carton", label: "Carton Box" },
-    { value: "crate", label: "Wooden Crate" },
-    { value: "container", label: "Full Container" },
-    { value: "bulk", label: "Bulk Cargo" },
-    { value: "drum", label: "Drums/Barrels" },
-  ];
-  
-  const incoterms = [
-    { value: "exw", label: "EXW (Ex Works)" },
-    { value: "fca", label: "FCA (Free Carrier)" },
-    { value: "fas", label: "FAS (Free Alongside Ship)" },
-    { value: "fob", label: "FOB (Free On Board)" },
-    { value: "cfr", label: "CFR (Cost and Freight)" },
-    { value: "cif", label: "CIF (Cost, Insurance & Freight)" },
-    { value: "cpt", label: "CPT (Carriage Paid To)" },
-    { value: "cip", label: "CIP (Carriage & Insurance Paid)" },
-    { value: "dap", label: "DAP (Delivered At Place)" },
-    { value: "dpu", label: "DPU (Delivered at Place Unloaded)" },
-    { value: "ddp", label: "DDP (Delivered Duty Paid)" },
-  ];
-  
-  const specialPrograms = [
-    { value: "gsp", label: "GSP (Generalized System of Preferences)" },
-    { value: "fta", label: "Free Trade Agreement" },
-    { value: "cptpp", label: "CPTPP Member" },
-    { value: "usmca", label: "USMCA" },
-    { value: "bonded", label: "Bonded Warehouse" },
-    { value: "section321", label: "Section 321 (De Minimis)" },
-    { value: "dutydrawback", label: "Duty Drawback" },
-  ];
-  
-  // Handler for HS code selection from the assistant
-  const handleHSCodeSelect = (code: string) => {
-    form.setValue("hsCode", code);
-    setShowHSCodeAssistant(false);
-  };
+  // Check if this form is currently in modification mode
+  const isModifyingAnalysis = isModified && lastAnalysis !== null;
   
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} id="product-info-form">
-        <Tabs value={selectedTab} onValueChange={setSelectedTab}>
-          <TabsList className="mb-4">
-            <TabsTrigger value="productDetails">Product Details</TabsTrigger>
-            <TabsTrigger value="shipment">Shipment Information</TabsTrigger>
-            <TabsTrigger value="commercial">Commercial Terms</TabsTrigger>
-          </TabsList>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <div className="space-y-4">
+          <h3 className="font-medium text-lg">Product Details</h3>
           
-          <TabsContent value="productDetails" className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <FormField
-                control={form.control}
-                name="productName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Product Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g., Office Desk Chair" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="productCategory"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Product Category</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select a category" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {categories.map((category) => (
-                          <SelectItem key={category.value} value={category.value}>
-                            {category.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="hsCode"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="flex items-center justify-between">
-                      HS Code
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setShowHSCodeAssistant(true)}
-                        className="flex items-center text-xs"
-                      >
-                        <FaMagnifyingGlass className="mr-1 h-3 w-3" />
-                        Find Code
-                      </Button>
-                    </FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g., 9403.30" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <div className="grid grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="unitValue"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Unit Value (USD)</FormLabel>
-                      <FormControl>
-                        <Input type="number" min="0" step="0.01" placeholder="0.00" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={form.control}
-                  name="quantity"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Quantity</FormLabel>
-                      <FormControl>
-                        <Input type="number" min="1" placeholder="1" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              
-              <FormField
-                control={form.control}
-                name="productDescription"
-                render={({ field }) => (
-                  <FormItem className="col-span-1 md:col-span-2">
-                    <FormLabel>Product Description</FormLabel>
-                    <FormControl>
-                      <Textarea 
-                        placeholder="Brief description of the product..."
-                        className="resize-none"
-                        rows={3}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-          </TabsContent>
+          {/* Product Description */}
+          <FormField
+            control={form.control}
+            name="productDescription"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Product Description</FormLabel>
+                <FormControl>
+                  <Input placeholder="e.g. High-performance laptop, 13-inch display, 32GB RAM, 1TB SSD" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           
-          <TabsContent value="shipment" className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <FormField
-                control={form.control}
-                name="originCountry"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Origin Country</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select origin country" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {countries.map((country) => (
-                          <SelectItem key={country.value} value={country.value}>
-                            {country.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="destinationCountry"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Destination Country</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select destination country" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {countries.map((country) => (
-                          <SelectItem key={country.value} value={country.value}>
-                            {country.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="transportMode"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Transport Mode</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select transport mode" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {transportModes.map((mode) => (
-                          <SelectItem key={mode.value} value={mode.value}>
-                            {mode.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="packageType"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Package Type</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select package type" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {packageTypes.map((type) => (
-                          <SelectItem key={type.value} value={type.value}>
-                            {type.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="weight"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Weight (kg)</FormLabel>
-                    <FormControl>
-                      <Input type="number" min="0.01" step="0.01" placeholder="0.00" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="dimensions"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Dimensions (L×W×H cm)</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g., 100×50×25" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-          </TabsContent>
+          {/* Product Category */}
+          <FormField
+            control={form.control}
+            name="productCategory"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Product Category <span className="text-xs text-blue-600">(Select first for better HS code results)</span></FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a category" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {productCategories.map((category) => (
+                      <SelectItem key={category.value} value={category.value}>
+                        {category.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           
-          <TabsContent value="commercial" className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <FormField
-                control={form.control}
-                name="incoterm"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Incoterm</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select incoterm" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {incoterms.map((incoterm) => (
-                          <SelectItem key={incoterm.value} value={incoterm.value}>
-                            {incoterm.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
+          {/* HS Code with AI Assistant */}
+          <FormField
+            control={form.control}
+            name="hsCode"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>HS Code</FormLabel>
+                <div className="flex items-center space-x-2">
+                  <FormControl>
+                    <Input placeholder="e.g. 8471.30" {...field} />
+                  </FormControl>
+                  <Button 
+                    type="button" 
+                    size="icon"
+                    variant="outline"
+                    className="border-green-500 text-green-500"
+                    onClick={() => setShowHSAssistant(!showHSAssistant)}
+                  >
+                    <FaMagnifyingGlass className="h-4 w-4" />
+                  </Button>
+                </div>
+                {showHSAssistant && (
+                  <HSCodeAssistant
+                    category={form.getValues("productCategory")}
+                    onSelect={(code: string) => {
+                      form.setValue("hsCode", code);
+                      setShowHSAssistant(false);
+                    }}
+                  />
                 )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="paymentTerms"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Payment Terms</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select payment terms" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="advance">100% Advance</SelectItem>
-                        <SelectItem value="net30">Net 30 Days</SelectItem>
-                        <SelectItem value="net60">Net 60 Days</SelectItem>
-                        <SelectItem value="net90">Net 90 Days</SelectItem>
-                        <SelectItem value="lc">Letter of Credit</SelectItem>
-                        <SelectItem value="dp">Documents against Payment</SelectItem>
-                        <SelectItem value="da">Documents against Acceptance</SelectItem>
-                        <SelectItem value="oa">Open Account</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="specialPrograms"
-                render={({ field }) => (
-                  <FormItem className="col-span-1 md:col-span-2">
-                    <FormLabel>Special Programs</FormLabel>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                      {specialPrograms.map((program) => (
-                        <div key={program.value} className="flex items-start space-x-2">
-                          <input
-                            type="checkbox"
-                            id={program.value}
-                            value={program.value}
-                            className="mt-1"
-                            onChange={(e) => {
-                              const newVal = e.target.checked 
-                                ? [...(field.value || []), program.value]
-                                : (field.value || []).filter(val => val !== program.value);
-                              field.onChange(newVal);
-                            }}
-                            checked={(field.value || []).includes(program.value)}
-                          />
-                          <label htmlFor={program.value} className="text-sm">
-                            {program.label}
-                          </label>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Origin Country */}
+            <FormField
+              control={form.control}
+              name="originCountry"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Origin Country</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select origin country" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent className="max-h-[300px]">
+                      {Object.entries(countryGroups).map(([groupName, groupCountries]) => (
+                        <div key={groupName}>
+                          <div className="px-2 py-1.5 font-semibold text-sm text-slate-500 bg-slate-50">
+                            {groupName}
+                          </div>
+                          {groupCountries.map((country) => (
+                            <SelectItem 
+                              key={country.value} 
+                              value={country.value}
+                              className={country.isCPTPP ? "text-blue-600 font-medium" : ""}
+                            >
+                              {country.label}
+                            </SelectItem>
+                          ))}
                         </div>
                       ))}
-                    </div>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="additionalNotes"
-                render={({ field }) => (
-                  <FormItem className="col-span-1 md:col-span-2">
-                    <FormLabel>Additional Notes</FormLabel>
-                    <FormControl>
-                      <Textarea 
-                        placeholder="Any additional details or requirements..."
-                        className="resize-none" 
-                        rows={3}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-          </TabsContent>
-        </Tabs>
-        
-        {/* HS Code Assistant Dialog */}
-        {showHSCodeAssistant && (
-          <Dialog open={showHSCodeAssistant} onOpenChange={setShowHSCodeAssistant}>
-            <DialogContent className="max-w-2xl">
-              <DialogHeader>
-                <DialogTitle>HS Code Assistant</DialogTitle>
-              </DialogHeader>
-              <HSCodeAssistant 
-                category={form.getValues().productCategory || ""}
-                onSelect={handleHSCodeSelect}
-              />
-            </DialogContent>
-          </Dialog>
-        )}
-        
-        {/* Display modification status if modifying */}
-        {isModifyingAnalysis && modificationInfo && (
-          <Alert className="mt-4 bg-amber-50 border-amber-200">
-            <AlertCircle className="h-4 w-4 text-amber-600" />
-            <AlertTitle className="text-amber-800">
-              Modifying Analysis: {modificationInfo.originalName} ({modificationInfo.date})
-            </AlertTitle>
-            <AlertDescription className="text-blue-600">
-              You are modifying a previous analysis. Fields changed: {modifiedFields.length > 0 ? 
-                modifiedFields.map(field => field.replace(/([A-Z])/g, ' $1').toLowerCase()).join(', ') : 
-                'None yet'}
-            </AlertDescription>
-          </Alert>
-        )}
-        
-        <div className="flex justify-end space-x-3 mt-6">
-          {isModified && (
-            <Button 
-              type="button" 
-              variant="outline"
-              onClick={handleReset}
-              className="border-gray-300 text-gray-700"
-            >
-              Reset Form
-            </Button>
-          )}
-          {/* Split Button: Calculate/Modify */}
-          <div className="flex space-x-1">
-            {/* Main Calculate/Recalculate Button */}
-            <Button 
-              type="submit" 
-              className={isModifyingAnalysis ? "bg-green-600 hover:bg-green-700" : "bg-blue-600 hover:bg-blue-700"}
-            >
-              {isModifyingAnalysis ? (
-                <>
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                  </svg>
-                  Recalculate
-                </>
-              ) : (
-                <>
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
-                  </svg>
-                  Calculate
-                </>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
               )}
-            </Button>
+            />
+            
+            {/* Destination Country */}
+            <FormField
+              control={form.control}
+              name="destinationCountry"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Destination Country</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select destination country" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent className="max-h-[300px]">
+                      {Object.entries(countryGroups).map(([groupName, groupCountries]) => (
+                        <div key={groupName}>
+                          <div className="px-2 py-1.5 font-semibold text-sm text-slate-500 bg-slate-50">
+                            {groupName}
+                          </div>
+                          {groupCountries.map((country) => (
+                            <SelectItem 
+                              key={country.value} 
+                              value={country.value}
+                              className={country.isCPTPP ? "text-blue-600 font-medium" : ""}
+                            >
+                              {country.label}
+                            </SelectItem>
+                          ))}
+                        </div>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Product Value */}
+            <FormField
+              control={form.control}
+              name="productValue"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Product Value (USD)</FormLabel>
+                  <FormControl>
+                    <Input type="number" min="0" step="0.01" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            {/* Quantity */}
+            <FormField
+              control={form.control}
+              name="quantity"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Quantity</FormLabel>
+                  <FormControl>
+                    <Input type="number" min="1" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            {/* Weight */}
+            <FormField
+              control={form.control}
+              name="weight"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Weight (kg)</FormLabel>
+                  <FormControl>
+                    <Input type="number" min="0" step="0.01" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          
+          <h3 className="font-medium text-lg pt-2">Shipping Details</h3>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Transport Mode */}
+            <FormField
+              control={form.control}
+              name="transportMode"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Transport Mode</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select transport mode" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {transportModes.map((mode) => (
+                        <SelectItem key={mode.value} value={mode.value}>
+                          {mode.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            {/* Shipment Type */}
+            <FormField
+              control={form.control}
+              name="shipmentType"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Shipment Type</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select shipment type" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {shipmentTypes.map((type) => (
+                        <SelectItem key={type.value} value={type.value}>
+                          {type.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            {/* Package Type */}
+            <FormField
+              control={form.control}
+              name="packageType"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Package Type</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select package type" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {packageTypes.map((type) => (
+                        <SelectItem key={type.value} value={type.value}>
+                          {type.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          
+          <h3 className="font-medium text-lg pt-2">Dimensions</h3>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Length */}
+            <FormField
+              control={form.control}
+              name="length"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Length (cm)</FormLabel>
+                  <FormControl>
+                    <Input type="number" min="0" step="0.1" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            {/* Width */}
+            <FormField
+              control={form.control}
+              name="width"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Width (cm)</FormLabel>
+                  <FormControl>
+                    <Input type="number" min="0" step="0.1" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            {/* Height */}
+            <FormField
+              control={form.control}
+              name="height"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Height (cm)</FormLabel>
+                  <FormControl>
+                    <Input type="number" min="0" step="0.1" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          
+          {/* Modification Indicator */}
+          {isModifyingAnalysis && (
+            <Alert className="bg-yellow-50 border-yellow-200">
+              <AlertCircle className="h-4 w-4 text-yellow-600" />
+              <AlertTitle className="text-yellow-800">Modifying Existing Analysis</AlertTitle>
+              <AlertDescription className="text-yellow-700">
+                You are modifying a saved analysis.
+                {modifiedFields.length > 0 && (
+                  <div className="pt-1">
+                    <div className="text-xs">Modified fields:</div>
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {modifiedFields.map(field => (
+                        <Badge key={field} variant="outline" className="bg-yellow-100 text-yellow-800 border-yellow-200">
+                          {field}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </AlertDescription>
+            </Alert>
+          )}
+          
+          {/* Form Buttons */}
+          <div className="flex justify-between pt-2">
+            {/* Reset Button - only show when fields have been modified */}
+            {isModifyingAnalysis ? (
+              <Button type="button" variant="outline" onClick={handleReset}>
+                Revert Changes
+              </Button>
+            ) : (
+              <div></div> 
+            )}
+            
+            {/* Split Button: Calculate/Modify */}
+            <div className="flex space-x-1">
+              {/* Main Calculate/Recalculate Button */}
+              <Button 
+                type="submit" 
+                className={isModified ? "bg-green-600 hover:bg-green-700" : "bg-blue-600 hover:bg-blue-700"}
+              >
+                {isModified ? (
+                  <>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                      <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                    </svg>
+                    Recalculate
+                  </>
+                ) : (
+                  <>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+                    </svg>
+                    Calculate
+                  </>
+                )}
+              </Button>
+            </div>
           </div>
         </div>
       </form>
@@ -673,81 +645,288 @@ const ProductInfoForm = ({
   );
 };
 
-// Main cost breakdown dashboard component
-const CostBreakdownDashboard = () => {
-  // State management
-  const [showResults, setShowResults] = useState(false);
-  const [savedAnalyses, setSavedAnalyses] = useState<SavedAnalysis[]>([]);
-  const [saveName, setSaveName] = useState("");
-  const [saveDialogOpen, setSaveDialogOpen] = useState(false);
-  const [formData, setFormData] = useState<ProductInfoFormValues | null>(null);
-  const [results, setResults] = useState<any | null>(null);
-  const [currentAnalysisId, setCurrentAnalysisId] = useState<string | null>(null);
-  const { toast } = useToast();
+// Cost breakdown results component
+const CostBreakdownResults = ({ 
+  results, 
+  onSave, 
+  isSaving = false,
+  isModifying = false,
+  analysisName = "",
+  canSave = true
+}: { 
+  results: any, 
+  onSave: (name: string) => void,
+  isSaving?: boolean,
+  isModifying?: boolean,
+  analysisName?: string,
+  canSave?: boolean
+}) => {
+  const [analysisTitle, setAnalysisTitle] = useState(analysisName || "");
   
-  // Modification tracking states
+  // Helper function to format currency values
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+    }).format(value);
+  };
+  
+  // Helper function to determine the text color based on percentage
+  const getPercentageTextColor = (percentage: number) => {
+    if (percentage > 25) return "text-red-600";
+    if (percentage > 15) return "text-orange-600";
+    if (percentage > 10) return "text-yellow-600";
+    return "text-green-600";
+  };
+  
+  return (
+    <div className="space-y-6">
+      <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="font-medium text-lg">Cost Breakdown Results</h3>
+          <div className="text-sm text-slate-500">
+            {isModifying && (
+              <Badge variant="outline" className="bg-green-50 border-green-200 text-green-700">
+                Modified Analysis
+              </Badge>
+            )}
+          </div>
+        </div>
+        
+        <div className="space-y-4">
+          <div className="flex justify-between items-center p-3 bg-blue-50 rounded-md border border-blue-100">
+            <div className="font-medium">Total Cost</div>
+            <div className="font-bold text-lg">{formatCurrency(results.totalCost)}</div>
+          </div>
+          
+          <div className="bg-white rounded-md border border-slate-200 overflow-hidden">
+            <div className="grid grid-cols-12 bg-slate-100 p-3 text-sm font-medium text-slate-600">
+              <div className="col-span-5">Component</div>
+              <div className="col-span-3 text-right">Amount</div>
+              <div className="col-span-2 text-right">% of Total</div>
+              <div className="col-span-2 text-right">Category</div>
+            </div>
+            <div className="divide-y divide-slate-100">
+              {results.components.map((component: any, index: number) => (
+                <div key={index} className="grid grid-cols-12 p-3 text-sm hover:bg-slate-50">
+                  <div className="col-span-5 font-medium">{component.name}</div>
+                  <div className="col-span-3 text-right">
+                    {formatCurrency(component.value)}
+                  </div>
+                  <div className={`col-span-2 text-right ${getPercentageTextColor(component.percentage)}`}>
+                    {component.percentage.toFixed(1)}%
+                  </div>
+                  <div className="col-span-2 text-right text-slate-500">
+                    {component.category}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          {/* VAT and Duty Information */}
+          <div className="bg-white rounded-md border border-slate-200 p-4">
+            <h4 className="font-medium mb-2">Tax & Duty Details</h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <div className="text-sm font-medium text-slate-500 mb-1">VAT/Sales Tax</div>
+                <div className="flex justify-between">
+                  <div>{results.taxDetails?.name || "VAT"}</div>
+                  <div>{results.taxDetails?.rate || 0}%</div>
+                </div>
+                {results.taxDetails?.description && (
+                  <div className="text-xs text-slate-500 mt-1">
+                    {results.taxDetails.description}
+                  </div>
+                )}
+              </div>
+              <div>
+                <div className="text-sm font-medium text-slate-500 mb-1">Import Duty</div>
+                <div className="flex justify-between">
+                  <div>Effective Rate</div>
+                  <div>{results.dutyDetails?.effectiveRate || 0}%</div>
+                </div>
+                {results.dutyDetails?.description && (
+                  <div className="text-xs text-slate-500 mt-1">
+                    {results.dutyDetails.description}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+          
+          {canSave && (
+            <div className="flex items-center space-x-2 mt-4">
+              <Input
+                placeholder="Enter name for this analysis"
+                value={analysisTitle}
+                onChange={(e) => setAnalysisTitle(e.target.value)}
+                className="max-w-md"
+              />
+              <Button 
+                onClick={() => onSave(analysisTitle)}
+                disabled={isSaving || !analysisTitle.trim()}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                {isSaving ? (
+                  <>
+                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Saving...
+                  </>
+                ) : (
+                  <>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                      <path d="M7.707 10.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V6h5a2 2 0 012 2v7a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2h5v5.586l-1.293-1.293zM9 4a1 1 0 012 0v2H9V4z" />
+                    </svg>
+                    Save Analysis
+                  </>
+                )}
+              </Button>
+            </div>
+          )}
+        </div>
+      </div>
+      
+      <CopilotAssistant
+        title="Trade Navigator Copilot"
+        productInfo={{
+          productName: results.productInfo?.productName || "",
+          productCategory: results.productInfo?.productCategory || "",
+          hsCode: results.productInfo?.hsCode || "",
+          productDescription: results.productInfo?.productDescription || "",
+          unitValue: String(results.productInfo?.unitValue || "0"),
+          quantity: String(results.productInfo?.quantity || "1"),
+          originCountry: results.productInfo?.originCountry || "",
+          destinationCountry: results.productInfo?.destinationCountry || "",
+          weight: String(results.productInfo?.weight || "0"),
+          dimensions: {
+            length: String(results.productInfo?.dimensions?.length || "0"),
+            width: String(results.productInfo?.dimensions?.width || "0"),
+            height: String(results.productInfo?.dimensions?.height || "0"),
+          },
+          transportMode: results.productInfo?.transportMode || "",
+          additionalNotes: results.productInfo?.additionalNotes || "",
+        }}
+        costBreakdown={results}
+      />
+    </div>
+  );
+};
+
+// Main Dashboard Component
+const CostBreakdownDashboard = () => {
+  const [formData, setFormData] = useState<ProductInfoFormValues | null>(null);
+  const [showResults, setShowResults] = useState(false);
+  const [results, setResults] = useState<any | null>(null);
+  const [savedAnalyses, setSavedAnalyses] = useState<SavedAnalysis[]>([]);
+  const [isSaving, setIsSaving] = useState(false);
+  const [currentAnalysisId, setCurrentAnalysisId] = useState<string | null>(null);
   const [isModifying, setIsModifying] = useState(false);
   const [lastAnalysis, setLastAnalysis] = useState<ProductInfoFormValues | null>(null);
   const [modificationInfo, setModificationInfo] = useState<{ originalName: string, date: string } | null>(null);
   
   // Global analysis context 
-  const { setAnalysisData } = useAnalysis();
+  const { setCurrentAnalysis } = useAnalysis();
   
   // Fetch data from API
   const { data } = useQuery({
     queryKey: ['/api/cost-breakdown'],
   });
   
-  // Load saved analyses from local storage on mount
+  const { toast } = useToast();
+  
+  // Load saved analyses from local storage on component mount
   useEffect(() => {
-    const savedAnalysesFromStorage = localStorage.getItem('savedCostAnalyses');
-    if (savedAnalysesFromStorage) {
-      setSavedAnalyses(JSON.parse(savedAnalysesFromStorage));
+    const saved = localStorage.getItem('savedAnalyses');
+    if (saved) {
+      try {
+        setSavedAnalyses(JSON.parse(saved));
+      } catch (error) {
+        console.error('Failed to parse saved analyses:', error);
+      }
     }
   }, []);
   
-  // Handle calculation from form submission
+  // Handle calculate/recalculate action
   const handleCalculate = (values: ProductInfoFormValues) => {
-    // Store the form data for later saving
     setFormData(values);
     
-    // In a real application, we would make an API call here to get the results
+    // In a real app, this would make an API call to calculate costs
     // For now, we'll use sample data
     const sampleResults = {
-      totalCost: 5425.75,
+      totalCost: calculateTotalCost(values),
       components: [
-        { id: 1, name: "Product Cost", value: 3500, percentage: 64.5, category: "product" },
-        { id: 2, name: "Duty", value: 350, percentage: 6.5, category: "duty" },
-        { id: 3, name: "VAT/Sales Tax", value: 385, percentage: 7.1, category: "tax" },
-        { id: 4, name: "Freight", value: 650, percentage: 12.0, category: "shipping" },
-        { id: 5, name: "Insurance", value: 105, percentage: 1.9, category: "shipping" },
-        { id: 6, name: "Handling", value: 75, percentage: 1.4, category: "other" },
-        { id: 7, name: "Customs Processing", value: 120, percentage: 2.2, category: "other" },
-        { id: 8, name: "Last Mile Delivery", value: 240.75, percentage: 4.4, category: "shipping" },
+        { 
+          name: "Product Value", 
+          value: values.productValue * values.quantity, 
+          percentage: ((values.productValue * values.quantity) / calculateTotalCost(values)) * 100,
+          category: "Base Cost"
+        },
+        { 
+          name: "Import Duty", 
+          value: calculateDuty(values), 
+          percentage: (calculateDuty(values) / calculateTotalCost(values)) * 100,
+          category: "Tariffs & Duties"
+        },
+        { 
+          name: "VAT/Sales Tax", 
+          value: calculateVAT(values), 
+          percentage: (calculateVAT(values) / calculateTotalCost(values)) * 100,
+          category: "Taxes"
+        },
+        { 
+          name: "Shipping Cost", 
+          value: calculateShipping(values), 
+          percentage: (calculateShipping(values) / calculateTotalCost(values)) * 100,
+          category: "Logistics"
+        },
+        { 
+          name: "Insurance", 
+          value: calculateInsurance(values), 
+          percentage: (calculateInsurance(values) / calculateTotalCost(values)) * 100,
+          category: "Logistics"
+        },
+        { 
+          name: "Customs Clearance Fees", 
+          value: calculateCustomsFees(values), 
+          percentage: (calculateCustomsFees(values) / calculateTotalCost(values)) * 100,
+          category: "Regulations & Compliance"
+        },
+        { 
+          name: "Handling Fees", 
+          value: calculateHandlingFees(values), 
+          percentage: (calculateHandlingFees(values) / calculateTotalCost(values)) * 100,
+          category: "Logistics"
+        },
       ],
-      transportMode: values.transportMode,
-      calculatedDate: new Date().toISOString(),
-      exchangeRates: {
-        base: "USD",
-        rates: {
-          EUR: 0.93,
-          GBP: 0.79,
-          JPY: 110.21,
-          CNY: 6.45,
-          CAD: 1.25
-        }
+      productInfo: {
+        productName: `${values.productCategory} Product`,
+        productCategory: values.productCategory,
+        hsCode: values.hsCode,
+        productDescription: values.productDescription,
+        unitValue: values.productValue,
+        quantity: values.quantity,
+        originCountry: values.originCountry,
+        destinationCountry: values.destinationCountry,
+        weight: values.weight,
+        dimensions: {
+          length: values.length,
+          width: values.width,
+          height: values.height,
+        },
+        transportMode: values.transportMode,
       },
-      // Add duty rate info based on origin/destination
-      dutyInfo: {
-        rate: 10,
-        notes: "Standard duty rate for HS 9403.30",
-        specialPrograms: values.specialPrograms?.length ? values.specialPrograms : []
+      taxDetails: {
+        name: getVATName(values.destinationCountry),
+        rate: getVATRate(values.destinationCountry, values.productCategory),
+        description: getVATDescription(values.destinationCountry, values.productCategory, values.productValue * values.quantity),
       },
-      taxInfo: {
-        name: "VAT",
-        rate: 11,
-        threshold: 1000,
-        notes: "Standard VAT rate applies"
+      dutyDetails: {
+        effectiveRate: getDutyRate(values.hsCode, values.originCountry, values.destinationCountry),
+        description: getDutyDescription(values.hsCode, values.originCountry, values.destinationCountry),
       }
     };
     
@@ -755,10 +934,27 @@ const CostBreakdownDashboard = () => {
     setResults(sampleResults);
     setShowResults(true);
     
-    // Update global analysis context
-    setAnalysisData({
-      productInfo: values,
-      results: sampleResults
+    // Update global analysis context with total cost and components
+    setCurrentAnalysis({
+      totalCost: sampleResults.totalCost,
+      components: sampleResults.components.map((c: any) => ({
+        name: c.name,
+        amount: c.value,
+        percentage: c.percentage,
+        details: { category: c.category }
+      })),
+      productDetails: {
+        description: values.productDescription || '',
+        hsCode: values.hsCode,
+        category: values.productCategory,
+        originCountry: values.originCountry,
+        destinationCountry: values.destinationCountry,
+        productValue: values.productValue,
+        weight: values.weight,
+        transportMode: values.transportMode,
+        quantity: values.quantity,
+      },
+      timestamp: new Date()
     });
     
     // If modifying, update the saved analysis
@@ -768,473 +964,479 @@ const CostBreakdownDashboard = () => {
           return {
             ...analysis,
             formData: values,
-            results: sampleResults,
-            date: new Date().toLocaleString()
+            results: sampleResults
           };
         }
         return analysis;
       });
       
       setSavedAnalyses(updatedAnalyses);
-      localStorage.setItem('savedCostAnalyses', JSON.stringify(updatedAnalyses));
-      
-      // Clear modification state
-      setIsModifying(false);
-      setLastAnalysis(null);
-      setModificationInfo(null);
+      localStorage.setItem('savedAnalyses', JSON.stringify(updatedAnalyses));
       
       toast({
         title: "Analysis Updated",
-        description: "Your modifications have been saved.",
-        variant: "default"
+        description: "Your modifications have been applied and the analysis has been updated.",
       });
     }
   };
   
-  // Handle saving the current analysis
-  const handleSaveAnalysis = () => {
-    if (!formData || !results) {
-      toast({
-        title: "Cannot Save",
-        description: "Please calculate results before saving.",
-        variant: "destructive"
-      });
-      return;
-    }
+  // Handle save analysis
+  const handleSaveAnalysis = (name: string) => {
+    if (!formData || !results) return;
     
-    setSaveDialogOpen(true);
-  };
-  
-  // Handle actual saving after name is provided
-  const saveAnalysis = () => {
-    if (!saveName || !formData || !results) return;
+    setIsSaving(true);
     
+    // Generate a unique ID
+    const newId = Date.now().toString();
+    
+    // Create a new analysis object
     const newAnalysis: SavedAnalysis = {
-      id: Date.now().toString(),
-      name: saveName,
-      date: new Date().toLocaleString(),
-      formData,
-      results
+      id: newId,
+      name: name,
+      date: new Date().toISOString(),
+      formData: formData,
+      results: results
     };
     
+    // Add to saved analyses
     const updatedAnalyses = [...savedAnalyses, newAnalysis];
     setSavedAnalyses(updatedAnalyses);
     
-    // Save to local storage
-    localStorage.setItem('savedCostAnalyses', JSON.stringify(updatedAnalyses));
+    // Save to localStorage
+    localStorage.setItem('savedAnalyses', JSON.stringify(updatedAnalyses));
     
-    setSaveDialogOpen(false);
-    setSaveName("");
+    // Update current analysis ID
+    setCurrentAnalysisId(newId);
     
-    // Show success message
+    // Show success toast
     toast({
       title: "Analysis Saved",
-      description: "You can access it anytime from the Saved Analyses section.",
-      variant: "default"
+      description: `"${name}" has been saved to your analyses.`,
     });
+    
+    setIsSaving(false);
   };
   
-  // Handle initiating a modification
-  const handleModify = () => {
-    if (!formData) {
-      toast({
-        title: "Cannot Modify",
-        description: "No analysis results available to modify.",
-        variant: "destructive"
-      });
-      return;
-    }
-    
-    // Set up modification state
-    setIsModifying(true);
-    setLastAnalysis(formData);
-    setModificationInfo({
-      originalName: "Current Analysis",
-      date: new Date().toLocaleString()
-    });
-    setShowResults(false);
-    
-    // Scroll to form section
-    setTimeout(() => {
-      const formElement = document.getElementById('product-info-form');
-      if (formElement) {
-        formElement.scrollIntoView({ behavior: 'smooth' });
-      }
-    }, 100);
-  };
-  
-  // Load a saved analysis
-  const loadAnalysis = (analysis: SavedAnalysis) => {
+  // Handle load analysis
+  const handleLoadAnalysis = (analysis: SavedAnalysis) => {
     setFormData(analysis.formData);
     setResults(analysis.results);
     setShowResults(true);
     setCurrentAnalysisId(analysis.id);
     
-    // Update global analysis context
-    setAnalysisData({
-      productInfo: analysis.formData,
-      results: analysis.results
+    // Update global analysis context with total cost and components
+    setCurrentAnalysis({
+      totalCost: analysis.results.totalCost,
+      components: analysis.results.components.map((c: any) => ({
+        name: c.name,
+        amount: c.value,
+        percentage: c.percentage,
+        details: { category: c.category }
+      })),
+      productDetails: {
+        description: analysis.formData.productDescription || '',
+        hsCode: analysis.formData.hsCode,
+        category: analysis.formData.productCategory,
+        originCountry: analysis.formData.originCountry,
+        destinationCountry: analysis.formData.destinationCountry,
+        productValue: analysis.formData.productValue,
+        weight: analysis.formData.weight,
+        transportMode: analysis.formData.transportMode,
+        quantity: analysis.formData.quantity,
+      },
+      timestamp: new Date()
     });
     
     toast({
       title: "Analysis Loaded",
       description: `Successfully loaded: ${analysis.name}`,
-      variant: "default"
     });
   };
   
-  // Handle modifying a saved analysis
-  const modifyAnalysis = (analysis: SavedAnalysis) => {
-    setFormData(analysis.formData);
+  // Handle Modify button click
+  const handleModify = (analysis: SavedAnalysis) => {
     setLastAnalysis(analysis.formData);
-    setResults(null);
-    setShowResults(false);
-    setIsModifying(true);
-    setCurrentAnalysisId(analysis.id);
     setModificationInfo({
       originalName: analysis.name,
-      date: analysis.date
+      date: new Date(analysis.date).toLocaleDateString()
     });
-    
-    // Scroll to form section
-    setTimeout(() => {
-      const formElement = document.getElementById('product-info-form');
-      if (formElement) {
-        formElement.scrollIntoView({ behavior: 'smooth' });
-      }
-    }, 100);
-  };
-  
-  // Delete a saved analysis
-  const deleteAnalysis = (id: string) => {
-    const updatedAnalyses = savedAnalyses.filter(analysis => analysis.id !== id);
-    setSavedAnalyses(updatedAnalyses);
-    localStorage.setItem('savedCostAnalyses', JSON.stringify(updatedAnalyses));
+    setIsModifying(true);
+    setFormData(analysis.formData);
+    setCurrentAnalysisId(analysis.id);
+    setShowResults(false);
     
     toast({
-      title: "Analysis Deleted",
-      description: "The analysis has been removed from your saved items.",
-      variant: "default"
+      title: "Modifying Analysis",
+      description: `You are now modifying "${analysis.name}". Make your changes and click Recalculate.`,
     });
   };
   
+  // Handle reset modification
+  const handleResetModification = () => {
+    setIsModifying(false);
+    setLastAnalysis(null);
+    setModificationInfo(null);
+    setFormData(null);
+    setCurrentAnalysisId(null);
+    setShowResults(false);
+  };
+  
+  // Helper function for calculating the total cost
+  function calculateTotalCost(values: ProductInfoFormValues): number {
+    const productCost = values.productValue * values.quantity;
+    const duty = calculateDuty(values);
+    const vat = calculateVAT(values);
+    const shipping = calculateShipping(values);
+    const insurance = calculateInsurance(values);
+    const customsFees = calculateCustomsFees(values);
+    const handlingFees = calculateHandlingFees(values);
+    
+    return productCost + duty + vat + shipping + insurance + customsFees + handlingFees;
+  }
+  
+  // Helper functions for calculating individual components
+  function calculateDuty(values: ProductInfoFormValues): number {
+    const productCost = values.productValue * values.quantity;
+    const rate = getDutyRate(values.hsCode, values.originCountry, values.destinationCountry);
+    return productCost * (rate / 100);
+  }
+  
+  function calculateVAT(values: ProductInfoFormValues): number {
+    const productCost = values.productValue * values.quantity;
+    const duty = calculateDuty(values);
+    const rate = getVATRate(values.destinationCountry, values.productCategory);
+    return (productCost + duty) * (rate / 100);
+  }
+  
+  function calculateShipping(values: ProductInfoFormValues): number {
+    const baseRate = values.transportMode === "Air Freight" ? 45 : 
+                    values.transportMode === "Sea Freight" ? 25 : 
+                    values.transportMode === "Rail Freight" ? 30 : 20;
+    
+    // Calculate volumetric weight
+    const volumetricWeight = (values.length * values.width * values.height) / 5000;
+    const chargeableWeight = Math.max(values.weight, volumetricWeight);
+    
+    // Distance factor based on origin and destination
+    const distanceFactor = getDistanceFactor(values.originCountry, values.destinationCountry);
+    
+    return baseRate * chargeableWeight * distanceFactor;
+  }
+  
+  function calculateInsurance(values: ProductInfoFormValues): number {
+    const productCost = values.productValue * values.quantity;
+    // Insurance rate depends on transport mode and product value
+    const rate = values.transportMode === "Air Freight" ? 0.015 : 
+                values.transportMode === "Sea Freight" ? 0.025 : 0.02;
+    return productCost * rate;
+  }
+  
+  function calculateCustomsFees(values: ProductInfoFormValues): number {
+    // Base fee depends on destination country
+    const baseFee = values.destinationCountry === "United States" ? 75 :
+                   values.destinationCountry === "European Union" ? 85 :
+                   values.destinationCountry === "United Kingdom" ? 70 : 65;
+    
+    // Additional fees for high-value shipments
+    const productCost = values.productValue * values.quantity;
+    const valueAddition = productCost > 10000 ? 50 : productCost > 5000 ? 25 : 0;
+    
+    return baseFee + valueAddition;
+  }
+  
+  function calculateHandlingFees(values: ProductInfoFormValues): number {
+    const baseRate = values.packageType === "Wooden Crate" ? 30 :
+                    values.packageType === "Pallet" ? 25 : 15;
+    
+    return baseRate * values.quantity;
+  }
+  
+  // Helper function to get duty rate based on HS code and countries
+  function getDutyRate(hsCode: string, originCountry: string, destinationCountry: string): number {
+    // Check if countries are part of trade agreements
+    const isCPTPP = 
+      ["Japan", "Vietnam", "Singapore", "Malaysia", "Australia", "New Zealand", "Canada", "Mexico", "Chile", "Peru", "United Kingdom"].includes(originCountry) && 
+      ["Japan", "Vietnam", "Singapore", "Malaysia", "Australia", "New Zealand", "Canada", "Mexico", "Chile", "Peru", "United Kingdom"].includes(destinationCountry);
+    
+    const isUSMCA = 
+      ["United States", "Canada", "Mexico"].includes(originCountry) && 
+      ["United States", "Canada", "Mexico"].includes(destinationCountry);
+    
+    const isASEAN = 
+      ["Singapore", "Malaysia", "Indonesia", "Thailand", "Vietnam", "Philippines"].includes(originCountry) && 
+      ["Singapore", "Malaysia", "Indonesia", "Thailand", "Vietnam", "Philippines"].includes(destinationCountry);
+    
+    // Apply preferential rates if applicable
+    if (isCPTPP) return 0; // Zero duty under CPTPP
+    if (isUSMCA) return 0; // Zero duty under USMCA
+    if (isASEAN) return 0; // Zero duty under ASEAN
+    
+    // HS Code-based rates (simplified example)
+    if (hsCode.startsWith("84") || hsCode.startsWith("85")) return 2.5; // Electronics
+    if (hsCode.startsWith("61") || hsCode.startsWith("62")) return 12; // Textiles
+    if (hsCode.startsWith("28") || hsCode.startsWith("29")) return 6.5; // Chemicals
+    if (hsCode.startsWith("87")) return 10; // Vehicles
+    if (hsCode.startsWith("94")) return 3.5; // Furniture
+    if (hsCode.startsWith("90")) return 1.5; // Medical devices
+    if (hsCode.startsWith("21") || hsCode.startsWith("22")) return 8; // Food products
+    
+    // Default rate
+    return 7.5;
+  }
+  
+  // Helper function to get duty description
+  function getDutyDescription(hsCode: string, originCountry: string, destinationCountry: string): string {
+    // Check if countries are part of trade agreements
+    const isCPTPP = 
+      ["Japan", "Vietnam", "Singapore", "Malaysia", "Australia", "New Zealand", "Canada", "Mexico", "Chile", "Peru", "United Kingdom"].includes(originCountry) && 
+      ["Japan", "Vietnam", "Singapore", "Malaysia", "Australia", "New Zealand", "Canada", "Mexico", "Chile", "Peru", "United Kingdom"].includes(destinationCountry);
+    
+    const isUSMCA = 
+      ["United States", "Canada", "Mexico"].includes(originCountry) && 
+      ["United States", "Canada", "Mexico"].includes(destinationCountry);
+    
+    const isASEAN = 
+      ["Singapore", "Malaysia", "Indonesia", "Thailand", "Vietnam", "Philippines"].includes(originCountry) && 
+      ["Singapore", "Malaysia", "Indonesia", "Thailand", "Vietnam", "Philippines"].includes(destinationCountry);
+    
+    if (isCPTPP) return "Duty-free under CPTPP trade agreement";
+    if (isUSMCA) return "Duty-free under USMCA trade agreement";
+    if (isASEAN) return "Duty-free under ASEAN trade agreement";
+    
+    return `Standard duty rate applies for HS code ${hsCode}`;
+  }
+  
+  // Helper function to get VAT/Sales Tax name based on country
+  function getVATName(country: string): string {
+    if (["United States"].includes(country)) return "Sales Tax";
+    if (["Canada"].includes(country)) return "GST/HST";
+    if (["Australia", "New Zealand"].includes(country)) return "GST";
+    if (["Japan"].includes(country)) return "Consumption Tax";
+    return "VAT";
+  }
+  
+  // Helper function to get VAT/Sales Tax rate based on country and product category
+  function getVATRate(country: string, category: string): number {
+    // Check for category-based exemptions
+    const isExempt = 
+      category === "Food & Beverages" || 
+      category === "Pharmaceuticals";
+    
+    // Country-specific rates with category exemptions
+    if (country === "United Kingdom") return isExempt ? 0 : 20;
+    if (country === "Germany" || country === "France" || country === "Italy" || country === "Spain") return isExempt ? 7 : 19;
+    if (country === "European Union") return isExempt ? 8 : 21;
+    if (country === "Japan") return 10;
+    if (country === "Singapore") return 8;
+    if (country === "Australia" || country === "New Zealand") return 10;
+    if (country === "Canada") return 13;
+    if (country === "United States") return 8.5; // Average sales tax
+    if (country === "China") return 13;
+    
+    // Default rate
+    return isExempt ? 5 : 15;
+  }
+  
+  // Helper function to get VAT/Sales Tax description
+  function getVATDescription(country: string, category: string, value: number): string {
+    // Check for category-based exemptions
+    const isExempt = 
+      category === "Food & Beverages" || 
+      category === "Pharmaceuticals";
+    
+    // Check for value-based threshold exemptions
+    const isBelowThreshold = 
+      (country === "European Union" && value < 150) ||
+      (country === "United Kingdom" && value < 135) ||
+      (country === "Australia" && value < 1000);
+    
+    if (isExempt) {
+      return `${category} products are exempt or have reduced rates`;
+    }
+    
+    if (isBelowThreshold) {
+      if (country === "European Union") return "Exempt: Below €150 import threshold";
+      if (country === "United Kingdom") return "Exempt: Below £135 import threshold";
+      if (country === "Australia") return "Exempt: Below AUD 1,000 import threshold";
+    }
+    
+    return `Standard rate applies for ${country}`;
+  }
+  
+  // Helper function to calculate distance factor
+  function getDistanceFactor(originCountry: string, destinationCountry: string): number {
+    // Simplified distance calculation based on regions
+    const originRegion = getRegion(originCountry);
+    const destRegion = getRegion(destinationCountry);
+    
+    if (originRegion === destRegion) return 1;
+    
+    const regionDistances: Record<string, Record<string, number>> = {
+      "ASIA-PACIFIC REGION": {
+        "EUROPE": 1.8,
+        "NORTH & CENTRAL AMERICA": 2.2,
+        "SOUTH AMERICA": 2.5,
+        "MIDDLE EAST & AFRICA": 1.5
+      },
+      "EUROPE": {
+        "ASIA-PACIFIC REGION": 1.8,
+        "NORTH & CENTRAL AMERICA": 1.5,
+        "SOUTH AMERICA": 2.0,
+        "MIDDLE EAST & AFRICA": 1.2
+      },
+      "NORTH & CENTRAL AMERICA": {
+        "ASIA-PACIFIC REGION": 2.2,
+        "EUROPE": 1.5,
+        "SOUTH AMERICA": 1.3,
+        "MIDDLE EAST & AFRICA": 2.0
+      },
+      "SOUTH AMERICA": {
+        "ASIA-PACIFIC REGION": 2.5,
+        "EUROPE": 2.0,
+        "NORTH & CENTRAL AMERICA": 1.3,
+        "MIDDLE EAST & AFRICA": 2.3
+      },
+      "MIDDLE EAST & AFRICA": {
+        "ASIA-PACIFIC REGION": 1.5,
+        "EUROPE": 1.2,
+        "NORTH & CENTRAL AMERICA": 2.0,
+        "SOUTH AMERICA": 2.3
+      }
+    };
+    
+    return regionDistances[originRegion]?.[destRegion] || 1.5;
+  }
+  
+  // Helper function to get region for a country
+  function getRegion(country: string): string {
+    for (const [region, countryList] of Object.entries(countryGroups)) {
+      if (countryList.some(c => c.value === country)) {
+        return region;
+      }
+    }
+    return "UNKNOWN";
+  }
+  
   return (
-    <>
-      <PageHeader 
-        title="Cost Breakdown Analysis" 
-        description="Calculate and analyze all costs associated with your international shipments."
-        icon={<FaCircleInfo className="h-6 w-6" />}
+    <div className="container mx-auto px-4 py-8">
+      {/* Page Header */}
+      <PageHeader
+        title="Cost Breakdown Dashboard"
+        description="Calculate and analyze all costs associated with importing or exporting products"
+        icon={<FaCircleInfo className="h-6 w-6 text-blue-500" />}
       />
       
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-        <div className="lg:col-span-2">
-          <Card className="h-full">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-xl font-semibold">Product Information</CardTitle>
+      {/* Main Content */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mt-6">
+        {/* Left Column - Input Form */}
+        <div className="lg:col-span-6">
+          <Card>
+            <CardHeader>
+              <div className="flex justify-between items-center">
+                <CardTitle className="text-xl font-semibold">
+                  {isModifying ? "Modify Product Information" : "Product Information"}
+                </CardTitle>
+                {modificationInfo && (
+                  <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">
+                    Modifying: {modificationInfo.originalName} ({modificationInfo.date})
+                  </Badge>
+                )}
+              </div>
             </CardHeader>
             <CardContent>
-              <ProductInfoForm 
-                defaultValues={formData || {}} 
+              <ProductInformationForm 
                 onCalculate={handleCalculate}
-                isModifyingAnalysis={isModifying}
+                isModified={isModifying}
                 lastAnalysis={lastAnalysis}
-                modificationInfo={modificationInfo}
+                onReset={handleResetModification}
               />
             </CardContent>
           </Card>
         </div>
         
-        <div className="lg:col-span-1">
-          <Card className="h-full">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-xl font-semibold flex items-center justify-between">
-                Saved Analyses
-                {savedAnalyses.length > 0 && (
-                  <Badge variant="outline" className="ml-2">{savedAnalyses.length}</Badge>
-                )}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {savedAnalyses.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground">
-                  <p>No saved analyses yet.</p>
-                  <p className="text-sm mt-2">Save your analyses to compare them later.</p>
-                </div>
-              ) : (
-                <ScrollArea className="h-[400px] pr-4">
+        {/* Right Column - Results or Saved Analyses */}
+        <div className="lg:col-span-6">
+          {showResults && results ? (
+            <CostBreakdownResults 
+              results={results} 
+              onSave={handleSaveAnalysis}
+              isSaving={isSaving}
+              isModifying={isModifying && !!currentAnalysisId}
+              analysisName={currentAnalysisId ? savedAnalyses.find(a => a.id === currentAnalysisId)?.name : ""}
+              canSave={!currentAnalysisId || (isModifying && !!currentAnalysisId)}
+            />
+          ) : (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-xl font-semibold">Saved Analyses</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {savedAnalyses.length === 0 ? (
+                  <div className="p-6 text-center text-slate-500 border border-dashed border-slate-300 rounded-lg">
+                    <div className="mb-2">No saved analyses yet</div>
+                    <div className="text-sm">Complete the form and calculate costs to save your analysis</div>
+                  </div>
+                ) : (
                   <div className="space-y-4">
                     {savedAnalyses.map((analysis) => (
-                      <Card key={analysis.id} className="p-4 border border-border">
-                        <div className="flex justify-between items-start">
+                      <div key={analysis.id} className="p-4 border rounded-lg hover:bg-slate-50">
+                        <div className="flex justify-between items-start mb-2">
                           <div>
-                            <h4 className="font-medium">{analysis.name}</h4>
-                            <p className="text-sm text-muted-foreground">{analysis.date}</p>
-                            <div className="flex mt-1 flex-wrap gap-1">
-                              <Badge variant="secondary" className="text-xs">
-                                {analysis.formData.originCountry} → {analysis.formData.destinationCountry}
-                              </Badge>
-                              <Badge variant="outline" className="text-xs">
-                                ${analysis.results.totalCost.toFixed(2)}
-                              </Badge>
+                            <h3 className="font-medium">{analysis.name}</h3>
+                            <div className="text-sm text-slate-500">
+                              {new Date(analysis.date).toLocaleDateString()} · {analysis.formData.productCategory}
                             </div>
                           </div>
-                          <div className="flex space-x-1">
-                            <Button 
-                              onClick={() => loadAnalysis(analysis)} 
-                              size="sm" 
-                              variant="outline"
-                            >
-                              Load
-                            </Button>
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button size="sm" variant="ghost">
-                                  <ChevronDown className="h-4 w-4" />
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end">
-                                <DropdownMenuItem onClick={() => modifyAnalysis(analysis)}>
-                                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                                  </svg>
-                                  Modify
-                                </DropdownMenuItem>
-                                <DropdownMenuItem 
-                                  onClick={() => deleteAnalysis(analysis.id)}
-                                  className="text-red-600"
-                                >
-                                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
-                                  </svg>
-                                  Delete
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
+                          <div className="text-lg font-bold">
+                            {new Intl.NumberFormat('en-US', {
+                              style: 'currency',
+                              currency: 'USD',
+                            }).format(analysis.results.totalCost)}
                           </div>
                         </div>
-                      </Card>
+                        <div className="flex flex-wrap gap-2 mb-3">
+                          <Badge variant="outline" className="bg-slate-100">
+                            {analysis.formData.hsCode}
+                          </Badge>
+                          <Badge variant="outline" className="bg-slate-100">
+                            {analysis.formData.originCountry} → {analysis.formData.destinationCountry}
+                          </Badge>
+                          <Badge variant="outline" className="bg-slate-100">
+                            {analysis.formData.transportMode}
+                          </Badge>
+                        </div>
+                        <div className="flex space-x-2">
+                          <Button 
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleLoadAnalysis(analysis)}
+                          >
+                            View Details
+                          </Button>
+                          
+                          {/* Modify Button in Saved Analysis Card */}
+                          <Button 
+                            variant="outline"
+                            size="sm"
+                            className="border-green-500 text-green-700 hover:bg-green-50"
+                            onClick={() => handleModify(analysis)}
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                              <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                            </svg>
+                            Modify
+                          </Button>
+                        </div>
+                      </div>
                     ))}
                   </div>
-                </ScrollArea>
-              )}
-            </CardContent>
-          </Card>
+                )}
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
-      
-      {/* Results Section */}
-      {showResults && formData && results && (
-        <div className="mb-6">
-          <Card>
-            <CardHeader className="pb-3 flex flex-row items-center justify-between">
-              <div>
-                <CardTitle className="text-xl font-semibold">Cost Breakdown Results</CardTitle>
-                <p className="text-muted-foreground text-sm mt-1">
-                  Analysis for {formData.productName} ({formData.productCategory}) from {formData.originCountry} to {formData.destinationCountry}
-                </p>
-              </div>
-              <div className="flex space-x-2">
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={handleModify}
-                  className="text-green-600 border-green-200 hover:bg-green-50 hover:text-green-700"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                  </svg>
-                  Modify Values
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={handleSaveAnalysis}
-                  className="text-blue-600 border-blue-200 hover:bg-blue-50 hover:text-blue-700"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                    <path d="M7.707 10.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V6h5a2 2 0 012 2v7a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2h5v5.586l-1.293-1.293zM9 4a1 1 0 012 0v2H9V4z" />
-                  </svg>
-                  Save Analysis
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-                <div>
-                  <div className="mb-4">
-                    <h3 className="text-lg font-semibold mb-2">Cost Summary</h3>
-                    <div className="bg-muted/50 p-4 rounded-lg">
-                      <div className="flex justify-between mb-2">
-                        <span className="font-medium">Total Landed Cost:</span>
-                        <span className="font-bold">${results.totalCost.toFixed(2)}</span>
-                      </div>
-                      <div className="space-y-2">
-                        {results.components.reduce((groups: any, component: any) => {
-                          const category = component.category;
-                          if (!groups[category]) groups[category] = 0;
-                          groups[category] += component.value;
-                          return groups;
-                        }, {})
-                        && Object.entries(results.components.reduce((groups: any, component: any) => {
-                          const category = component.category;
-                          if (!groups[category]) groups[category] = 0;
-                          groups[category] += component.value;
-                          return groups;
-                        }, {})).map(([category, value]: [string, any]) => (
-                          <div key={category} className="flex justify-between">
-                            <span className="text-muted-foreground capitalize">{category}:</span>
-                            <span>${value.toFixed(2)}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="mb-4">
-                    <h3 className="text-lg font-semibold mb-2">Shipment Details</h3>
-                    <div className="bg-muted/50 p-4 rounded-lg grid grid-cols-2 gap-3">
-                      <div>
-                        <p className="text-muted-foreground text-sm">Transport Mode</p>
-                        <p className="font-medium capitalize">{formData.transportMode}</p>
-                      </div>
-                      <div>
-                        <p className="text-muted-foreground text-sm">Incoterm</p>
-                        <p className="font-medium uppercase">{formData.incoterm}</p>
-                      </div>
-                      <div>
-                        <p className="text-muted-foreground text-sm">Package Type</p>
-                        <p className="font-medium capitalize">{formData.packageType}</p>
-                      </div>
-                      <div>
-                        <p className="text-muted-foreground text-sm">Weight</p>
-                        <p className="font-medium">{formData.weight} kg</p>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <h3 className="text-lg font-semibold mb-2">Duty & Tax Information</h3>
-                    <div className="bg-muted/50 p-4 rounded-lg space-y-3">
-                      <div>
-                        <p className="text-muted-foreground text-sm">Duty Rate</p>
-                        <p className="font-medium">{results.dutyInfo.rate}%</p>
-                        <p className="text-xs text-muted-foreground mt-1">{results.dutyInfo.notes}</p>
-                      </div>
-                      <div>
-                        <p className="text-muted-foreground text-sm">{results.taxInfo.name} Rate</p>
-                        <p className="font-medium">{results.taxInfo.rate}%</p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          Threshold: ${results.taxInfo.threshold}. {results.taxInfo.notes}
-                        </p>
-                      </div>
-                      {results.dutyInfo.specialPrograms && results.dutyInfo.specialPrograms.length > 0 && (
-                        <div>
-                          <p className="text-muted-foreground text-sm">Special Programs</p>
-                          <div className="flex flex-wrap gap-1 mt-1">
-                            {results.dutyInfo.specialPrograms.map((program: string) => (
-                              <Badge key={program} variant="secondary">{program}</Badge>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-                
-                <div>
-                  <h3 className="text-lg font-semibold mb-2">Detailed Cost Breakdown</h3>
-                  <div className="bg-muted/50 p-4 rounded-lg">
-                    <div className="space-y-3">
-                      {results.components.map((component: any) => (
-                        <div key={component.id} className="flex justify-between">
-                          <div className="flex items-center">
-                            <span 
-                              className={`w-3 h-3 rounded-full mr-2 ${
-                                component.category === 'product' ? 'bg-blue-500' :
-                                component.category === 'duty' ? 'bg-amber-500' :
-                                component.category === 'tax' ? 'bg-red-500' :
-                                component.category === 'shipping' ? 'bg-green-500' :
-                                'bg-purple-500'
-                              }`}
-                            />
-                            <span>{component.name}</span>
-                          </div>
-                          <div className="flex items-center space-x-4">
-                            <span className="text-muted-foreground w-16 text-right">{component.percentage}%</span>
-                            <span className="font-medium w-24 text-right">${component.value.toFixed(2)}</span>
-                          </div>
-                        </div>
-                      ))}
-                      <div className="pt-3 border-t border-border mt-3 flex justify-between">
-                        <span className="font-bold">Total</span>
-                        <span className="font-bold">${results.totalCost.toFixed(2)}</span>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Exchange Rates Section */}
-                  <div className="mt-4">
-                    <h3 className="text-lg font-semibold mb-2">Exchange Rates</h3>
-                    <div className="bg-muted/50 p-4 rounded-lg">
-                      <p className="text-sm text-muted-foreground mb-2">Base currency: {results.exchangeRates.base}</p>
-                      <div className="grid grid-cols-3 gap-2">
-                        {Object.entries(results.exchangeRates.rates).map(([currency, rate]: [string, any]) => (
-                          <div key={currency} className="text-center p-2 bg-background rounded border border-border">
-                            <p className="font-medium">{currency}</p>
-                            <p className="text-sm">{rate}</p>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              {/* AI Copilot Section */}
-              <div className="mt-2">
-                <CopilotAssistant 
-                  context={{
-                    productInfo: formData,
-                    costBreakdown: results,
-                  }}
-                />
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
-      
-      {/* Save Dialog */}
-      <Dialog open={saveDialogOpen} onOpenChange={setSaveDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Save Analysis</DialogTitle>
-            <DialogDescription>
-              Give your analysis a name to save it for future reference.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="py-4">
-            <FormLabel htmlFor="analysisName">Analysis Name</FormLabel>
-            <Input 
-              id="analysisName"
-              value={saveName}
-              onChange={(e) => setSaveName(e.target.value)}
-              placeholder="e.g., Office Chairs Q2 2023"
-              className="mt-2"
-            />
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setSaveDialogOpen(false)}>Cancel</Button>
-            <Button 
-              onClick={saveAnalysis}
-              disabled={!saveName}
-            >
-              Save Analysis
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </>
+    </div>
   );
 };
 
