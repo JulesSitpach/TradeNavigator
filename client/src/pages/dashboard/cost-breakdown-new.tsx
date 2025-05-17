@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import PageHeader from "@/components/common/PageHeader";
 import { useQuery } from "@tanstack/react-query";
@@ -25,6 +25,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import HSCodeAssistant from "@/components/ai/HSCodeAssistant";
+import SavedAnalyses, { SavedAnalysis } from "@/components/analysis/SavedAnalyses";
 
 // Form schema for product information
 const productInfoFormSchema = z.object({
