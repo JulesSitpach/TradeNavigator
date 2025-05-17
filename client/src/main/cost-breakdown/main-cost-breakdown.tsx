@@ -841,20 +841,21 @@ const NewCostForm = () => {
                       </div>
                       
                       <div className="pt-4">
-                        <Button 
-                          variant="outline"
-                          className="w-full border-green-600 text-green-600 hover:bg-green-50"
+                        <button 
                           onClick={() => {
                             setIsModifying(true);
                             toast({
                               title: "Modifying Analysis",
-                              description: "You can now make changes to your analysis."
+                              description: "You can now make changes to your product and shipping details."
                             });
                           }}
+                          className="w-full py-2 px-4 bg-white border border-green-600 text-green-600 rounded-md hover:bg-green-50 flex items-center justify-center"
                         >
-                          <Pencil className="h-4 w-4 mr-2" />
-                          Modify Analysis
-                        </Button>
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                          </svg>
+                          Modify Product & Shipping Details
+                        </button>
                       </div>
                     </div>
                   </div>
