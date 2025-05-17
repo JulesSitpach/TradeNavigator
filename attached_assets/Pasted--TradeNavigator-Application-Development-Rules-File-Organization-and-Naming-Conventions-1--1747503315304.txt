@@ -1,0 +1,82 @@
+# TradeNavigator Application Development Rules
+
+## File Organization and Naming Conventions
+
+1. **Primary Files Marking:**
+   - All production-ready components must be named with prefix `main-` (e.g., `main-cost-breakdown.tsx`)
+   - Only one main file should exist for each feature area
+
+2. **Versioning System:**
+   - All experimental or in-progress components must be stored in `/experimental` directory
+   - Deprecated versions must be moved to `/deprecated` directory
+   - Never leave multiple versions in the primary directory
+
+3. **Component Importation:**
+   - Main application router must only import from files with `main-` prefix
+   - All imports must use absolute paths to prevent confusion
+
+## Development Process
+
+1. **Feature Development Process:**
+   - New features must be developed in `/experimental` directory
+   - When ready for production, copy to main directory with `main-` prefix
+   - Previous main version must be moved to `/deprecated` with date suffix
+
+2. **Code Freezing:**
+   - Once a component is in production, create a commit with tag "PRODUCTION-[COMPONENT]-[DATE]"
+   - Branch for any modifications to production components
+
+3. **Documentation Requirements:**
+   - Every component file must have a header comment block:
+     ```javascript
+     /**
+      * @component Main Cost Breakdown
+      * @status PRODUCTION
+      * @version 1.0
+      * @lastModified 2025-05-17
+      * @description Primary cost breakdown component with full functionality
+      * @dependencies HSCodeAssistant, AnalysisContext
+      */
+     ```
+
+## Emergency Protection
+
+1. **Backup System:**
+   - Automated daily backup of all production components
+   - Backups stored in `/backups/[DATE]` directory
+   - Recovery procedure documented in `RECOVERY.md`
+
+2. **Checkpoint System:**
+   - Critical functionality must be wrapped in feature flags
+   - All production components must include a verification test
+
+3. **Navigation Safety:**
+   - Main navigation component must validate component existence before loading
+   - Fallback to previous working version if component load fails
+
+## Deployment Protection
+
+1. **Pre-Deployment Checklist:**
+   - Verify all imports reference `main-` prefixed files
+   - Run functionality tests on core features
+   - Verify critical component paths in router configuration
+
+2. **Code Review Requirements:**
+   - All PRs affecting navigation or routing require 2 approvals
+   - Changes to production components require documented testing
+
+3. **Component Locking:**
+   - Production components can be "locked" with a config setting
+   - Locked components cannot be modified without explicit unlock command
+
+## UI/UX Rules
+
+1. **Form Standardization:**
+   - All input forms must follow the established pattern in `main-cost-breakdown.tsx`
+   - Form field IDs must follow consistent naming convention
+
+2. **Navigation Consistency:**
+   - All dashboard navigation must use the primary router
+   - No internal routing or component switching
+
+By strictly following these rules, we can prevent situations where the application shows the wrong component version or loses functionality during development.

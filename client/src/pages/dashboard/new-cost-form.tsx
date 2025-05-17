@@ -9,8 +9,63 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import PageHeader from "@/components/common/PageHeader";
 import { useToast } from "@/hooks/use-toast";
 import { AnalysisContext } from "@/contexts/AnalysisContext";
-import { Calculator, Save, FileText, RotateCcw, PlusCircle } from "lucide-react";
+import { Calculator, Save, FileText, RotateCcw, PlusCircle, Search } from "lucide-react";
+import HSCodeAssistant from "@/components/ai/HSCodeAssistant";
 import "../../styles/cost-breakdown-form.css";
+
+// Country lists organized by region with CPTPP indicators
+const countryGroups = {
+  'ASIA-PACIFIC REGION': [
+    { label: "Japan - CPTPP member", value: "jp", region: "ASIA-PACIFIC REGION", isCPTPP: true },
+    { label: "South Korea", value: "kr", region: "ASIA-PACIFIC REGION", isCPTPP: false },
+    { label: "China", value: "cn", region: "ASIA-PACIFIC REGION", isCPTPP: false },
+    { label: "India", value: "in", region: "ASIA-PACIFIC REGION", isCPTPP: false },
+    { label: "Vietnam - CPTPP member", value: "vn", region: "ASIA-PACIFIC REGION", isCPTPP: true },
+    { label: "Singapore - CPTPP member", value: "sg", region: "ASIA-PACIFIC REGION", isCPTPP: true },
+    { label: "Malaysia - CPTPP member", value: "my", region: "ASIA-PACIFIC REGION", isCPTPP: true },
+    { label: "Australia - CPTPP member", value: "au", region: "ASIA-PACIFIC REGION", isCPTPP: true },
+    { label: "Indonesia", value: "id", region: "ASIA-PACIFIC REGION", isCPTPP: false },
+    { label: "Taiwan", value: "tw", region: "ASIA-PACIFIC REGION", isCPTPP: false },
+    { label: "New Zealand - CPTPP member", value: "nz", region: "ASIA-PACIFIC REGION", isCPTPP: true },
+    { label: "Thailand", value: "th", region: "ASIA-PACIFIC REGION", isCPTPP: false },
+    { label: "Philippines", value: "ph", region: "ASIA-PACIFIC REGION", isCPTPP: false },
+  ],
+  'EUROPE': [
+    { label: "European Union", value: "eu", region: "EUROPE", isCPTPP: false },
+    { label: "Germany", value: "de", region: "EUROPE", isCPTPP: false },
+    { label: "United Kingdom - CPTPP member", value: "uk", region: "EUROPE", isCPTPP: true },
+    { label: "France", value: "fr", region: "EUROPE", isCPTPP: false },
+    { label: "Spain", value: "es", region: "EUROPE", isCPTPP: false },
+    { label: "Italy", value: "it", region: "EUROPE", isCPTPP: false },
+    { label: "Netherlands", value: "nl", region: "EUROPE", isCPTPP: false },
+    { label: "Switzerland", value: "ch", region: "EUROPE", isCPTPP: false },
+    { label: "Sweden", value: "se", region: "EUROPE", isCPTPP: false },
+    { label: "Belgium", value: "be", region: "EUROPE", isCPTPP: false },
+    { label: "Poland", value: "pl", region: "EUROPE", isCPTPP: false },
+  ],
+  'NORTH & CENTRAL AMERICA': [
+    { label: "United States", value: "us", region: "NORTH & CENTRAL AMERICA", isCPTPP: false },
+    { label: "Canada - CPTPP member", value: "ca", region: "NORTH & CENTRAL AMERICA", isCPTPP: true },
+    { label: "Mexico - CPTPP member", value: "mx", region: "NORTH & CENTRAL AMERICA", isCPTPP: true },
+    { label: "Costa Rica", value: "cr", region: "NORTH & CENTRAL AMERICA", isCPTPP: false },
+    { label: "Panama", value: "pa", region: "NORTH & CENTRAL AMERICA", isCPTPP: false },
+  ],
+  'SOUTH AMERICA': [
+    { label: "Brazil", value: "br", region: "SOUTH AMERICA", isCPTPP: false },
+    { label: "Chile - CPTPP member", value: "cl", region: "SOUTH AMERICA", isCPTPP: true },
+    { label: "Peru - CPTPP member", value: "pe", region: "SOUTH AMERICA", isCPTPP: true },
+    { label: "Colombia", value: "co", region: "SOUTH AMERICA", isCPTPP: false },
+    { label: "Argentina", value: "ar", region: "SOUTH AMERICA", isCPTPP: false },
+  ],
+  'MIDDLE EAST & AFRICA': [
+    { label: "United Arab Emirates", value: "ae", region: "MIDDLE EAST & AFRICA", isCPTPP: false },
+    { label: "Saudi Arabia", value: "sa", region: "MIDDLE EAST & AFRICA", isCPTPP: false },
+    { label: "Israel", value: "il", region: "MIDDLE EAST & AFRICA", isCPTPP: false },
+    { label: "South Africa", value: "za", region: "MIDDLE EAST & AFRICA", isCPTPP: false },
+    { label: "Nigeria", value: "ng", region: "MIDDLE EAST & AFRICA", isCPTPP: false },
+    { label: "Egypt", value: "eg", region: "MIDDLE EAST & AFRICA", isCPTPP: false },
+  ]
+};
 
 const NewCostForm = () => {
   // Form state management
@@ -44,6 +99,9 @@ const NewCostForm = () => {
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
   const [saveName, setSaveName] = useState("");
   const [modificationInfo, setModificationInfo] = useState(null);
+  
+  // HS Code Assistant state
+  const [showHSAssistant, setShowHSAssistant] = useState(false);
   
   // UI state
   const [calculationComplete, setCalculationComplete] = useState(false);
@@ -343,10 +401,27 @@ const NewCostForm = () => {
                       value={formValues.hsCode}
                       onChange={(e) => handleInputChange('hsCode', e.target.value)} 
                     />
-                    <Button variant="outline" size="icon" className="lookup-btn">
-                      <span className="text-blue-500 font-bold">↑</span>
+                    <Button 
+                      variant="outline" 
+                      size="icon" 
+                      className="lookup-btn border-green-500 text-green-500 hover:bg-green-50"
+                      onClick={() => setShowHSAssistant(!showHSAssistant)}
+                    >
+                      <Search className="h-4 w-4" />
                     </Button>
                   </div>
+                  {showHSAssistant && (
+                    <div className="mt-2">
+                      <HSCodeAssistant
+                        productDescription={formValues.productDescription}
+                        category={formValues.productCategory}
+                        onSelectHSCode={(code) => {
+                          handleInputChange('hsCode', code);
+                          setShowHSAssistant(false);
+                        }}
+                      />
+                    </div>
+                  )}
                 </div>
                 
                 <div className="country-selectors">
@@ -359,26 +434,17 @@ const NewCostForm = () => {
                       <SelectTrigger className="w-full">
                         <SelectValue placeholder="Select a country" />
                       </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="au">Australia</SelectItem>
-                        <SelectItem value="br">Brazil</SelectItem>
-                        <SelectItem value="ca">Canada</SelectItem>
-                        <SelectItem value="cn">China</SelectItem>
-                        <SelectItem value="co">Colombia</SelectItem>
-                        <SelectItem value="fr">France</SelectItem>
-                        <SelectItem value="de">Germany</SelectItem>
-                        <SelectItem value="in">India</SelectItem>
-                        <SelectItem value="id">Indonesia</SelectItem>
-                        <SelectItem value="jp">Japan</SelectItem>
-                        <SelectItem value="my">Malaysia</SelectItem>
-                        <SelectItem value="mx">Mexico</SelectItem>
-                        <SelectItem value="pe">Peru</SelectItem>
-                        <SelectItem value="sg">Singapore</SelectItem>
-                        <SelectItem value="kr">South Korea</SelectItem>
-                        <SelectItem value="th">Thailand</SelectItem>
-                        <SelectItem value="uk">United Kingdom</SelectItem>
-                        <SelectItem value="us">United States</SelectItem>
-                        <SelectItem value="vn">Vietnam</SelectItem>
+                      <SelectContent className="max-h-72 overflow-y-auto">
+                        {Object.entries(countryGroups).map(([region, countries]) => (
+                          <div key={`origin-${region}`}>
+                            <div className="px-2 py-1.5 text-xs font-semibold bg-slate-100">{region}</div>
+                            {countries.map((country) => (
+                              <SelectItem key={`origin-${country.value}`} value={country.value}>
+                                {country.label}
+                              </SelectItem>
+                            ))}
+                          </div>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>
@@ -392,28 +458,17 @@ const NewCostForm = () => {
                       <SelectTrigger className="w-full">
                         <SelectValue placeholder="Select a country" />
                       </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="au">Australia - CPTPP member</SelectItem>
-                        <SelectItem value="br">Brazil</SelectItem>
-                        <SelectItem value="ca">Canada - CPTPP & USMCA member</SelectItem>
-                        <SelectItem value="cl">Chile - CPTPP member</SelectItem>
-                        <SelectItem value="cn">China</SelectItem>
-                        <SelectItem value="co">Colombia</SelectItem>
-                        <SelectItem value="fr">France</SelectItem>
-                        <SelectItem value="de">Germany</SelectItem>
-                        <SelectItem value="in">India</SelectItem>
-                        <SelectItem value="id">Indonesia</SelectItem>
-                        <SelectItem value="jp">Japan - CPTPP member</SelectItem>
-                        <SelectItem value="my">Malaysia - CPTPP member</SelectItem>
-                        <SelectItem value="mx">Mexico - CPTPP & USMCA member</SelectItem>
-                        <SelectItem value="nz">New Zealand - CPTPP member</SelectItem>
-                        <SelectItem value="pe">Peru - CPTPP member</SelectItem>
-                        <SelectItem value="sg">Singapore - CPTPP member</SelectItem>
-                        <SelectItem value="kr">South Korea</SelectItem>
-                        <SelectItem value="th">Thailand</SelectItem>
-                        <SelectItem value="uk">United Kingdom</SelectItem>
-                        <SelectItem value="us">United States - USMCA member</SelectItem>
-                        <SelectItem value="vn">Vietnam - CPTPP member</SelectItem>
+                      <SelectContent className="max-h-72 overflow-y-auto">
+                        {Object.entries(countryGroups).map(([region, countries]) => (
+                          <div key={`dest-${region}`}>
+                            <div className="px-2 py-1.5 text-xs font-semibold bg-slate-100">{region}</div>
+                            {countries.map((country) => (
+                              <SelectItem key={`dest-${country.value}`} value={country.value}>
+                                {country.label}
+                              </SelectItem>
+                            ))}
+                          </div>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>

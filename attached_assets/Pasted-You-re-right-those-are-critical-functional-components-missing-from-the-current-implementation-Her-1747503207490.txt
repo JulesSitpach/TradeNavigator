@@ -1,0 +1,127 @@
+You're right - those are critical functional components missing from the current implementation. Here's a revised plan focused on preserving those specific elements:
+
+# Critical Functionality to Restore
+
+## 1. HS Code Assistant Integration
+
+This is a key feature that needs to be restored. The code should include:
+
+```javascript
+// 1. Add the HSCodeAssistant component import
+import HSCodeAssistant from "@/components/ai/HSCodeAssistant";
+
+// 2. Add state variable for showing/hiding assistant
+const [showHSAssistant, setShowHSAssistant] = useState(false);
+
+// 3. Add this code to the HS Code field section:
+<div className="flex items-center space-x-2">
+  <FormControl>
+    <Input placeholder="e.g. 8471.30" {...field} />
+  </FormControl>
+  <Button 
+    type="button" 
+    size="icon"
+    variant="outline"
+    className="border-green-500 text-green-500"
+    onClick={() => setShowHSAssistant(!showHSAssistant)}
+  >
+    <FaMagnifyingGlass className="h-4 w-4" />
+  </Button>
+</div>
+{showHSAssistant && (
+  <HSCodeAssistant
+    productDescription={form.getValues("productName")} // adjust field name
+    category={form.getValues("productCategory")}
+    onSelectHSCode={(code) => {
+      form.setValue("hsCode", code);
+      setShowHSAssistant(false);
+    }}
+  />
+)}
+```
+
+## 2. Country List Implementation
+
+The comprehensive country list with CPTPP indicators needs to be restored:
+
+```javascript
+// 1. Add the country groups data structure
+const countryGroups = {
+  'ASIA-PACIFIC REGION': [
+    { label: "Japan - CPTPP member", value: "Japan", region: "ASIA-PACIFIC REGION", isCPTPP: true },
+    { label: "South Korea", value: "South Korea", region: "ASIA-PACIFIC REGION", isCPTPP: false },
+    // Add all countries from our previous implementation
+  ],
+  'EUROPE': [
+    { label: "European Union", value: "European Union", region: "EUROPE", isCPTPP: false },
+    { label: "Germany", value: "Germany", region: "EUROPE", isCPTPP: false },
+    { label: "United Kingdom - CPTPP member", value: "United Kingdom", region: "EUROPE", isCPTPP: true },
+    // Add all countries from our previous implementation
+  ],
+  // Add all other regions
+};
+
+// 2. Replace the country dropdowns with our grouped version:
+<FormItem>
+  <FormLabel>Origin Country</FormLabel>
+  <Select
+    onValueChange={field.onChange}
+    defaultValue={field.value}
+  >
+    <FormControl>
+      <SelectTrigger>
+        <SelectValue placeholder="Select origin country" />
+      </SelectTrigger>
+    </FormControl>
+    <SelectContent className="max-h-80">
+      {Object.entries(countryGroups).map(([region, regionCountries]) => (
+        <div key={region}>
+          <div className="px-2 py-1.5 text-sm font-semibold bg-gray-100">{region}</div>
+          {regionCountries.map((country) => (
+            <SelectItem key={country.value} value={country.value}>
+              {country.label}
+            </SelectItem>
+          ))}
+        </div>
+      ))}
+    </SelectContent>
+  </Select>
+  <FormMessage />
+</FormItem>
+```
+
+## 3. Data Flow to Other Dashboards
+
+This is critical to ensure all dashboards connect properly:
+
+```javascript
+// In the calculate/submit handler:
+const handleCalculate = (values) => {
+  // Update the central analysis context to synchronize all dashboards
+  setCurrentAnalysis({
+    totalCost: results.totalCost,
+    components: results.components,
+    productDetails: {
+      // Map all fields properly
+    },
+    timestamp: new Date()
+  });
+};
+```
+
+## 4. Implementation Instructions
+
+For your developer:
+
+1. **First, extract these components** from the `cost-breakdown-complete.tsx` file
+
+2. **Integrate them into the current working form**, adapting field names as needed
+
+3. **Prioritize functionality over exact layout** - ensure the HS assistant works, the country lists are complete, and data flows to other dashboards
+
+4. **Test critical operations**:
+   - HS code suggestions
+   - Country selection with grouping
+   - Dashboard data propagation
+
+Tell your developer to focus specifically on these components first, as they represent the most valuable functionality that needs to be preserved from our previous work.
