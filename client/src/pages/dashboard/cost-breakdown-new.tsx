@@ -499,10 +499,10 @@ const ProductInformationForm = ({
         </div>
         
         {isModified && (
-          <Alert variant="info" className="mb-4">
-            <AlertCircle className="h-4 w-4" />
-            <AlertTitle>Modified from previous analysis</AlertTitle>
-            <AlertDescription>
+          <Alert className="mb-4 bg-blue-50 border-blue-200">
+            <AlertCircle className="h-4 w-4 text-blue-500" />
+            <AlertTitle className="text-blue-700">Modified from previous analysis</AlertTitle>
+            <AlertDescription className="text-blue-600">
               You are modifying a previous analysis. Fields changed: {modifiedFields.length > 0 ? 
                 modifiedFields.map(field => field.replace(/([A-Z])/g, ' $1').toLowerCase()).join(', ') : 
                 'None yet'}
@@ -1014,6 +1014,32 @@ const CostBreakdownDashboard = () => {
                       onClick={saveAnalysis}
                     >
                       Save Breakdown
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              {/* Modify Analysis Card */}
+              <Card className="bg-white shadow-sm border border-neutral-200">
+                <CardHeader className="px-4 py-3 border-b border-neutral-200">
+                  <CardTitle className="text-md font-medium flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                      <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                    </svg>
+                    Modify Analysis
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-4">
+                  <div className="space-y-3">
+                    <p className="text-sm text-neutral-600">Modify this analysis to test different scenarios without re-entering all information</p>
+                    <Button 
+                      className="w-full bg-blue-600 hover:bg-blue-700 flex items-center justify-center" 
+                      onClick={handleModify}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                      </svg>
+                      Modify Analysis
                     </Button>
                   </div>
                 </CardContent>
