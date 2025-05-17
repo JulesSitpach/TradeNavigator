@@ -1,0 +1,53 @@
+PROMPT FOR AI DESIGN DEVELOPER:
+
+Fix global data availability issue affecting all dashboard tabs
+
+ISSUE:
+Despite implementing a data structure fix (adding 'formValues' and 'results' fields), multiple dashboards (including Alternative Routes, Tariff Analysis, Regulations, etc.) are still displaying "No Analysis Data Available" messages, indicating a systemic issue with how dashboards access and verify data.
+
+COMPREHENSIVE SOLUTION REQUIRED:
+
+1. GLOBAL DATA ACCESS INSPECTION:
+   - Inspect the parent/container component that hosts all dashboard tabs
+   - Verify that the updated data structure is properly propagated to ALL dashboard components
+   - Check if there's a global state provider that needs updating to use the new structure
+   - Add debugging to confirm data flow through the component hierarchy
+
+2. DASHBOARD COMPONENT TEMPLATE FIX:
+   - Identify if dashboards are using a shared template/component for rendering
+   - Update the base dashboard template to correctly check for data in the new structure
+   - Fix conditional rendering logic across all affected dashboards consistently
+   - Ensure all dashboards react to data availability changes the same way
+
+3. NAVIGATION SYSTEM REVIEW:
+   - Check how tab navigation is implemented (React Router, custom tabs, etc.)
+   - Verify that navigation preserves state across all tabs
+   - Fix any state reset issues during tab changes
+   - Ensure data persistence between dashboard views
+
+4. DATA VERIFICATION STANDARDIZATION:
+   - Create a standard utility function for checking data availability
+   - Implement this function across all dashboards consistently
+   - Update all "No Analysis Data Available" conditionals to use this standard check
+   - Ensure proper handling of partial data scenarios
+
+5. UNIFIED TESTING PROCEDURE:
+   - Complete a cost analysis
+   - Systematically check each dashboard tab without page refresh
+   - Verify data appears correctly in ALL dashboards:
+     * Alternative Routes
+     * Tariff Analysis
+     * Regulations
+     * Special Programs
+     * Duty Drawback
+     * Market Analysis
+     * Trade Partners
+     * Visualizations
+     * AI Predictions
+
+6. DEPLOY VERIFICATION:
+   - Implement a simple visual indicator that shows whether data is available across all dashboards
+   - Add version/timestamp of loaded data to help troubleshoot across environments
+   - Create a forced refresh option if data appears to be stale
+
+This is a critical system-wide issue that needs to be addressed at the architectural level to ensure consistent data flow to all dashboard components. The solution should ensure that once a cost analysis is completed, ALL dashboard tabs properly access and display the relevant data without requiring additional user action.

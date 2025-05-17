@@ -93,24 +93,31 @@ const RegulationsDashboard = () => {
   const [searchQuery, setSearchQuery] = useState('');
   
   useEffect(() => {
-    // Get the current analysis from the context
-    if (analysisContext?.currentAnalysis) {
-      setCurrentAnalysis(analysisContext.currentAnalysis);
-      
-      // Analyze regulatory requirements based on current analysis
-      analyzeRegulations(analysisContext.currentAnalysis);
-    } else {
-      toast({
-        title: "No Analysis Data",
-        description: "Please complete a cost analysis first to view regulatory requirements.",
-        variant: "destructive"
-      });
-    }
+    // Import utility functions for data validation and normalization
+    import('@/utils/analysisDataHelper').then(({ isValidAnalysisData, normalizeAnalysisData, getAnalysisDataErrorMessage }) => {
+      // Get the current analysis from the context
+      if (analysisContext?.currentAnalysis) {
+        // Normalize data to ensure it has a consistent structure
+        const normalizedData = normalizeAnalysisData(analysisContext.currentAnalysis);
+        
+        // Validate the data before using it
+        if (isValidAnalysisData(normalizedData)) {
+          setCurrentAnalysis(normalizedData);
+          
+          // Analyze regulatory requirements based on normalized analysis data
+          analyzeRegulations(normalizedData);
+        } else {
+          toast(getAnalysisDataErrorMessage());
+        }
+      } else {
+        toast(getAnalysisDataErrorMessage());
+      }
+    });
   }, [analysisContext?.currentAnalysis]);
   
   // Analyze regulatory requirements based on the current analysis
   const analyzeRegulations = (analysis: any) => {
-    if (!analysis || !analysis.formValues || !analysis.results) {
+    if (!analysis) {
       return;
     }
     

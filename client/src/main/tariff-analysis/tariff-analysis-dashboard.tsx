@@ -61,24 +61,31 @@ const TariffAnalysisDashboard = () => {
   const [searchQuery, setSearchQuery] = useState('');
   
   useEffect(() => {
-    // Get the current analysis from the context
-    if (analysisContext?.currentAnalysis) {
-      setCurrentAnalysis(analysisContext.currentAnalysis);
-      
-      // Analyze tariff data based on current analysis
-      analyzeTariffData(analysisContext.currentAnalysis);
-    } else {
-      toast({
-        title: "No Analysis Data",
-        description: "Please complete a cost analysis first to view tariff analysis.",
-        variant: "destructive"
-      });
-    }
+    // Import utility functions for data validation and normalization
+    import('@/utils/analysisDataHelper').then(({ isValidAnalysisData, normalizeAnalysisData, getAnalysisDataErrorMessage }) => {
+      // Get the current analysis from the context
+      if (analysisContext?.currentAnalysis) {
+        // Normalize data to ensure it has a consistent structure
+        const normalizedData = normalizeAnalysisData(analysisContext.currentAnalysis);
+        
+        // Validate the data before using it
+        if (isValidAnalysisData(normalizedData)) {
+          setCurrentAnalysis(normalizedData);
+          
+          // Analyze tariff data based on normalized analysis data
+          analyzeTariffData(normalizedData);
+        } else {
+          toast(getAnalysisDataErrorMessage());
+        }
+      } else {
+        toast(getAnalysisDataErrorMessage());
+      }
+    });
   }, [analysisContext?.currentAnalysis]);
   
   // Analyze tariff data based on the current analysis
   const analyzeTariffData = (analysis: any) => {
-    if (!analysis || !analysis.formValues || !analysis.results) {
+    if (!analysis) {
       return;
     }
     

@@ -30,6 +30,7 @@ import CostBreakdownOriginal from "@/pages/dashboard/cost-breakdown";
 import CostBreakdownNew from "@/pages/dashboard/cost-breakdown-new";
 import AlternativeRoutesDashboard from "@/pages/dashboard/alternative-routes";
 import TariffAnalysisDashboard from "@/pages/dashboard/tariff-analysis";
+import RegulationsDashboard from "@/pages/dashboard/regulations";
 import NewAnalysis from "@/pages/dashboard/new-analysis";
 import ProductInfoForm from "@/pages/dashboard/product-info-form";
 import MainCostBreakdown from "@/main/cost-breakdown";
@@ -93,7 +94,7 @@ function Router() {
       <PrivateRoute exact path="/dashboard/cost-breakdown" component={MainCostBreakdown} />
       <PrivateRoute exact path="/dashboard/alternative-routes" component={AlternativeRoutesDashboard} />
       <PrivateRoute exact path="/dashboard/tariff-analysis" component={TariffAnalysisDashboard} />
-      <PrivateRoute exact path="/dashboard/regulations" component={Dashboard} />
+      <PrivateRoute exact path="/dashboard/regulations" component={RegulationsDashboard} />
       <PrivateRoute exact path="/dashboard/visualizations" component={Dashboard} />
       <PrivateRoute exact path="/dashboard/exemptions" component={Dashboard} />
       <PrivateRoute exact path="/dashboard/duty-drawback" component={Dashboard} />
