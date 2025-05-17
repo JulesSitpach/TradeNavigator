@@ -458,6 +458,7 @@ const MainCostBreakdown = () => {
                       <SelectItem value="chemicals">Chemicals</SelectItem>
                       <SelectItem value="medical">Medical Supplies</SelectItem>
                       <SelectItem value="toys">Toys & Games</SelectItem>
+                      <SelectItem value="Others">Others</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
