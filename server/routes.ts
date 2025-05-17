@@ -727,46 +727,182 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       // For development, return sample countries
       if (process.env.NODE_ENV === 'development') {
-        // Return key manufacturing origins
-        const manufacturingOrigins = [
-          { id: 1, code: 'CN', name: 'China', region: 'Asia', isOrigin: true, isDestination: true, description: 'Major manufacturing hub for a wide range of products' },
-          { id: 2, code: 'VN', name: 'Vietnam', region: 'Asia', isOrigin: true, isDestination: false, description: 'Growing manufacturing hub, especially for electronics and textiles' },
-          { id: 3, code: 'IN', name: 'India', region: 'Asia', isOrigin: true, isDestination: true, description: 'Major source for textiles, pharmaceuticals, and IT services' },
-          { id: 4, code: 'MX', name: 'Mexico', region: 'North America', isOrigin: true, isDestination: true, description: 'Key manufacturing center for automotive and electronics for North American market' },
-          { id: 5, code: 'MY', name: 'Malaysia', region: 'Asia', isOrigin: true, isDestination: false, description: 'Important source for electronics and components' },
-          { id: 6, code: 'TH', name: 'Thailand', region: 'Asia', isOrigin: true, isDestination: false, description: 'Growing manufacturing base for automotive and electronics' },
-          { id: 7, code: 'ID', name: 'Indonesia', region: 'Asia', isOrigin: true, isDestination: false, description: 'Large production capacity for textiles, footwear, and natural resources' },
-          { id: 8, code: 'BD', name: 'Bangladesh', region: 'Asia', isOrigin: true, isDestination: false, description: 'Major textiles and apparel producer' },
-          { id: 9, code: 'KR', name: 'South Korea', region: 'Asia', isOrigin: true, isDestination: true, description: 'High-tech manufacturing hub for electronics and automotive' },
-          { id: 10, code: 'TW', name: 'Taiwan', region: 'Asia', isOrigin: true, isDestination: false, description: 'Critical for electronics and semiconductor production' },
-          { id: 11, code: 'JP', name: 'Japan', region: 'Asia', isOrigin: true, isDestination: true, description: 'High-value manufacturing with focus on precision engineering' },
+        // Comprehensive alphabetical country list with key trading nations
+        const countries = [
+          // A
+          { id: 1, code: 'AF', name: 'Afghanistan', region: 'Asia', isOrigin: true, isDestination: true, description: 'Emerging market with agricultural exports and handicrafts' },
+          { id: 2, code: 'AL', name: 'Albania', region: 'Europe', isOrigin: true, isDestination: true, description: 'Growing manufacturing base for textiles and footwear' },
+          { id: 3, code: 'DZ', name: 'Algeria', region: 'Africa', isOrigin: true, isDestination: true, description: 'Major North African economy with energy exports' },
+          { id: 4, code: 'AD', name: 'Andorra', region: 'Europe', isOrigin: false, isDestination: true, description: 'Small European market with tourism focus' },
+          { id: 5, code: 'AO', name: 'Angola', region: 'Africa', isOrigin: true, isDestination: true, description: 'Oil-focused economy with developing infrastructure' },
+          { id: 6, code: 'AR', name: 'Argentina', region: 'South America', isOrigin: true, isDestination: true, description: 'Major South American market with diverse industrial base' },
+          { id: 7, code: 'AM', name: 'Armenia', region: 'Asia', isOrigin: true, isDestination: true, description: 'Developing economy with growing tech sector' },
+          { id: 8, code: 'AU', name: 'Australia', region: 'Oceania', isOrigin: true, isDestination: true, description: 'Leading market in Oceania with strong consumer demand' },
+          { id: 9, code: 'AT', name: 'Austria', region: 'Europe', isOrigin: true, isDestination: true, description: 'Advanced manufacturing with machinery expertise' },
+          { id: 10, code: 'AZ', name: 'Azerbaijan', region: 'Asia', isOrigin: true, isDestination: true, description: 'Energy-rich nation with growing manufacturing sector' },
           
-          // Major import destinations
-          { id: 12, code: 'US', name: 'United States', region: 'North America', isOrigin: true, isDestination: true, description: 'Largest consumer market globally' },
-          { id: 13, code: 'CA', name: 'Canada', region: 'North America', isOrigin: true, isDestination: true, description: 'Major North American market with strong trade ties' },
-          { id: 14, code: 'DE', name: 'Germany', region: 'Europe', isOrigin: true, isDestination: true, description: 'Largest economy in Europe and manufacturing powerhouse' },
-          { id: 15, code: 'FR', name: 'France', region: 'Europe', isOrigin: true, isDestination: true, description: 'Major European market for consumer goods and luxury items' },
-          { id: 16, code: 'IT', name: 'Italy', region: 'Europe', isOrigin: true, isDestination: true, description: 'Important market for fashion, food, and machinery' },
-          { id: 17, code: 'NL', name: 'Netherlands', region: 'Europe', isOrigin: true, isDestination: true, description: 'Key European logistics hub and market' },
-          { id: 18, code: 'ES', name: 'Spain', region: 'Europe', isOrigin: true, isDestination: true, description: 'Significant Southern European market' },
-          { id: 19, code: 'GB', name: 'United Kingdom', region: 'Europe', isOrigin: true, isDestination: true, description: 'Major market with distinct post-Brexit regulations' },
-          { id: 20, code: 'AU', name: 'Australia', region: 'Oceania', isOrigin: true, isDestination: true, description: 'Leading market in Oceania with strong consumer demand' },
-          { id: 21, code: 'SG', name: 'Singapore', region: 'Asia', isOrigin: true, isDestination: true, description: 'Important trade hub and high-income market in Southeast Asia' },
-          { id: 22, code: 'BR', name: 'Brazil', region: 'South America', isOrigin: true, isDestination: true, description: 'Largest Latin American market with diverse import needs' },
-          { id: 23, code: 'AE', name: 'United Arab Emirates', region: 'Middle East', isOrigin: false, isDestination: true, description: 'Gateway to Middle Eastern markets with high purchasing power' },
-          { id: 24, code: 'SA', name: 'Saudi Arabia', region: 'Middle East', isOrigin: false, isDestination: true, description: 'Largest Middle Eastern market with growing import demand' },
+          // B
+          { id: 11, code: 'BS', name: 'Bahamas', region: 'Caribbean', isOrigin: false, isDestination: true, description: 'Tourism-focused economy with financial services' },
+          { id: 12, code: 'BH', name: 'Bahrain', region: 'Middle East', isOrigin: true, isDestination: true, description: 'Financial hub with growing manufacturing' },
+          { id: 13, code: 'BD', name: 'Bangladesh', region: 'Asia', isOrigin: true, isDestination: true, description: 'Major textiles and apparel producer with growing economy' },
+          { id: 14, code: 'BY', name: 'Belarus', region: 'Europe', isOrigin: true, isDestination: true, description: 'Manufacturing focus with machinery and agricultural equipment' },
+          { id: 15, code: 'BE', name: 'Belgium', region: 'Europe', isOrigin: true, isDestination: true, description: 'Logistics hub with advanced chemical and manufacturing industries' },
+          { id: 16, code: 'BZ', name: 'Belize', region: 'Central America', isOrigin: true, isDestination: true, description: 'Agricultural exports with growing tourism' },
+          { id: 17, code: 'BR', name: 'Brazil', region: 'South America', isOrigin: true, isDestination: true, description: 'Largest Latin American economy with diverse industrial base' },
+          { id: 18, code: 'BN', name: 'Brunei', region: 'Asia', isOrigin: true, isDestination: true, description: 'Oil and gas-based economy with diversification initiatives' },
+          { id: 19, code: 'BG', name: 'Bulgaria', region: 'Europe', isOrigin: true, isDestination: true, description: 'Growing manufacturing with IT sector development' },
           
-          // South America additions
-          { id: 25, code: 'CO', name: 'Colombia', region: 'South America', isOrigin: true, isDestination: true, description: 'Growing manufacturing and import market with strategic position' },
-          { id: 26, code: 'CL', name: 'Chile', region: 'South America', isOrigin: true, isDestination: true, description: 'One of the most open economies in South America with extensive FTA network' },
-          { id: 27, code: 'AR', name: 'Argentina', region: 'South America', isOrigin: true, isDestination: true, description: 'Major South American market with diverse industrial base' },
-          { id: 28, code: 'PE', name: 'Peru', region: 'South America', isOrigin: true, isDestination: true, description: 'Fast-growing trade hub with significant mining sector' },
+          // C
+          { id: 20, code: 'KH', name: 'Cambodia', region: 'Asia', isOrigin: true, isDestination: true, description: 'Growing manufacturing center for garments and footwear' },
+          { id: 21, code: 'CA', name: 'Canada', region: 'North America', isOrigin: true, isDestination: true, description: 'Major North American market with strong trade ties' },
+          { id: 22, code: 'CL', name: 'Chile', region: 'South America', isOrigin: true, isDestination: true, description: 'Open economy with extensive free trade agreements' },
+          { id: 23, code: 'CN', name: 'China', region: 'Asia', isOrigin: true, isDestination: true, description: 'Major manufacturing hub for a wide range of products' },
+          { id: 24, code: 'CO', name: 'Colombia', region: 'South America', isOrigin: true, isDestination: true, description: 'Growing manufacturing with strategic trade position' },
+          { id: 25, code: 'CR', name: 'Costa Rica', region: 'Central America', isOrigin: true, isDestination: true, description: 'Stable economy with technology and ecotourism focus' },
+          { id: 26, code: 'HR', name: 'Croatia', region: 'Europe', isOrigin: true, isDestination: true, description: 'Tourism with growing manufacturing sector' },
+          { id: 27, code: 'CY', name: 'Cyprus', region: 'Europe', isOrigin: true, isDestination: true, description: 'Services economy with shipping and tourism' },
+          { id: 28, code: 'CZ', name: 'Czech Republic', region: 'Europe', isOrigin: true, isDestination: true, description: 'Manufacturing powerhouse for automotive and machinery' },
           
-          // Central America additions
-          { id: 29, code: 'PA', name: 'Panama', region: 'Central America', isOrigin: false, isDestination: true, description: 'Strategic logistics hub with the Panama Canal' },
-          { id: 30, code: 'CR', name: 'Costa Rica', region: 'Central America', isOrigin: true, isDestination: true, description: 'Stable business environment with focus on technology and ecotourism' },
-          { id: 31, code: 'DO', name: 'Dominican Republic', region: 'Caribbean', isOrigin: true, isDestination: true, description: 'Caribbean manufacturing hub with strong US ties' },
-          { id: 32, code: 'GT', name: 'Guatemala', region: 'Central America', isOrigin: true, isDestination: true, description: 'Largest economy in Central America with diverse agricultural exports' }
+          // D
+          { id: 29, code: 'DK', name: 'Denmark', region: 'Europe', isOrigin: true, isDestination: true, description: 'Innovation-driven economy with clean tech focus' },
+          { id: 30, code: 'DO', name: 'Dominican Republic', region: 'Caribbean', isOrigin: true, isDestination: true, description: 'Manufacturing with strong tourism sector' },
+          
+          // E
+          { id: 31, code: 'EC', name: 'Ecuador', region: 'South America', isOrigin: true, isDestination: true, description: 'Oil exporter with agricultural specialties' },
+          { id: 32, code: 'EG', name: 'Egypt', region: 'Africa', isOrigin: true, isDestination: true, description: 'North African hub with diverse manufacturing' },
+          { id: 33, code: 'SV', name: 'El Salvador', region: 'Central America', isOrigin: true, isDestination: true, description: 'Manufacturing focus with textile production' },
+          { id: 34, code: 'EE', name: 'Estonia', region: 'Europe', isOrigin: true, isDestination: true, description: 'Digital leader with advanced e-government' },
+          { id: 35, code: 'ET', name: 'Ethiopia', region: 'Africa', isOrigin: true, isDestination: true, description: 'Fast-growing economy with manufacturing potential' },
+          
+          // F
+          { id: 36, code: 'FJ', name: 'Fiji', region: 'Oceania', isOrigin: true, isDestination: true, description: 'Tourism with sugar and garment exports' },
+          { id: 37, code: 'FI', name: 'Finland', region: 'Europe', isOrigin: true, isDestination: true, description: 'High-tech economy with forestry products' },
+          { id: 38, code: 'FR', name: 'France', region: 'Europe', isOrigin: true, isDestination: true, description: 'Major European market for consumer goods and luxury items' },
+          
+          // G
+          { id: 39, code: 'GE', name: 'Georgia', region: 'Asia', isOrigin: true, isDestination: true, description: 'Growing trade hub between Europe and Asia' },
+          { id: 40, code: 'DE', name: 'Germany', region: 'Europe', isOrigin: true, isDestination: true, description: 'Largest economy in Europe and manufacturing powerhouse' },
+          { id: 41, code: 'GH', name: 'Ghana', region: 'Africa', isOrigin: true, isDestination: true, description: 'West African leader with diverse exports' },
+          { id: 42, code: 'GR', name: 'Greece', region: 'Europe', isOrigin: true, isDestination: true, description: 'Tourism with shipping and food products' },
+          { id: 43, code: 'GT', name: 'Guatemala', region: 'Central America', isOrigin: true, isDestination: true, description: 'Agricultural exports with growing manufacturing' },
+          
+          // H
+          { id: 44, code: 'HT', name: 'Haiti', region: 'Caribbean', isOrigin: true, isDestination: true, description: 'Apparel manufacturing with agricultural focus' },
+          { id: 45, code: 'HN', name: 'Honduras', region: 'Central America', isOrigin: true, isDestination: true, description: 'Textiles with agricultural exports' },
+          { id: 46, code: 'HK', name: 'Hong Kong', region: 'Asia', isOrigin: true, isDestination: true, description: 'Global financial hub and trade center' },
+          { id: 47, code: 'HU', name: 'Hungary', region: 'Europe', isOrigin: true, isDestination: true, description: 'Manufacturing center for automotive and electronics' },
+          
+          // I
+          { id: 48, code: 'IS', name: 'Iceland', region: 'Europe', isOrigin: true, isDestination: true, description: 'Renewable energy with aluminum production' },
+          { id: 49, code: 'IN', name: 'India', region: 'Asia', isOrigin: true, isDestination: true, description: 'Major source for textiles, pharmaceuticals, and IT services' },
+          { id: 50, code: 'ID', name: 'Indonesia', region: 'Asia', isOrigin: true, isDestination: true, description: 'Major manufacturing hub with diverse exports including textiles, electronics, palm oil, and natural resources' },
+          { id: 51, code: 'IR', name: 'Iran', region: 'Middle East', isOrigin: true, isDestination: true, description: 'Oil exporter with diverse manufacturing' },
+          { id: 52, code: 'IQ', name: 'Iraq', region: 'Middle East', isOrigin: true, isDestination: true, description: 'Oil-based economy with reconstruction growth' },
+          { id: 53, code: 'IE', name: 'Ireland', region: 'Europe', isOrigin: true, isDestination: true, description: 'Technology hub with pharmaceutical strength' },
+          { id: 54, code: 'IL', name: 'Israel', region: 'Middle East', isOrigin: true, isDestination: true, description: 'High-tech innovation with advanced defense industries' },
+          { id: 55, code: 'IT', name: 'Italy', region: 'Europe', isOrigin: true, isDestination: true, description: 'Design excellence with fashion, food, and machinery exports' },
+          
+          // J
+          { id: 56, code: 'JM', name: 'Jamaica', region: 'Caribbean', isOrigin: true, isDestination: true, description: 'Tourism with agricultural exports' },
+          { id: 57, code: 'JP', name: 'Japan', region: 'Asia', isOrigin: true, isDestination: true, description: 'High-value manufacturing with automotive and electronics expertise' },
+          { id: 58, code: 'JO', name: 'Jordan', region: 'Middle East', isOrigin: true, isDestination: true, description: 'Services with pharmaceutical and textile exports' },
+          
+          // K
+          { id: 59, code: 'KZ', name: 'Kazakhstan', region: 'Asia', isOrigin: true, isDestination: true, description: 'Resource-rich with diverse mineral exports' },
+          { id: 60, code: 'KE', name: 'Kenya', region: 'Africa', isOrigin: true, isDestination: true, description: 'East African hub with agricultural and technology focus' },
+          { id: 61, code: 'KW', name: 'Kuwait', region: 'Middle East', isOrigin: true, isDestination: true, description: 'Oil-rich economy with strategic location' },
+          { id: 62, code: 'KG', name: 'Kyrgyzstan', region: 'Asia', isOrigin: true, isDestination: true, description: 'Gold mining with agricultural exports' },
+          
+          // L
+          { id: 63, code: 'LA', name: 'Laos', region: 'Asia', isOrigin: true, isDestination: true, description: 'Growing economy with hydropower focus' },
+          { id: 64, code: 'LV', name: 'Latvia', region: 'Europe', isOrigin: true, isDestination: true, description: 'Baltic state with transit services and IT' },
+          { id: 65, code: 'LB', name: 'Lebanon', region: 'Middle East', isOrigin: true, isDestination: true, description: 'Service economy with banking focus' },
+          { id: 66, code: 'LT', name: 'Lithuania', region: 'Europe', isOrigin: true, isDestination: true, description: 'Manufacturing with growing tech sector' },
+          { id: 67, code: 'LU', name: 'Luxembourg', region: 'Europe', isOrigin: true, isDestination: true, description: 'Financial center with high-value services' },
+          
+          // M
+          { id: 68, code: 'MO', name: 'Macau', region: 'Asia', isOrigin: false, isDestination: true, description: 'Tourism and gaming hub' },
+          { id: 69, code: 'MY', name: 'Malaysia', region: 'Asia', isOrigin: true, isDestination: true, description: 'Electronics manufacturing hub with diverse economy' },
+          { id: 70, code: 'MV', name: 'Maldives', region: 'Asia', isOrigin: false, isDestination: true, description: 'Tourism-focused island nation' },
+          { id: 71, code: 'MT', name: 'Malta', region: 'Europe', isOrigin: true, isDestination: true, description: 'Services with tourism and financial focus' },
+          { id: 72, code: 'MU', name: 'Mauritius', region: 'Africa', isOrigin: true, isDestination: true, description: 'Services with textile manufacturing' },
+          { id: 73, code: 'MX', name: 'Mexico', region: 'North America', isOrigin: true, isDestination: true, description: 'Manufacturing center for automotive and electronics' },
+          { id: 74, code: 'MD', name: 'Moldova', region: 'Europe', isOrigin: true, isDestination: true, description: 'Agricultural with wine specialization' },
+          { id: 75, code: 'MN', name: 'Mongolia', region: 'Asia', isOrigin: true, isDestination: true, description: 'Mining-focused with cashmere exports' },
+          { id: 76, code: 'ME', name: 'Montenegro', region: 'Europe', isOrigin: true, isDestination: true, description: 'Tourism with aluminum production' },
+          { id: 77, code: 'MA', name: 'Morocco', region: 'Africa', isOrigin: true, isDestination: true, description: 'Manufacturing with automotive and aerospace growth' },
+          { id: 78, code: 'MZ', name: 'Mozambique', region: 'Africa', isOrigin: true, isDestination: true, description: 'Natural resources with agricultural exports' },
+          { id: 79, code: 'MM', name: 'Myanmar', region: 'Asia', isOrigin: true, isDestination: true, description: 'Growing garment manufacturing with natural resources' },
+          
+          // N
+          { id: 80, code: 'NA', name: 'Namibia', region: 'Africa', isOrigin: true, isDestination: true, description: 'Mining with diamond and uranium exports' },
+          { id: 81, code: 'NP', name: 'Nepal', region: 'Asia', isOrigin: true, isDestination: true, description: 'Agricultural with handicraft exports' },
+          { id: 82, code: 'NL', name: 'Netherlands', region: 'Europe', isOrigin: true, isDestination: true, description: 'Key European logistics hub and market' },
+          { id: 83, code: 'NZ', name: 'New Zealand', region: 'Oceania', isOrigin: true, isDestination: true, description: 'Agricultural exports with dairy focus' },
+          { id: 84, code: 'NI', name: 'Nicaragua', region: 'Central America', isOrigin: true, isDestination: true, description: 'Agricultural exports with textile manufacturing' },
+          { id: 85, code: 'NG', name: 'Nigeria', region: 'Africa', isOrigin: true, isDestination: true, description: 'Oil-rich economy with Africa\'s largest market' },
+          { id: 86, code: 'NO', name: 'Norway', region: 'Europe', isOrigin: true, isDestination: true, description: 'Oil and gas with maritime technologies' },
+          
+          // O
+          { id: 87, code: 'OM', name: 'Oman', region: 'Middle East', isOrigin: true, isDestination: true, description: 'Oil and gas with diversification initiatives' },
+          
+          // P
+          { id: 88, code: 'PK', name: 'Pakistan', region: 'Asia', isOrigin: true, isDestination: true, description: 'Textile manufacturing with agricultural exports' },
+          { id: 89, code: 'PA', name: 'Panama', region: 'Central America', isOrigin: false, isDestination: true, description: 'Strategic logistics hub with the Panama Canal' },
+          { id: 90, code: 'PG', name: 'Papua New Guinea', region: 'Oceania', isOrigin: true, isDestination: true, description: 'Resource-rich with gold, copper and gas exports' },
+          { id: 91, code: 'PY', name: 'Paraguay', region: 'South America', isOrigin: true, isDestination: true, description: 'Agricultural exports with hydroelectric power' },
+          { id: 92, code: 'PE', name: 'Peru', region: 'South America', isOrigin: true, isDestination: true, description: 'Mining with growing agricultural exports' },
+          { id: 93, code: 'PH', name: 'Philippines', region: 'Asia', isOrigin: true, isDestination: true, description: 'Service sector strength with electronics manufacturing' },
+          { id: 94, code: 'PL', name: 'Poland', region: 'Europe', isOrigin: true, isDestination: true, description: 'Manufacturing powerhouse with automotive and machinery' },
+          { id: 95, code: 'PT', name: 'Portugal', region: 'Europe', isOrigin: true, isDestination: true, description: 'Manufacturing with textile and cork specialties' },
+          
+          // Q
+          { id: 96, code: 'QA', name: 'Qatar', region: 'Middle East', isOrigin: true, isDestination: true, description: 'Natural gas exports with financial investments' },
+          
+          // R
+          { id: 97, code: 'RO', name: 'Romania', region: 'Europe', isOrigin: true, isDestination: true, description: 'Manufacturing with automotive and IT growth' },
+          { id: 98, code: 'RU', name: 'Russia', region: 'Europe', isOrigin: true, isDestination: true, description: 'Resource-rich with diverse industrial base' },
+          { id: 99, code: 'RW', name: 'Rwanda', region: 'Africa', isOrigin: true, isDestination: true, description: 'Fast-growing economy with technology initiatives' },
+          
+          // S
+          { id: 100, code: 'SA', name: 'Saudi Arabia', region: 'Middle East', isOrigin: true, isDestination: true, description: 'Oil-based economy with diversification vision' },
+          { id: 101, code: 'SN', name: 'Senegal', region: 'Africa', isOrigin: true, isDestination: true, description: 'Services with agricultural exports' },
+          { id: 102, code: 'RS', name: 'Serbia', region: 'Europe', isOrigin: true, isDestination: true, description: 'Manufacturing with automotive components and IT' },
+          { id: 103, code: 'SG', name: 'Singapore', region: 'Asia', isOrigin: true, isDestination: true, description: 'Global trade hub with finance and high-tech manufacturing' },
+          { id: 104, code: 'SK', name: 'Slovakia', region: 'Europe', isOrigin: true, isDestination: true, description: 'Automotive manufacturing center' },
+          { id: 105, code: 'SI', name: 'Slovenia', region: 'Europe', isOrigin: true, isDestination: true, description: 'Advanced manufacturing with automotive focus' },
+          { id: 106, code: 'ZA', name: 'South Africa', region: 'Africa', isOrigin: true, isDestination: true, description: 'Diverse economy with mining and manufacturing' },
+          { id: 107, code: 'KR', name: 'South Korea', region: 'Asia', isOrigin: true, isDestination: true, description: 'High-tech manufacturing hub for electronics and automotive' },
+          { id: 108, code: 'ES', name: 'Spain', region: 'Europe', isOrigin: true, isDestination: true, description: 'Diverse economy with automotive, tourism and agricultural exports' },
+          { id: 109, code: 'LK', name: 'Sri Lanka', region: 'Asia', isOrigin: true, isDestination: true, description: 'Textile exports with tea and spices' },
+          { id: 110, code: 'SE', name: 'Sweden', region: 'Europe', isOrigin: true, isDestination: true, description: 'Innovation-driven with engineering expertise' },
+          { id: 111, code: 'CH', name: 'Switzerland', region: 'Europe', isOrigin: true, isDestination: true, description: 'High-value manufacturing with pharmaceuticals and precision instruments' },
+          
+          // T
+          { id: 112, code: 'TW', name: 'Taiwan', region: 'Asia', isOrigin: true, isDestination: true, description: 'Advanced electronics with semiconductor leadership' },
+          { id: 113, code: 'TJ', name: 'Tajikistan', region: 'Asia', isOrigin: true, isDestination: true, description: 'Aluminum production with cotton exports' },
+          { id: 114, code: 'TZ', name: 'Tanzania', region: 'Africa', isOrigin: true, isDestination: true, description: 'Agricultural exports with mining and tourism' },
+          { id: 115, code: 'TH', name: 'Thailand', region: 'Asia', isOrigin: true, isDestination: true, description: 'Manufacturing hub for automotive and electronics' },
+          { id: 116, code: 'TT', name: 'Trinidad and Tobago', region: 'Caribbean', isOrigin: true, isDestination: true, description: 'Energy-based economy with petrochemicals' },
+          { id: 117, code: 'TN', name: 'Tunisia', region: 'Africa', isOrigin: true, isDestination: true, description: 'Manufacturing with textiles and automotive parts' },
+          { id: 118, code: 'TR', name: 'Turkey', region: 'Europe', isOrigin: true, isDestination: true, description: 'Manufacturing powerhouse with textiles and automotive' },
+          
+          // U
+          { id: 119, code: 'UG', name: 'Uganda', region: 'Africa', isOrigin: true, isDestination: true, description: 'Agricultural exports with coffee focus' },
+          { id: 120, code: 'UA', name: 'Ukraine', region: 'Europe', isOrigin: true, isDestination: true, description: 'Agricultural powerhouse with manufacturing base' },
+          { id: 121, code: 'AE', name: 'United Arab Emirates', region: 'Middle East', isOrigin: true, isDestination: true, description: 'Trade and logistics hub with tourism and finance' },
+          { id: 122, code: 'GB', name: 'United Kingdom', region: 'Europe', isOrigin: true, isDestination: true, description: 'Advanced economy with services, aerospace and pharmaceuticals' },
+          { id: 123, code: 'US', name: 'United States', region: 'North America', isOrigin: true, isDestination: true, description: 'World\'s largest economy with diverse industrial base' },
+          { id: 124, code: 'UY', name: 'Uruguay', region: 'South America', isOrigin: true, isDestination: true, description: 'Agricultural exports with solid services sector' },
+          { id: 125, code: 'UZ', name: 'Uzbekistan', region: 'Asia', isOrigin: true, isDestination: true, description: 'Cotton exports with growing manufacturing' },
+          
+          // V
+          { id: 126, code: 'VE', name: 'Venezuela', region: 'South America', isOrigin: true, isDestination: true, description: 'Oil-rich economy with agricultural potential' },
+          { id: 127, code: 'VN', name: 'Vietnam', region: 'Asia', isOrigin: true, isDestination: true, description: 'Growing manufacturing hub for electronics and textiles' },
+          
+          // Z
+          { id: 128, code: 'ZM', name: 'Zambia', region: 'Africa', isOrigin: true, isDestination: true, description: 'Copper mining with agricultural production' },
+          { id: 129, code: 'ZW', name: 'Zimbabwe', region: 'Africa', isOrigin: true, isDestination: true, description: 'Mining with tobacco and cotton exports' }
         ];
         
         return res.json(manufacturingOrigins);
