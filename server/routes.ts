@@ -1988,6 +1988,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
             { code: '7318.15', description: 'Threaded screws and bolts of iron or steel' },
             { code: '7326.90', description: 'Articles of iron or steel, other' }
           ]
+        },
+        'Others': {
+          primary: { code: '9801.00', description: 'General merchandise not elsewhere specified' },
+          alternatives: [
+            { code: '9403.20', description: 'Metal furniture' },
+            { code: '4202.92', description: 'Containers, cases and similar items' },
+            { code: '3926.90', description: 'Other articles of plastics' }
+          ]
         }
       };
       
