@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -36,10 +36,33 @@ import {
 import PageHeader from "@/components/common/PageHeader";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
+import { 
+  PieChart, 
+  Pie, 
+  Cell, 
+  ResponsiveContainer, 
+  Tooltip, 
+  Legend, 
+  BarChart, 
+  Bar, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid 
+} from 'recharts';
 import HSCodeAssistant from "@/components/ai/HSCodeAssistant";
 import CopilotAssistant from "@/components/ai/CopilotAssistant";
-import { FaDownload, FaBox, FaShip, FaFileInvoice, FaPercent, FaPlus } from "react-icons/fa";
+import { 
+  FaDownload, 
+  FaBox, 
+  FaShip, 
+  FaFileInvoice, 
+  FaPercent, 
+  FaPlus, 
+  FaSave, 
+  FaTrash, 
+  FaListAlt, 
+  FaHistory 
+} from "react-icons/fa";
 import { FaCircleInfo, FaMagnifyingGlass } from "react-icons/fa6";
 
 // Form validation schema
@@ -158,6 +181,35 @@ const getCategoryColor = (category: string) => {
   return categoryColors[category] || '#82ca9d';
 };
 
+// Type for saved analysis
+interface SavedAnalysis {
+  id: string;
+  name: string;
+  date: string;
+  productDetails: {
+    description: string;
+    category: string;
+    hsCode: string;
+    originCountry: string;
+    destinationCountry: string;
+    value: number;
+  };
+  shippingDetails: {
+    quantity: number;
+    transportMode: string;
+    shipmentType: string;
+    packageType: string;
+    weight: number;
+    dimensions: {
+      length: number;
+      width: number;
+      height: number;
+      unit: string;
+    }
+  };
+  results: any;
+}
+
 const CostBreakdownCalculator = () => {
   const { t } = useContext(LanguageContext);
   const { toast } = useToast();
@@ -165,6 +217,8 @@ const CostBreakdownCalculator = () => {
   const [results, setResults] = useState(null);
   const [selectedTab, setSelectedTab] = useState("product");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [savedAnalyses, setSavedAnalyses] = useState<SavedAnalysis[]>([]);
+  const [saveName, setSaveName] = useState("");
 
   // Form definition
   const form = useForm<z.infer<typeof formSchema>>({
@@ -245,6 +299,118 @@ const CostBreakdownCalculator = () => {
       setIsSubmitting(false);
     }
   });
+
+  // Load saved analyses on component mount
+  useEffect(() => {
+    const savedAnalysesFromStorage = localStorage.getItem('savedCostAnalyses');
+    if (savedAnalysesFromStorage) {
+      setSavedAnalyses(JSON.parse(savedAnalysesFromStorage));
+    }
+  }, []);
+
+  // Save current analysis
+  const saveAnalysis = () => {
+    if (!results) {
+      toast({
+        title: "No Analysis to Save",
+        description: "Please calculate a cost breakdown first",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (!saveName.trim()) {
+      toast({
+        title: "Name Required",
+        description: "Please enter a name for this analysis",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const formValues = form.getValues();
+    
+    const newAnalysis: SavedAnalysis = {
+      id: Date.now().toString(),
+      name: saveName,
+      date: new Date().toISOString(),
+      productDetails: {
+        description: formValues.description,
+        category: formValues.category,
+        hsCode: formValues.hsCode,
+        originCountry: formValues.originCountry,
+        destinationCountry: formValues.destinationCountry,
+        value: formValues.value
+      },
+      shippingDetails: {
+        quantity: formValues.quantity,
+        transportMode: formValues.transportMode,
+        shipmentType: formValues.shipmentType,
+        packageType: formValues.packageType,
+        weight: formValues.weight,
+        dimensions: {
+          length: formValues.length,
+          width: formValues.width,
+          height: formValues.height,
+          unit: formValues.dimensionUnit
+        }
+      },
+      results: results
+    };
+    
+    const updatedSavedAnalyses = [...savedAnalyses, newAnalysis];
+    setSavedAnalyses(updatedSavedAnalyses);
+    localStorage.setItem('savedCostAnalyses', JSON.stringify(updatedSavedAnalyses));
+    
+    setSaveName("");
+    
+    toast({
+      title: "Analysis Saved",
+      description: "Your cost breakdown has been saved successfully"
+    });
+  };
+
+  // Load a saved analysis
+  const loadAnalysis = (analysis: SavedAnalysis) => {
+    // Fill form with saved analysis data
+    form.reset({
+      description: analysis.productDetails.description,
+      category: analysis.productDetails.category,
+      hsCode: analysis.productDetails.hsCode,
+      originCountry: analysis.productDetails.originCountry,
+      destinationCountry: analysis.productDetails.destinationCountry,
+      value: analysis.productDetails.value,
+      quantity: analysis.shippingDetails.quantity,
+      transportMode: analysis.shippingDetails.transportMode,
+      shipmentType: analysis.shippingDetails.shipmentType,
+      packageType: analysis.shippingDetails.packageType,
+      weight: analysis.shippingDetails.weight,
+      length: analysis.shippingDetails.dimensions.length,
+      width: analysis.shippingDetails.dimensions.width,
+      height: analysis.shippingDetails.dimensions.height,
+      dimensionUnit: analysis.shippingDetails.dimensions.unit
+    });
+    
+    // Set results
+    setResults(analysis.results);
+    
+    toast({
+      title: "Analysis Loaded",
+      description: `${analysis.name} has been loaded successfully`
+    });
+  };
+
+  // Delete a saved analysis
+  const deleteAnalysis = (id: string) => {
+    const updatedSavedAnalyses = savedAnalyses.filter(analysis => analysis.id !== id);
+    setSavedAnalyses(updatedSavedAnalyses);
+    localStorage.setItem('savedCostAnalyses', JSON.stringify(updatedSavedAnalyses));
+    
+    toast({
+      title: "Analysis Deleted",
+      description: "The selected analysis has been deleted"
+    });
+  };
 
   // Form submission handler
   const onSubmit = (values: z.infer<typeof formSchema>) => {
@@ -866,14 +1032,92 @@ const CostBreakdownCalculator = () => {
                   </div>
                 </div>
               </CardContent>
-              <CardFooter className="flex justify-between border-t pt-6">
-                <Button variant="outline" onClick={() => setResults(null)}>
-                  Start New Calculation
-                </Button>
-                <Button onClick={() => console.log("Export cost breakdown")}>
-                  <FaDownload className="mr-2" /> Export Results
-                </Button>
+              <CardFooter className="flex flex-col border-t pt-6 gap-4">
+                <div className="flex flex-wrap justify-between w-full gap-2">
+                  <Button variant="outline" onClick={() => setResults(null)}>
+                    Start New Calculation
+                  </Button>
+                  <div className="flex gap-2">
+                    <Button 
+                      variant="secondary" 
+                      onClick={saveAnalysis}
+                    >
+                      <FaSave className="mr-2" /> Save Analysis
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      onClick={() => console.log("Export cost breakdown")}
+                    >
+                      <FaDownload className="mr-2" /> Export
+                    </Button>
+                  </div>
+                </div>
+                <div className="flex gap-2 w-full items-center">
+                  <Input 
+                    placeholder="Enter a name for this analysis" 
+                    value={saveName}
+                    onChange={(e) => setSaveName(e.target.value)}
+                    className="flex-grow"
+                  />
+                </div>
               </CardFooter>
+            </Card>
+          </div>
+        )}
+        
+        {/* Saved Analyses */}
+        {savedAnalyses.length > 0 && (
+          <div className="mt-8">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <FaHistory className="mr-2" />
+                  Saved Analyses
+                </CardTitle>
+                <CardDescription>
+                  Your previously saved cost breakdown analyses
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {savedAnalyses.map((analysis) => (
+                    <div key={analysis.id} className="bg-card/50 p-4 rounded-lg border">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h3 className="text-lg font-semibold">{analysis.name}</h3>
+                          <div className="flex flex-wrap gap-x-4 text-sm text-muted-foreground mt-1">
+                            <span>{new Date(analysis.date).toLocaleDateString()}</span>
+                            <span>{analysis.productDetails.description}</span>
+                            <span>{analysis.productDetails.originCountry} → {analysis.productDetails.destinationCountry}</span>
+                            <span>HS: {analysis.productDetails.hsCode}</span>
+                          </div>
+                          <div className="mt-2 text-sm">
+                            <span className="font-medium">Total Cost: </span>
+                            {formatCurrency(analysis.results.totalCost)}
+                          </div>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            onClick={() => loadAnalysis(analysis)}
+                          >
+                            Load
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            onClick={() => deleteAnalysis(analysis.id)}
+                            className="text-destructive hover:bg-destructive hover:text-destructive-foreground"
+                          >
+                            <FaTrash size={14} />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
             </Card>
           </div>
         )}
