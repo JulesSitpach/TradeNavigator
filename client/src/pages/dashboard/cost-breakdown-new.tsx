@@ -8,6 +8,7 @@ import CopilotAssistant from "@/components/ai/CopilotAssistant";
 import { Button } from "@/components/ui/button";
 import { useAnalysis } from "@/contexts/AnalysisContext";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { useToast } from "@/hooks/use-toast";
 import {
   Form,
   FormControl,
@@ -738,10 +739,12 @@ const CostBreakdownTable = () => {
 // Cost Breakdown Dashboard - Main Component
 const CostBreakdownDashboard = () => {
   const [showResults, setShowResults] = useState(false);
+  const [currentAnalysisId, setCurrentAnalysisId] = useState<string | null>(null);
   const [savedAnalyses, setSavedAnalyses] = useState<SavedAnalysis[]>([]);
   const [saveName, setSaveName] = useState("");
   const [formData, setFormData] = useState<ProductInfoFormValues | null>(null);
   const [results, setResults] = useState<any>(null);
+  const { toast } = useToast();
   const [isModifying, setIsModifying] = useState(false);
   const [lastAnalysis, setLastAnalysis] = useState<ProductInfoFormValues | null>(null);
   const { setCurrentAnalysis } = useAnalysis();
@@ -961,7 +964,6 @@ const CostBreakdownDashboard = () => {
         },
         shippingDetails: {
           transportMode: analysis.formData.transportMode,
-          incoterm: analysis.formData.incoterm,
           weight: analysis.formData.weight,
           dimensions: {
             length: analysis.formData.length,
@@ -982,11 +984,6 @@ const CostBreakdownDashboard = () => {
       
       // Set the complete analysis in the global context
       setCurrentAnalysis(completeAnalysis);
-      
-      // Update any dependent context or state
-      if (setLastUpdated) {
-        setLastUpdated(new Date());
-      }
     }
     
     // Step 4: Show success message
