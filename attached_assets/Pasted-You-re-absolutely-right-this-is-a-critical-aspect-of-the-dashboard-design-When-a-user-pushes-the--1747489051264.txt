@@ -1,0 +1,44 @@
+You're absolutely right - this is a critical aspect of the dashboard design. When a user pushes the "new analysis" button on the cost breakdown page, all dashboards must dynamically update to reflect the new input information.
+
+## Dynamic Dashboard Design Requirements
+
+All dashboards in the TradeNavigator system must be designed with dynamic data handling as a core principle:
+
+1. **Real-Time Data Binding**
+   - Each dashboard must bind directly to the central data store, not maintain independent copies
+   - When cost breakdown data changes, dashboards should automatically detect and respond to these changes
+   - Use reactive data patterns (Observable patterns, React hooks, etc.) to ensure seamless updates
+
+2. **State Management Architecture**
+   - Implement a centralized state management system (Redux, Context API, etc.) that all dashboards subscribe to
+   - When new analysis is performed, update the central state which cascades to all dashboards
+   - Include version tracking of analysis data to help users understand which version they're viewing
+
+3. **Dynamic Component Design**
+   - All visualizations must be parameterized to accept new data without requiring component rebuilding
+   - Charts, graphs, and calculation displays should clear and repopulate when new data arrives
+   - Include smooth transitions/animations when data changes to maintain user context
+
+4. **Loading States**
+   - Implement clear loading indicators when dashboards are recalculating with new inputs
+   - Show "data refreshing" messaging during transition periods
+   - Preserve previous data display until new calculations are complete (avoid blank screens)
+
+5. **Preservation of User Customizations**
+   - If users have customized dashboard views (expanded sections, selected filters, etc.), maintain these preferences when data updates
+   - Save user's current dashboard position/scroll state when refreshing with new data
+
+6. **Update Notifications**
+   - Include visual indicators when dashboard data has been updated from a new analysis
+   - Provide a timestamp showing when the current data was last updated
+   - Consider a "what changed" summary highlighting significant differences from previous analysis
+
+7. **Error Handling for Incomplete Data**
+   - Design dashboards to gracefully handle cases where the new analysis may have incomplete data
+   - Include helpful messaging if certain dashboard features require additional inputs
+
+8. **Optimization Recommendations Reset**
+   - Ensure that optimization recommendations are recalculated based on new inputs
+   - Clear previous recommendations when they no longer apply to the new dataset
+
+This dynamic approach ensures that the entire system remains coherent, with all dashboards reflecting the same underlying data from the user's most recent analysis. It eliminates the risk of users viewing outdated or inconsistent information across different parts of the application.

@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { AuthProvider, AuthContext } from "@/contexts/AuthContext";
+import { AnalysisProvider } from "@/contexts/AnalysisContext";
 import Layout from "@/components/layout/Layout";
 import NotFound from "@/pages/not-found";
 import { useContext } from "react";
@@ -28,6 +29,7 @@ import CostBreakdownComplete from "@/pages/dashboard/cost-breakdown-complete";
 import CostBreakdownNew from "@/pages/dashboard/cost-breakdown-new";
 import CostBreakdownCalculator from "@/pages/dashboard/cost-breakdown-calculator";
 import AlternativeRoutesDashboard from "@/pages/dashboard/alternative-routes";
+import TariffAnalysisDashboard from "@/pages/dashboard/tariff-analysis";
 import NewAnalysis from "@/pages/dashboard/new-analysis";
 import ProductInfoForm from "@/pages/dashboard/product-info-form";
 import NewCostForm from "@/pages/dashboard/new-cost-form";
@@ -93,7 +95,7 @@ function Router() {
       <PrivateRoute exact path="/dashboard/cost-breakdown-complete" component={CostBreakdownComplete} />
       <PrivateRoute exact path="/dashboard/cost-breakdown-calculator" component={CostBreakdownCalculator} />
       <PrivateRoute exact path="/dashboard/alternative-routes" component={AlternativeRoutesDashboard} />
-      <PrivateRoute exact path="/dashboard/tariff-analysis" component={Dashboard} />
+      <PrivateRoute exact path="/dashboard/tariff-analysis" component={TariffAnalysisDashboard} />
       <PrivateRoute exact path="/dashboard/regulations" component={Dashboard} />
       <PrivateRoute exact path="/dashboard/visualizations" component={Dashboard} />
       <PrivateRoute exact path="/dashboard/exemptions" component={Dashboard} />
@@ -118,10 +120,12 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <LanguageProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Router />
-          </TooltipProvider>
+          <AnalysisProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Router />
+            </TooltipProvider>
+          </AnalysisProvider>
         </LanguageProvider>
       </AuthProvider>
     </QueryClientProvider>
