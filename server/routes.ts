@@ -1655,8 +1655,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         shippingDetails.dimensions
       );
       
-      // Calculate tax
-      const taxInfo = costCalculator.getTaxInfo(productDetails.destinationCountry);
+      // Calculate tax with the enhanced dynamic VAT calculator
+      const taxInfo = costCalculator.getTaxInfo(
+        productDetails.destinationCountry,
+        productDetails.category,
+        productCost
+      );
       const taxAmount = ((productCost + dutyAmount) * taxInfo.rate) / 100;
       
       // Calculate insurance
@@ -1733,7 +1737,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           name: `${taxInfo.name} (${taxInfo.rate.toFixed(1)}%)`,
           value: parseFloat(taxAmount.toFixed(2)),
           percentage: parseFloat(((taxAmount / totalLandedCost) * 100).toFixed(1)),
-          description: `${taxInfo.name} calculated at ${taxInfo.rate.toFixed(1)}% of dutiable value`,
+          description: taxInfo.description || `${taxInfo.name} calculated at ${taxInfo.rate.toFixed(1)}% of dutiable value`,
           category: "tax"
         },
         {
