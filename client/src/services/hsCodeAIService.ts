@@ -102,7 +102,7 @@ class HSCodeAIService {
    */
   async classifyProduct(productDescription: string, category: string): Promise<HSCodeSuggestion> {
     try {
-      if (!productDescription) {
+      if (!productDescription || productDescription.trim().length < 3) {
         return this.getHSCodeFromCategory(category);
       }
 
@@ -118,37 +118,40 @@ class HSCodeAIService {
 
       const result = response.data;
 
-      // If we got AI results, validate them against expected chapter ranges
-      if (result && result.hsCode) {
+      // If we got valid results from the API
+      if (result && result.hsCode && result.success) {
         // Adjust confidence based on whether the suggested HS code falls within expected chapter ranges
         const validationConfidence = this.validateHSCodeForCategory(result.hsCode, category);
-        const adjustedConfidence = (result.confidence || 0.8) * validationConfidence;
+        const adjustedConfidence = Math.min(1.0, (result.confidence || 0.8) * validationConfidence);
         
-        // Generate explanations
-        const explanations = [
-          this.generateExplanation(result.hsCode, category, foundTerms)
-        ];
+        // Use explanations from the API response or generate our own
+        let explanations = result.explanations || [];
+        if (!explanations.length) {
+          explanations = [
+            this.generateExplanation(result.hsCode, category, foundTerms)
+          ];
         
-        if (result.alternativeCodes) {
-          // Add explanations for alternative codes as well
-          result.alternativeCodes.forEach((code: string, index: number) => {
-            if (index < 2) { // Limit to top 2 alternatives
-              explanations.push(this.generateExplanation(code, category, []));
-            }
-          });
+          if (result.alternativeCodes) {
+            // Add explanations for alternative codes as well
+            result.alternativeCodes.forEach((code: string, index: number) => {
+              if (index < 3) { // Limit to top 3 alternatives
+                explanations.push(this.generateExplanation(code, category, []));
+              }
+            });
+          }
         }
         
         return {
           hsCode: result.hsCode,
           confidence: adjustedConfidence,
           description: result.description,
-          alternativeCodes: result.alternativeCodes?.slice(0, 2) || [], // Limit to top 2 alternatives
+          alternativeCodes: result.alternativeCodes || [], 
           explanations,
           source: 'AI'
         };
       }
       
-      // If AI fails, try to look up by category
+      // If API fails, try to look up by category
       return this.getHSCodeFromCategory(category);
     } catch (error) {
       console.error('Error classifying product:', error);

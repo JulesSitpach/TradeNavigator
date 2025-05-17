@@ -21,7 +21,9 @@ const HSCodeAssistant: React.FC<HSCodeAssistantProps> = ({
   const [hsCodeSuggestion, setHSCodeSuggestion] = useState<{
     hsCode: string;
     confidence: number;
+    description?: string;
     alternativeCodes?: string[];
+    explanations?: string[];
     source: 'AI' | 'Mapping' | 'Fallback';
   } | null>(null);
 
