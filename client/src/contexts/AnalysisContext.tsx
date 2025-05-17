@@ -48,7 +48,7 @@ type AnalysisContextType = {
 };
 
 // Create the context
-const AnalysisContext = createContext<AnalysisContextType | undefined>(undefined);
+export const AnalysisContext = createContext<AnalysisContextType | undefined>(undefined);
 
 // Create a provider component
 export const AnalysisProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
