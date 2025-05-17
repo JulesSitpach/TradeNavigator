@@ -93,7 +93,7 @@ function Router() {
       
       {/* Dashboard Flexible Tabs Routes */}
       <PrivateRoute exact path="/dashboard/overview" component={Dashboard} />
-      <PrivateRoute exact path="/dashboard/cost-breakdown" component={CostBreakdownOriginal} />
+      <PrivateRoute exact path="/dashboard/cost-breakdown" component={SimpleTradeCostBreakdown} />
       <PrivateRoute exact path="/dashboard/cost-breakdown-original" component={CostBreakdownDashboard} />
       <PrivateRoute exact path="/dashboard/cost-breakdown-complete" component={CostBreakdownComplete} />
       <PrivateRoute exact path="/dashboard/cost-breakdown-calculator" component={CostBreakdownCalculator} />
