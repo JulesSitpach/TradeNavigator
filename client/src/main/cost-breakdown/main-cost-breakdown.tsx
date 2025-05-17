@@ -78,23 +78,38 @@ const countryGroups = {
 };
 
 const NewCostForm = () => {
-  // Form state management
-  const [formValues, setFormValues] = useState({
-    productDescription: "",
-    productCategory: "",
-    hsCode: "", // No default value
-    originCountry: "",
-    destinationCountry: "",
-    productValue: "",
-    quantity: "",
-    transportMode: "",
-    shipmentType: "",
-    packageType: "",
-    weight: "",
-    length: "",
-    width: "",
-    height: ""
-  });
+  // Get the analysis context to potentially load saved values
+  const analysisContext = useContext(AnalysisContext);
+  
+  // Initialize form values from context or with defaults
+  const initialFormValues = () => {
+    if (analysisContext?.currentAnalysis?.formValues) {
+      console.log("Loading initial form values from context");
+      return analysisContext.currentAnalysis.formValues;
+    }
+    
+    // Default empty form values
+    return {
+      productDescription: "",
+      productCategory: "",
+      hsCode: "", // No default value
+      originCountry: "",
+      destinationCountry: "",
+      productValue: "",
+      quantity: "",
+      transportMode: "",
+      shipmentType: "",
+      packageType: "",
+      weight: "",
+      length: "",
+      width: "",
+      height: "",
+      incoterm: ""
+    };
+  };
+  
+  // Form state management with values from context or defaults
+  const [formValues, setFormValues] = useState(initialFormValues());
   
   const [currency, setCurrency] = useState("USD");
   const [weightUnit, setWeightUnit] = useState("kg");
