@@ -93,23 +93,20 @@ const RegulationsDashboard = () => {
   const [searchQuery, setSearchQuery] = useState('');
   
   useEffect(() => {
-    // Import utility functions for data validation and normalization
-    import('@/utils/analysisDataHelper').then(({ isValidAnalysisData, normalizeAnalysisData, getAnalysisDataErrorMessage }) => {
-      // Get the current analysis from the context
-      if (analysisContext?.currentAnalysis) {
-        // Normalize data to ensure it has a consistent structure
-        const normalizedData = normalizeAnalysisData(analysisContext.currentAnalysis);
+    // Import enhanced utility functions for reliable data access
+    import('@/utils/analysisDataHelper').then(({ getAnalysisData, isValidAnalysisData, getAnalysisDataErrorMessage }) => {
+      // Get analysis data with fallback to localStorage if needed
+      const analysisData = getAnalysisData(analysisContext);
+      
+      // Check if we have valid data
+      if (analysisData && isValidAnalysisData(analysisData)) {
+        console.log('Regulations Dashboard: Analysis data loaded successfully');
+        setCurrentAnalysis(analysisData);
         
-        // Validate the data before using it
-        if (isValidAnalysisData(normalizedData)) {
-          setCurrentAnalysis(normalizedData);
-          
-          // Analyze regulatory requirements based on normalized analysis data
-          analyzeRegulations(normalizedData);
-        } else {
-          toast(getAnalysisDataErrorMessage());
-        }
+        // Analyze regulatory requirements based on normalized analysis data
+        analyzeRegulations(analysisData);
       } else {
+        console.warn('Regulations Dashboard: No valid analysis data available');
         toast(getAnalysisDataErrorMessage());
       }
     });
