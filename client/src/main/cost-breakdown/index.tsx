@@ -126,7 +126,7 @@ const MainCostBreakdown = () => {
   };
   
   // Handle HS code selection from the assistant
-  const handleHSCodeSelect = (code) => {
+  const handleHSCodeSelect = (code: string) => {
     setFormValues({
       ...formValues,
       hsCode: code
@@ -803,8 +803,9 @@ const MainCostBreakdown = () => {
           </DialogHeader>
           <div className="py-4">
             <HSCodeAssistant 
-              onSelect={handleHSCodeSelect}
+              productDescription={formValues.productDescription}
               category={formValues.productCategory}
+              onSelectHSCode={handleHSCodeSelect}
             />
           </div>
         </DialogContent>
