@@ -1717,6 +1717,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         lastMileDelivery + 
         handlingFees;
       
+      // Add disclaimer for cost breakdown estimates
+      const disclaimer = "IMPORTANT: These calculations provide an estimate based on current data and standard rates. Actual costs may vary based on specific product details, current regulatory changes, exchange rate fluctuations, and carrier pricing. We recommend verifying critical figures with your customs broker or freight forwarder before making business decisions.";
+      
       // Format cost components for the response
       const components = [
         {
@@ -1777,8 +1780,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       ];
       
-      // Return the cost breakdown data
+      // Return the cost breakdown data with disclaimer
       return res.json({
+        disclaimer,
         components,
         breakdown: {
           productCost,
