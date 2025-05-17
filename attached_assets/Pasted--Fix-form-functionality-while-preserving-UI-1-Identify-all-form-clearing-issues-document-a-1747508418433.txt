@@ -1,0 +1,275 @@
+// Fix form functionality while preserving UI
+
+// 1. Identify all form clearing issues
+document.addEventListener('DOMContentLoaded', function() {
+  // Find the calculate button
+  const calculateButton = document.querySelector('button[type="submit"]');
+  
+  if (calculateButton) {
+    console.log("Found calculate button, fixing form submission...");
+    
+    // Find the form element
+    const form = calculateButton.closest('form');
+    
+    if (form) {
+      // Prevent default form submission which causes page reload/clearing
+      form.addEventListener('submit', function(event) {
+        event.preventDefault();
+        console.log("Prevented default form submission");
+        
+        // Get form data
+        const formData = new FormData(form);
+        const formValues = Object.fromEntries(formData.entries());
+        console.log("Form values:", formValues);
+        
+        // Call our custom function instead
+        handleCalculateWithoutClearing(formValues);
+      });
+    }
+  }
+});
+
+// 2. Add our custom handler that doesn't clear the form
+function handleCalculateWithoutClearing(values) {
+  console.log("Running calculation without clearing form");
+  
+  // Store form data in state/localStorage to preserve it
+  storeFormData(values);
+  
+  // Calculate landed costs
+  const results = calculateLandedCosts(values);
+  
+  // Show results without clearing form
+  displayResultsSection(results);
+  
+  // Update other dashboards
+  updateDashboards(values, results);
+}
+
+// 3. Store form data function
+function storeFormData(values) {
+  console.log("Storing form data");
+  
+  // Save to localStorage
+  localStorage.setItem('currentFormData', JSON.stringify(values));
+  
+  // Also set in memory if needed
+  window.currentFormData = values;
+}
+
+// 4. Calculate landed costs function (example implementation)
+function calculateLandedCosts(values) {
+  console.log("Calculating landed costs");
+  
+  // This would contain your actual calculation logic
+  // For now we'll use sample data
+  const results = {
+    totalCost: values.productValue * 1.35, // Example calculation
+    components: [
+      { name: "Product Value", value: parseFloat(values.productValue), percentage: 74.1 },
+      { name: "Import Duty", value: parseFloat(values.productValue) * 0.08, percentage: 5.9 },
+      { name: "VAT", value: parseFloat(values.productValue) * 0.05, percentage: 3.7 },
+      { name: "Freight", value: parseFloat(values.productValue) * 0.12, percentage: 8.9 },
+      { name: "Insurance", value: parseFloat(values.productValue) * 0.01, percentage: 0.7 },
+      { name: "Customs Clearance", value: 350, percentage: 1.9 },
+      { name: "Documentation", value: 120, percentage: 0.7 },
+      { name: "Other Fees", value: 550, percentage: 4.1 }
+    ]
+  };
+  
+  // Calculate total
+  results.totalCost = results.components.reduce((sum, component) => sum + component.value, 0);
+  
+  // Store results
+  localStorage.setItem('calculationResults', JSON.stringify(results));
+  window.calculationResults = results;
+  
+  return results;
+}
+
+// 5. Display results section function
+function displayResultsSection(results) {
+  console.log("Displaying results");
+  
+  // Check if results container already exists
+  let resultsContainer = document.getElementById('cost-breakdown-results');
+  
+  if (!resultsContainer) {
+    // Create results container if it doesn't exist
+    resultsContainer = document.createElement('div');
+    resultsContainer.id = 'cost-breakdown-results';
+    
+    // Find where to insert it (after the form)
+    const form = document.querySelector('form');
+    if (form) {
+      form.parentNode.insertBefore(resultsContainer, form.nextSibling);
+    } else {
+      // Fallback - append to body
+      document.body.appendChild(resultsContainer);
+    }
+  }
+  
+  // Clear any existing content
+  resultsContainer.innerHTML = '';
+  
+  // Create cost breakdown table
+  const tableHTML = createCostBreakdownTable(results);
+  resultsContainer.innerHTML = tableHTML;
+  
+  // Add action buttons
+  const actionsHTML = createActionButtons();
+  resultsContainer.innerHTML += actionsHTML;
+  
+  // Show the results section
+  resultsContainer.style.display = 'block';
+  
+  // Scroll to results
+  resultsContainer.scrollIntoView({ behavior: 'smooth' });
+  
+  // Add event listeners to new buttons
+  addActionButtonListeners();
+}
+
+// 6. Create cost breakdown table HTML
+function createCostBreakdownTable(results) {
+  let tableHTML = `
+    <div class="bg-white shadow-sm border border-neutral-200 rounded-lg mt-6">
+      <div class="border-b border-neutral-200 px-5 py-4">
+        <h3 class="text-lg font-medium text-neutral-900">Detailed Cost Breakdown</h3>
+      </div>
+      <div class="p-0">
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead class="bg-neutral-50 text-xs font-semibold uppercase text-neutral-500">
+              <tr>
+                <th class="whitespace-nowrap px-5 py-3 text-left">Cost Component</th>
+                <th class="whitespace-nowrap px-5 py-3 text-right">Amount (USD)</th>
+                <th class="whitespace-nowrap px-5 py-3 text-right">Percentage</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-neutral-200">
+  `;
+  
+  // Add rows for each component
+  results.components.forEach(component => {
+    tableHTML += `
+      <tr class="hover:bg-neutral-50">
+        <td class="px-5 py-4">
+          <div class="font-medium text-neutral-800">${component.name}</div>
+        </td>
+        <td class="px-5 py-4 text-right text-neutral-800">
+          $${component.value.toFixed(2)}
+        </td>
+        <td class="px-5 py-4 text-right text-neutral-800">
+          ${component.percentage.toFixed(1)}%
+        </td>
+      </tr>
+    `;
+  });
+  
+  // Add total row
+  tableHTML += `
+              <tr class="bg-neutral-100 font-semibold">
+                <td class="px-5 py-4 text-neutral-900">Total</td>
+                <td class="px-5 py-4 text-right text-neutral-900">
+                  $${results.totalCost.toFixed(2)}
+                </td>
+                <td class="px-5 py-4 text-right text-neutral-900">
+                  100%
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  return tableHTML;
+}
+
+// 7. Create action buttons HTML
+function createActionButtons() {
+  return `
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+      <div class="bg-white shadow-sm border border-neutral-200 rounded-lg">
+        <div class="px-4 py-3 border-b border-neutral-200">
+          <h4 class="text-md font-medium">Cost Summary</h4>
+        </div>
+        <div class="p-4">
+          <div class="space-y-2">
+            <div class="flex justify-between">
+              <span class="text-sm text-neutral-600">Product Value:</span>
+              <span class="text-sm font-medium">$${window.calculationResults.components[0].value.toFixed(2)}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-sm text-neutral-600">Total Duties:</span>
+              <span class="text-sm font-medium">$${window.calculationResults.components[1].value.toFixed(2)}</span>
+            </div>
+            <div class="flex justify-between pt-2 mt-2 border-t border-neutral-200">
+              <span class="text-sm font-medium text-neutral-700">Total:</span>
+              <span class="text-sm font-bold text-primary">$${window.calculationResults.totalCost.toFixed(2)}</span>
+            </div>
+            
+            <div class="flex justify-center mt-4">
+              <button id="modify-button" class="w-full px-4 py-2 text-green-600 border border-green-600 rounded hover:bg-green-50">
+                <svg xmlns="http://www.w3.org/2000/svg" class="inline-block h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                </svg>
+                Modify Values
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bg-white shadow-sm border border-neutral-200 rounded-lg">
+        <div class="px-4 py-3 border-b border-neutral-200">
+          <h4 class="text-md font-medium flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4z" />
+              <path d="M8 7a1 1 0 00-1 1v4a1 1 0 001 1h4a1 1 0 001-1V8a1 1 0 00-1-1H8z" />
+            </svg>
+            Save Analysis
+          </h4>
+        </div>
+        <div class="p-4">
+          <div class="space-y-3">
+            <p class="text-sm text-neutral-600">Save this breakdown to reference later or share with your team</p>
+            <input id="save-name-input" class="w-full px-3 py-2 border border-gray-300 rounded" placeholder="Analysis name" />
+            <button id="save-button" class="w-full px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700">
+              Save Breakdown
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bg-white shadow-sm border border-neutral-200 rounded-lg">
+        <div class="px-4 py-3 border-b border-neutral-200">
+          <h4 class="text-md font-medium">Optimization Tips</h4>
+        </div>
+        <div class="p-4">
+          <div class="space-y-3">
+            <div class="bg-blue-50 p-3 rounded-md border border-blue-100">
+              <h5 class="text-sm font-medium text-blue-800">Duty Savings Opportunity</h5>
+              <p class="text-xs text-blue-700 mt-1">Use the Canada-US-Mexico Agreement to potentially save $560 in duties.</p>
+            </div>
+            <div class="bg-green-50 p-3 rounded-md border border-green-100">
+              <h5 class="text-sm font-medium text-green-800">Shipping Cost Reduction</h5>
+              <p class="text-xs text-green-700 mt-1">Consider FCL instead of LCL to reduce per-unit shipping costs by up to 22%.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div id="saved-analyses-container" class="mt-6"></div>
+  `;
+}
+
+// 8. Add event listeners to action buttons
+function addActionButtonListeners() {
+  // Save button
+  const saveButton = document.getElementById('save-button');
+  if (saveButton) {
+    saveBu
