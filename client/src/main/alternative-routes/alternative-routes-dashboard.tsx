@@ -15,6 +15,7 @@ import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AnalysisContext } from "@/contexts/AnalysisContext";
 import { useToast } from "@/hooks/use-toast";
+import { useAlternativeRoutesData } from "@/hooks/useDashboardData";
 import { BarChart, PieChart, LineChart, Bar, Pie, Cell, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { Plane, Ship, Truck, Clock, DollarSign, AlertTriangle, MapPin, Calendar, BarChart3 } from "lucide-react";
 import PageHeader from "@/components/common/PageHeader";
@@ -60,6 +61,7 @@ interface RouteOption {
 const AlternativeRoutesDashboard = () => {
   const { toast } = useToast();
   const analysisContext = useContext(AnalysisContext);
+  const alternativeRoutesData = useAlternativeRoutesData();
   const [isLoading, setIsLoading] = useState(false);
   const [currentAnalysis, setCurrentAnalysis] = useState<any>(null);
   const [routeOptions, setRouteOptions] = useState<RouteOption[]>([]);
@@ -76,14 +78,21 @@ const AlternativeRoutesDashboard = () => {
         console.log('Alternative Routes Dashboard: Analysis data loaded successfully');
         setCurrentAnalysis(analysisData);
         
-        // Generate route options based on the valid analysis data
-        generateRouteOptions(analysisData);
+        // First check if we have cost data from the shared context
+        if (alternativeRoutesData.isReady) {
+          console.log('Alternative Routes Dashboard: Using cost data from shared context');
+          generateRouteOptions(analysisData);
+        } else {
+          // If no shared cost data, proceed with traditional approach
+          console.log('Alternative Routes Dashboard: Using analysis data directly');
+          generateRouteOptions(analysisData);
+        }
       } else {
         console.warn('Alternative Routes Dashboard: No valid analysis data available');
         toast(getAnalysisDataErrorMessage());
       }
     });
-  }, [analysisContext?.currentAnalysis]);
+  }, [analysisContext?.currentAnalysis, alternativeRoutesData.isReady]);
   
   // Generate alternative route options based on the current analysis
   const generateRouteOptions = (analysis: any) => {
@@ -105,11 +114,22 @@ const AlternativeRoutesDashboard = () => {
       transportMode: currentMode
     } = analysis.formValues;
     
-    const currentFreightCost = analysis.results.components.find((c: any) => 
-      c.name === "Freight" || c.name === "Transportation"
-    )?.value || 0;
+    // Use the shared cost breakdown data if available, otherwise fall back to analysis data
+    let currentFreightCost = 0;
+    let totalCost = 0;
     
-    const totalCost = analysis.results.totalCost || 0;
+    if (alternativeRoutesData.isReady && alternativeRoutesData.baseRouteCosts) {
+      // Use data from the shared context which is more reliable
+      currentFreightCost = alternativeRoutesData.baseRouteCosts.freightCost;
+      totalCost = alternativeRoutesData.baseRouteCosts.totalLandedCost;
+    } else {
+      // Fall back to analysis data directly
+      currentFreightCost = analysis.results.components.find((c: any) => 
+        c.name === "Freight" || c.name === "Transportation"
+      )?.value || 0;
+      
+      totalCost = analysis.results.totalCost || 0;
+    }
     
     // Calculate volume in cubic meters
     const volume = (parseFloat(length) * parseFloat(width) * parseFloat(height)) / 1000000;

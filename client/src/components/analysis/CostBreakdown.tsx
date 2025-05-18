@@ -4,6 +4,7 @@ import { FaRotate, FaDownload } from "react-icons/fa6";
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts";
 import { useRef } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useCostBreakdownSummary } from "@/hooks/useDashboardData";
 
 interface CostBreakdownProps {
   data: {
@@ -21,7 +22,16 @@ interface CostBreakdownProps {
   onExport: () => void;
 }
 
-const CostBreakdown = ({ data, isLoading, onRecalculate, onExport }: CostBreakdownProps) => {
+// Original props-based component for backward compatibility 
+const CostBreakdown = ({ data: propData, isLoading: propIsLoading, onRecalculate: propOnRecalculate, onExport: propOnExport }: CostBreakdownProps) => {
+  // Use the shared context or fall back to props for backward compatibility
+  const { data: contextData, isLoading: contextIsLoading, onRecalculate: contextOnRecalculate, onExport: contextOnExport } = useCostBreakdownSummary();
+  
+  // Use context data if available, otherwise fall back to props
+  const data = contextData || propData;
+  const isLoading = contextIsLoading || propIsLoading;
+  const onRecalculate = contextOnRecalculate || propOnRecalculate;
+  const onExport = contextOnExport || propOnExport;
   const chartRef = useRef<HTMLDivElement>(null);
 
   if (isLoading) {

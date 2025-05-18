@@ -20,6 +20,9 @@ import {
   subscriptionTiers
 } from "@shared/schema";
 
+// Import route modules
+import alertRoutes from "./routes/alerts";
+
 // Setup session store with PostgreSQL
 const PgSession = pgSimple(session);
 
@@ -73,6 +76,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       },
     })
   );
+  
+  // Register route modules
+  app.use('/api/alerts', alertRoutes);
   
   // Dashboard stats API endpoint
   app.get("/api/dashboard/stats", isAuthenticated, async (req, res) => {

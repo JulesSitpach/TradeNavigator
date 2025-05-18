@@ -6,34 +6,45 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { AuthProvider, AuthContext } from "@/contexts/AuthContext";
 import { AnalysisProvider } from "@/contexts/AnalysisContext";
+import { CostBreakdownProvider } from "@/contexts/shared/CostBreakdownContext";
 import Layout from "@/components/layout/Layout";
 import NotFound from "@/pages/not-found";
-import { useContext } from "react";
-import Login from "@/pages/login";
-import Register from "@/pages/register";
-import Dashboard from "@/pages/dashboard";
-import ProductAnalysis from "@/pages/product-analysis";
-import Products from "@/pages/products";
-import Shipments from "@/pages/shipments";
-import TariffLookup from "@/pages/tariff-lookup";
-import MarketAnalysis from "@/pages/market-analysis";
-import Reports from "@/pages/reports";
-import Profile from "@/pages/profile";
-import Subscription from "@/pages/subscription";
-import SpecialPrograms from "@/pages/special-programs";
-import SpecialProgramsRedesigned from "@/pages/dashboard/special-programs-redesigned";
-import SimpleTradeCostBreakdown from "@/pages/dashboard/simple-trade-cost-breakdown";
+import { useContext, lazy, Suspense } from "react";
 
-// Dashboard pages
-import CostBreakdownDashboard from "@/pages/dashboard/cost-breakdown-fixed";
-import CostBreakdownOriginal from "@/pages/dashboard/cost-breakdown";
-import CostBreakdownNew from "@/pages/dashboard/cost-breakdown-new";
-import AlternativeRoutesDashboard from "@/pages/dashboard/alternative-routes";
-import TariffAnalysisDashboard from "@/pages/dashboard/tariff-analysis";
-import RegulationsDashboard from "@/pages/dashboard/regulations";
-import NewAnalysis from "@/pages/dashboard/new-analysis";
-import ProductInfoForm from "@/pages/dashboard/product-info-form";
-import MainCostBreakdown from "@/main/cost-breakdown";
+// Lazy load page components to improve initial load time
+const Login = lazy(() => import("@/pages/login"));
+const Register = lazy(() => import("@/pages/register"));
+const Dashboard = lazy(() => import("@/pages/dashboard"));
+const ProductAnalysis = lazy(() => import("@/pages/product-analysis"));
+const Products = lazy(() => import("@/pages/products"));
+const Shipments = lazy(() => import("@/pages/shipments"));
+const TariffLookup = lazy(() => import("@/pages/tariff-lookup"));
+const MarketAnalysis = lazy(() => import("@/pages/market-analysis"));
+const Reports = lazy(() => import("@/pages/reports"));
+const Profile = lazy(() => import("@/pages/profile"));
+const Subscription = lazy(() => import("@/pages/subscription"));
+const SpecialPrograms = lazy(() => import("@/pages/special-programs"));
+const SpecialProgramsRedesigned = lazy(() => import("@/pages/dashboard/special-programs-redesigned"));
+const SimpleTradeCostBreakdown = lazy(() => import("@/pages/dashboard/simple-trade-cost-breakdown"));
+
+// Dashboard pages - lazy loaded
+const CostBreakdownDashboard = lazy(() => import("@/pages/dashboard/cost-breakdown-fixed"));
+const CostBreakdownOriginal = lazy(() => import("@/pages/dashboard/cost-breakdown"));
+const CostBreakdownNew = lazy(() => import("@/pages/dashboard/cost-breakdown-new"));
+const AlternativeRoutesDashboard = lazy(() => import("@/pages/dashboard/alternative-routes"));
+const TariffAnalysisDashboard = lazy(() => import("@/pages/dashboard/tariff-analysis"));
+const RegulationsDashboard = lazy(() => import("@/pages/dashboard/regulations"));
+const NewAnalysis = lazy(() => import("@/pages/dashboard/new-analysis"));
+const ProductInfoForm = lazy(() => import("@/pages/dashboard/product-info-form"));
+const MainCostBreakdown = lazy(() => import("@/main/cost-breakdown"));
+
+// Loading fallback component
+const LoadingFallback = () => (
+  <div className="flex items-center justify-center h-screen">
+    <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-t-2 border-primary"></div>
+    <span className="ml-3 text-lg font-medium">Loading...</span>
+  </div>
+);
 
 function PrivateRoute({ component: Component, ...rest }: { component: React.ComponentType<any>; path: string; exact?: boolean }) {
   // For development, we'll allow access to routes without authentication
@@ -48,7 +59,9 @@ function PrivateRoute({ component: Component, ...rest }: { component: React.Comp
         if (isDevelopment || user) {
           return (
             <Layout>
-              <Component {...props} />
+              <Suspense fallback={<LoadingFallback />}>
+                <Component {...props} />
+              </Suspense>
             </Layout>
           );
         }
@@ -64,7 +77,11 @@ function PublicOnlyRoute({ component: Component, ...rest }: { component: React.C
   return (
     <Route
       {...rest}
-      component={(props: any) => <Component {...props} />}
+      component={(props: any) => (
+        <Suspense fallback={<LoadingFallback />}>
+          <Component {...props} />
+        </Suspense>
+      )}
     />
   );
 }
@@ -119,10 +136,12 @@ function App() {
       <AuthProvider>
         <LanguageProvider>
           <AnalysisProvider>
-            <TooltipProvider>
-              <Toaster />
-              <Router />
-            </TooltipProvider>
+            <CostBreakdownProvider>
+              <TooltipProvider>
+                <Toaster />
+                <Router />
+              </TooltipProvider>
+            </CostBreakdownProvider>
           </AnalysisProvider>
         </LanguageProvider>
       </AuthProvider>

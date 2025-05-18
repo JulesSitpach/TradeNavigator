@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { normalizeAnalysisData } from '@/utils/analysisDataHelper';
 
 // Define the Analysis data structure
@@ -90,6 +90,9 @@ export const AnalysisProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [savedAnalyses, setSavedAnalyses] = useState<AnalysisData[]>([]);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   
+  // Access the query client for cache updates
+  const queryClient = useQueryClient();
+  
   // Force clear demo data right at component initialization - do this first before any other effects
   useEffect(() => {
     // Clear ALL localStorage data to ensure we start completely fresh
@@ -107,7 +110,92 @@ export const AnalysisProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     refetch 
   } = useQuery<AnalysisData[]>({
     queryKey: ['/api/analysis'],
-    refetchOnWindowFocus: false
+    refetchOnWindowFocus: false,
+    staleTime: 60000, // Consider data fresh for 1 minute
+    cacheTime: 300000, // Keep unused data in cache for 5 minutes
+  });
+  
+  // Mutation for saving a new analysis
+  const saveAnalysisMutation = useMutation({
+    mutationFn: async (newAnalysis: AnalysisData) => {
+      // In a real implementation, this would be an API call
+      // return fetch('/api/analysis', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify(newAnalysis),
+      // }).then(res => res.json());
+      
+      // For now, simulate API call with localStorage
+      console.log('Saving analysis:', newAnalysis);
+      return Promise.resolve(newAnalysis);
+    },
+    onMutate: async (newAnalysis) => {
+      // Cancel any outgoing refetches to avoid overwriting our optimistic update
+      await queryClient.cancelQueries({ queryKey: ['/api/analysis'] });
+      
+      // Snapshot the previous value
+      const previousAnalyses = queryClient.getQueryData<AnalysisData[]>(['/api/analysis']);
+      
+      // Optimistically update the cache with the new analysis
+      if (previousAnalyses) {
+        queryClient.setQueryData<AnalysisData[]>(['/api/analysis'], [...previousAnalyses, newAnalysis]);
+      }
+      
+      return { previousAnalyses };
+    },
+    onError: (err, newAnalysis, context) => {
+      // If the mutation fails, use the context returned from onMutate to roll back
+      if (context?.previousAnalyses) {
+        queryClient.setQueryData<AnalysisData[]>(['/api/analysis'], context.previousAnalyses);
+      }
+      console.error('Error saving analysis:', err);
+    },
+    onSettled: () => {
+      // Always refetch after error or success to make sure the server state is reflected
+      queryClient.invalidateQueries({ queryKey: ['/api/analysis'] });
+    },
+  });
+  
+  // Mutation for deleting an analysis
+  const deleteAnalysisMutation = useMutation({
+    mutationFn: async (id: string) => {
+      // In a real implementation, this would be an API call
+      // return fetch(`/api/analysis/${id}`, {
+      //   method: 'DELETE',
+      // }).then(res => res.json());
+      
+      // For now, simulate API call
+      console.log('Deleting analysis:', id);
+      return Promise.resolve(id);
+    },
+    onMutate: async (id) => {
+      // Cancel any outgoing refetches to avoid overwriting our optimistic update
+      await queryClient.cancelQueries({ queryKey: ['/api/analysis'] });
+      
+      // Snapshot the previous value
+      const previousAnalyses = queryClient.getQueryData<AnalysisData[]>(['/api/analysis']);
+      
+      // Optimistically update the cache by removing the deleted analysis
+      if (previousAnalyses) {
+        queryClient.setQueryData<AnalysisData[]>(
+          ['/api/analysis'],
+          previousAnalyses.filter(a => (a.id !== id && a.analysisId !== id))
+        );
+      }
+      
+      return { previousAnalyses };
+    },
+    onError: (err, id, context) => {
+      // If the mutation fails, use the context returned from onMutate to roll back
+      if (context?.previousAnalyses) {
+        queryClient.setQueryData<AnalysisData[]>(['/api/analysis'], context.previousAnalyses);
+      }
+      console.error('Error deleting analysis:', err);
+    },
+    onSettled: () => {
+      // Always refetch after error or success to make sure the server state is reflected
+      queryClient.invalidateQueries({ queryKey: ['/api/analysis'] });
+    },
   });
 
   // Update saved analyses when data changes
@@ -186,22 +274,18 @@ export const AnalysisProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       timestamp: new Date() // for backwards compatibility
     });
     
+    // Update local state
     const updatedSavedAnalyses = [...savedAnalyses, newAnalysis];
     setSavedAnalyses(updatedSavedAnalyses);
     
-    // Save both to localStorage for persistence
+    // Save to localStorage for persistence
     localStorage.setItem('savedAnalyses', JSON.stringify(updatedSavedAnalyses));
     localStorage.setItem('currentAnalysis', JSON.stringify(newAnalysis));
     
-    // In a real implementation, save to the API
-    // fetch('/api/analysis', {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //   },
-    //   body: JSON.stringify(newAnalysis),
-    // });
+    // Use the mutation to save (optimistically updates the cache)
+    saveAnalysisMutation.mutate(newAnalysis);
     
+    setLastUpdated(new Date());
     console.log('Analysis saved:', newAnalysis);
   };
 
@@ -223,17 +307,17 @@ export const AnalysisProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   // Delete a saved analysis
   const deleteAnalysis = (id: string) => {
+    // Update local state
     const updatedSavedAnalyses = savedAnalyses.filter(a => (a.id !== id && a.analysisId !== id));
     setSavedAnalyses(updatedSavedAnalyses);
     
     // Update localStorage
     localStorage.setItem('savedAnalyses', JSON.stringify(updatedSavedAnalyses));
     
-    // In a real implementation, delete from the API
-    // fetch(`/api/analysis/${id}`, {
-    //   method: 'DELETE',
-    // });
+    // Use the mutation to delete (optimistically updates the cache)
+    deleteAnalysisMutation.mutate(id);
     
+    setLastUpdated(new Date());
     console.log('Analysis deleted, ID:', id);
   };
 

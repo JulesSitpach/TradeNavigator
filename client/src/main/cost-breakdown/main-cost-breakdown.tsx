@@ -19,6 +19,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import PageHeader from "@/components/common/PageHeader";
 import { useToast } from "@/hooks/use-toast";
 import { AnalysisContext, useAnalysis } from "@/contexts/AnalysisContext";
+import { useCostBreakdown } from "@/contexts/shared/CostBreakdownContext";
 import { Calculator, Save, FileText, RotateCcw, PlusCircle, Search, Pencil, Edit } from "lucide-react";
 import HSCodeAssistant from "@/components/ai/HSCodeAssistant";
 import { normalizeAnalysisData } from "@/utils/analysisDataHelper";
@@ -81,6 +82,15 @@ const countryGroups = {
 const NewCostForm = () => {
   // Use context directly since the custom hook is not working properly
   const context = useContext(AnalysisContext);
+  
+  // Use the shared cost breakdown context
+  const { 
+    costData, 
+    isCalculating: costCalculating, 
+    hasCalculated: costHasCalculated,
+    calculateCosts: calculateCostBreakdown,
+    exportCostData
+  } = useCostBreakdown();
   
   // Safe access to context properties with fallbacks
   const currentAnalysis = context?.currentAnalysis || null;
@@ -181,89 +191,23 @@ const NewCostForm = () => {
     }));
   };
   
-  // Calculate costs without clearing the form
-  const calculateCosts = () => {
+  // Calculate costs without clearing the form - now uses the shared context
+  const calculateCosts = async () => {
     // Store current form data in localStorage to preserve it
     localStorage.setItem('currentFormData', JSON.stringify(formValues));
-    
-    // In a real app, this would call your API for accurate tariff and shipping costs
-    // For now, we're calculating based on user-entered values
-    const dutyRate = 0.07; // 7% duty rate
-    const taxRate = 0.10;  // 10% VAT/tax
-    const shippingRate = formValues.transportMode === 'Air' ? 0.08 : 0.05; // Air is more expensive
-    
-    const productValueNum = parseFloat(formValues.productValue) || 0;
-    const quantityNum = parseInt(formValues.quantity) || 1;
-    const weightNum = parseFloat(formValues.weight) || 1;
-    
-    // Calculate component costs
-    const dutyAmount = productValueNum * dutyRate;
-    const taxAmount = productValueNum * taxRate;
-    const shippingAmount = productValueNum * shippingRate + (weightNum * 2); // Base + weight factor
-    const insuranceAmount = productValueNum * 0.02; // 2% of value
-    const handlingAmount = 50 + (quantityNum * 2); // Base fee + per item
-    
-    // Calculate total
-    const totalCost = productValueNum + dutyAmount + taxAmount + shippingAmount + insuranceAmount + handlingAmount;
-    
-    // Create properly structured results with both amount and percentage
-    const results = {
-      totalCost: totalCost,
-      components: [
-        { 
-          name: "Duties", 
-          amount: dutyAmount, 
-          percentage: (dutyAmount / totalCost) * 100,
-          details: { category: "Customs" }
-        },
-        { 
-          name: "VAT/Sales Tax", 
-          amount: taxAmount, 
-          percentage: (taxAmount / totalCost) * 100,
-          details: { category: "Tax" }
-        },
-        { 
-          name: "Freight", 
-          amount: shippingAmount, 
-          percentage: (shippingAmount / totalCost) * 100,
-          details: { category: "Logistics" }
-        },
-        { 
-          name: "Insurance", 
-          amount: insuranceAmount, 
-          percentage: (insuranceAmount / totalCost) * 100,
-          details: { category: "Logistics" }
-        },
-        { 
-          name: "Documentation", 
-          amount: handlingAmount, 
-          percentage: (handlingAmount / totalCost) * 100,
-          details: { category: "Administration" }
-        }
-      ],
-      timestamp: new Date()
-    };
-    
-    // Store calculation results
-    setResults(results);
-    setCalculationComplete(true);
-    localStorage.setItem('calculationResults', JSON.stringify(results));
     
     // Generate a unique ID for this analysis
     const analysisId = `analysis-${Date.now()}`;
     
-    // Update the global analysis context so other dashboards can access this data
+    // Prepare the analysis data with the form values
     const analysisData = {
       id: analysisId,
       name: `Analysis - ${formValues.productDescription}`,
       date: new Date().toISOString(),
       // Include the original form values for other dashboards to reference
       formValues: formValues,
-      // Include the calculation results
-      results: results,
-      // Include structured data for dashboards that expect specific formats
-      totalCost: results.totalCost,
-      components: results.components,
+      // Results will be added by the cost breakdown service
+      results: { totalCost: 0, components: [] },
       productDetails: {
         description: formValues.productDescription,
         category: formValues.productCategory,
@@ -284,17 +228,49 @@ const NewCostForm = () => {
       timestamp: new Date()
     };
     
-    // Save to Analysis Context
+    // Save to Analysis Context first
     setCurrentAnalysis(analysisData);
     
     // Also update localStorage for other components to use
     localStorage.setItem('currentAnalysis', JSON.stringify(analysisData));
     localStorage.setItem('hasAnalysisData', 'true');
     
-    toast({
-      title: "Calculation Complete",
-      description: "Your cost analysis has been calculated successfully.",
-    });
+    // Use the shared CostBreakdownContext to calculate costs
+    try {
+      // Force recalculate
+      await calculateCostBreakdown(true);
+      
+      // Set UI state
+      setCalculationComplete(true);
+      
+      // Wait for the cost data to be updated
+      setTimeout(() => {
+        // If we have cost data from the shared context, use it for our results
+        if (costData) {
+          const formattedResults = {
+            totalCost: costData.totalLandedCost,
+            components: costData.components,
+            timestamp: new Date()
+          };
+          
+          // Store calculation results
+          setResults(formattedResults);
+          localStorage.setItem('calculationResults', JSON.stringify(formattedResults));
+        }
+      }, 500);
+      
+      toast({
+        title: "Calculation Complete",
+        description: "Your cost analysis has been calculated successfully.",
+      });
+    } catch (error) {
+      console.error("Error calculating costs:", error);
+      toast({
+        title: "Calculation Error",
+        description: "There was an error calculating costs. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
   
   // Handler function for modifying product and shipping details
@@ -814,13 +790,22 @@ const NewCostForm = () => {
             
             <div className="flex justify-between mt-6">
               {calculationComplete && (
-                <Button 
-                  variant="outline"
-                  onClick={() => setSaveDialogOpen(true)}
-                >
-                  <Save className="mr-2 h-4 w-4" />
-                  Save Analysis
-                </Button>
+                <div className="flex space-x-3">
+                  <Button 
+                    variant="outline"
+                    onClick={() => setSaveDialogOpen(true)}
+                  >
+                    <Save className="mr-2 h-4 w-4" />
+                    Save Analysis
+                  </Button>
+                  <Button 
+                    variant="outline"
+                    onClick={exportCostData}
+                  >
+                    <FileText className="mr-2 h-4 w-4" />
+                    Export Data
+                  </Button>
+                </div>
               )}
               
               {isModifying ? (

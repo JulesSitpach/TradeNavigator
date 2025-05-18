@@ -31,6 +31,22 @@ task = "shell.exec"
 args = "npm run dev"
 waitForPort = 5000
 
+[[workflows.workflow]]
+name = "Setup"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run setup"
+
+[[workflows.workflow]]
+name = "CI"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run ci"
+
 [[ports]]
 localPort = 5000
 externalPort = 80

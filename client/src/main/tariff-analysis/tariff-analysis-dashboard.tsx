@@ -18,6 +18,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Progress } from "@/components/ui/progress";
 import { AnalysisContext } from "@/contexts/AnalysisContext";
+import { useTariffAnalysisData } from "@/hooks/useDashboardData";
 import { useToast } from "@/hooks/use-toast";
 import { BarChart, PieChart, LineChart, Bar, Pie, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer, Cell } from "recharts";
 import { AlertTriangle, DollarSign, Tag, Globe, FileText, TrendingDown, TrendingUp, Info, Search, ExternalLink } from "lucide-react";
@@ -52,6 +53,7 @@ interface TariffHistoricalData {
 const TariffAnalysisDashboard = () => {
   const { toast } = useToast();
   const analysisContext = useContext(AnalysisContext);
+  const tariffData = useTariffAnalysisData();
   const [isLoading, setIsLoading] = useState(false);
   const [currentAnalysis, setCurrentAnalysis] = useState<any>(null);
   const [tariffRates, setTariffRates] = useState<TariffRate[]>([]);
@@ -71,17 +73,25 @@ const TariffAnalysisDashboard = () => {
         console.log('Tariff Analysis Dashboard: Analysis data loaded successfully');
         setCurrentAnalysis(analysisData);
         
-        // Analyze tariff data based on the valid analysis data
-        analyzeTariffData(analysisData);
+        // Check if we have tariff data from the shared context
+        if (tariffData.isReady) {
+          console.log('Tariff Analysis Dashboard: Using cost data from shared context');
+          // We still need to generate UI-specific data that isn't in the shared context
+          analyzeTariffData(analysisData, true);
+        } else {
+          // No shared data available, perform full analysis
+          console.log('Tariff Analysis Dashboard: No shared data available, performing full analysis');
+          analyzeTariffData(analysisData, false);
+        }
       } else {
         console.warn('Tariff Analysis Dashboard: No valid analysis data available');
         toast(getAnalysisDataErrorMessage());
       }
     });
-  }, [analysisContext?.currentAnalysis]);
+  }, [analysisContext?.currentAnalysis, tariffData.isReady]);
   
   // Analyze tariff data based on the current analysis
-  const analyzeTariffData = (analysis: any) => {
+  const analyzeTariffData = (analysis: any, useSharedData: boolean = false) => {
     if (!analysis) {
       return;
     }
@@ -98,16 +108,30 @@ const TariffAnalysisDashboard = () => {
       productValue
     } = analysis.formValues;
     
-    const dutyAmount = analysis.results.components.find((c: any) => 
-      c.name === "Duties" || c.name === "Tariffs"
-    )?.value || 0;
+    // Get duty data - either from shared context or from analysis
+    let dutyAmount = 0;
+    let effectiveDutyRate = 0;
     
-    const totalCost = analysis.results.totalCost || 0;
+    if (useSharedData && tariffData.isReady) {
+      // Use data from shared context
+      dutyAmount = tariffData.dutyDetails?.amount || 0;
+      effectiveDutyRate = tariffData.dutyDetails?.rate || 0;
+    } else {
+      // Fall back to analysis data directly
+      dutyAmount = analysis.results.components.find((c: any) => 
+        c.name === "Duties" || c.name === "Tariffs"
+      )?.value || 0;
+      
+      // Calculate effective duty rate
+      const productValueNum = parseFloat(productValue);
+      effectiveDutyRate = productValueNum > 0 ? (dutyAmount / productValueNum) * 100 : 0;
+    }
     
-    // Calculate effective duty rate
-    const productValueNum = parseFloat(productValue);
-    const effectiveDutyRate = productValueNum > 0 ? (dutyAmount / productValueNum) * 100 : 0;
-    
+    // Get total cost from shared context or analysis
+    const totalCost = useSharedData && tariffData.isReady 
+      ? tariffData.totalValue
+      : analysis.results.totalCost || 0;
+      
     // Generate alternative HS codes
     generateAlternativeHSCodes(hsCode, productDescription, productCategory, effectiveDutyRate, dutyAmount);
     
@@ -475,6 +499,16 @@ const TariffAnalysisDashboard = () => {
         description="Analyze and optimize HS code classifications, duty rates, and trade agreement opportunities."
         icon={<Tag className="h-6 w-6 text-blue-600" />}
       />
+      
+      {tariffData.isReady && (
+        <Alert className="mb-4 bg-blue-50 border-blue-200">
+          <Info className="h-4 w-4 text-blue-600" />
+          <AlertTitle className="text-blue-800">Using Shared Cost Data</AlertTitle>
+          <AlertDescription className="text-blue-700">
+            This dashboard is using data calculated in the Cost Breakdown dashboard. Any changes made there will automatically update here.
+          </AlertDescription>
+        </Alert>
+      )}
       
       {isLoading ? (
         <Card className="w-full my-6">

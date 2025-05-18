@@ -1,4 +1,6 @@
 import axios from 'axios';
+import { createResilientClient } from '../utils/api/resilience';
+import { config } from '../config';
 
 // Comtrade API wrapper
 export class ComtradeApi {
@@ -9,8 +11,10 @@ export class ComtradeApi {
   private cacheTTL: number = 24 * 60 * 60 * 1000; // 24 hours
 
   constructor() {
-    this.primaryApiKey = process.env.UN_COMTRADE_PRIMARY_KEY || '';
-    this.secondaryApiKey = process.env.UN_COMTRADE_SECONDARY_KEY || '';
+    const apiConfig = config.getApiConfig();
+    this.primaryApiKey = apiConfig.UN_COMTRADE_PRIMARY_KEY || '';
+    this.secondaryApiKey = apiConfig.UN_COMTRADE_SECONDARY_KEY || '';
+    this.cacheTTL = apiConfig.COMTRADE_CACHE_TTL || 24 * 60 * 60 * 1000;
     
     if (!this.primaryApiKey && !this.secondaryApiKey) {
       console.warn('No Comtrade API keys provided. API calls will fail.');
@@ -129,5 +133,15 @@ export class ComtradeApi {
   }
 }
 
-// Create and export singleton instance
-export const comtradeApi = new ComtradeApi();
+// Create basic instance
+const baseComtradeApi = new ComtradeApi();
+
+// Get service-specific circuit breaker configuration
+const comtradeCircuitBreakerConfig = config.getServiceCircuitBreakerConfig('COMTRADE');
+
+// Create and export resilient instance with circuit breaker and retry logic
+export const comtradeApi = createResilientClient(
+  baseComtradeApi, 
+  'comtradeApi', 
+  comtradeCircuitBreakerConfig
+);

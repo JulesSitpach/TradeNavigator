@@ -1,4 +1,6 @@
 import axios from 'axios';
+import { createResilientClient } from '../utils/api/resilience';
+import { config } from '../config';
 
 // Exchange Rate API wrapper
 export class ExchangeRateApi {
@@ -8,7 +10,8 @@ export class ExchangeRateApi {
   private cacheTTL: number = 24 * 60 * 60 * 1000; // 24 hours
 
   constructor() {
-    this.apiKey = process.env.EXCHANGE_RATE_API_KEY || '';
+    this.apiKey = config.getApiConfig().EXCHANGE_RATE_API_KEY || '';
+    this.cacheTTL = config.getApiConfig().EXCHANGE_RATE_CACHE_TTL;
     
     if (!this.apiKey) {
       console.warn('No Exchange Rate API key provided. API calls will fail.');
@@ -117,5 +120,15 @@ export class ExchangeRateApi {
   }
 }
 
-// Create and export singleton instance
-export const exchangeRateApi = new ExchangeRateApi();
+// Create basic instance
+const baseExchangeRateApi = new ExchangeRateApi();
+
+// Get service-specific circuit breaker configuration
+const exchangeRateCircuitBreakerConfig = config.getServiceCircuitBreakerConfig('EXCHANGE_RATE');
+
+// Create and export resilient instance with circuit breaker and retry logic
+export const exchangeRateApi = createResilientClient(
+  baseExchangeRateApi, 
+  'exchangeRateApi', 
+  exchangeRateCircuitBreakerConfig
+);
