@@ -1153,12 +1153,40 @@ const RegulationsDashboard = () => {
       ) : !currentAnalysis ? (
         <Card className="w-full my-6">
           <CardContent className="p-6 flex justify-center items-center min-h-[400px]">
-            <div className="text-center">
-              <AlertTriangle className="h-12 w-12 text-amber-500 mx-auto mb-4" />
-              <h3 className="text-lg font-medium mb-2">No Analysis Data Available</h3>
-              <p className="text-gray-500 mb-4">Please complete a cost analysis first to view regulatory requirements.</p>
-              <Button onClick={() => window.location.href = '/dashboard/cost-breakdown'}>
-                Go to Cost Analysis
+            <div className="text-center max-w-xl">
+              <div className="mb-4 flex justify-center">
+                <FileText className="h-12 w-12 text-blue-500" />
+              </div>
+              <h3 className="text-xl font-semibold mb-3">Regulatory Analysis Ready</h3>
+              <p className="text-gray-600 mb-4">
+                To view detailed regulatory requirements for your product and shipping route, first complete 
+                a cost breakdown analysis with your product details and destination country.
+              </p>
+              
+              <div className="bg-blue-50 p-4 rounded-lg mb-6 text-left">
+                <h4 className="font-medium text-blue-800 mb-2">What you'll discover here:</h4>
+                <ul className="text-sm space-y-2 text-gray-700">
+                  <li className="flex items-start">
+                    <span className="mr-2">•</span>
+                    <span>Product-specific import regulations and documentation</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="mr-2">•</span>
+                    <span>Safety and compliance certifications required</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="mr-2">•</span>
+                    <span>Shipping and transport documentation requirements</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="mr-2">•</span>
+                    <span>Compliance deadlines and regulatory agency contacts</span>
+                  </li>
+                </ul>
+              </div>
+              
+              <Button size="lg" onClick={() => window.location.href = '/dashboard/cost-breakdown'}>
+                Go to Cost Breakdown
               </Button>
             </div>
           </CardContent>

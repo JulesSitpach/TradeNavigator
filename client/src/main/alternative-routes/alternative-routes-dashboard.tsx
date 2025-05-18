@@ -518,12 +518,40 @@ const AlternativeRoutesDashboard = () => {
       ) : !currentAnalysis ? (
         <Card className="w-full my-6">
           <CardContent className="p-6 flex justify-center items-center min-h-[400px]">
-            <div className="text-center">
-              <AlertTriangle className="h-12 w-12 text-amber-500 mx-auto mb-4" />
-              <h3 className="text-lg font-medium mb-2">No Analysis Data Available</h3>
-              <p className="text-gray-500 mb-4">Please complete a cost analysis first to view alternative routes.</p>
-              <Button onClick={() => window.location.href = '/dashboard/cost-breakdown'}>
-                Go to Cost Analysis
+            <div className="text-center max-w-xl">
+              <div className="mb-4 flex justify-center">
+                <MapPin className="h-12 w-12 text-blue-500" />
+              </div>
+              <h3 className="text-xl font-semibold mb-3">Route Analysis Ready to Begin</h3>
+              <p className="text-gray-600 mb-4">
+                To see shipping route alternatives and comparisons, first complete a cost breakdown analysis 
+                with your product and shipping details.
+              </p>
+              
+              <div className="bg-blue-50 p-4 rounded-lg mb-6 text-left">
+                <h4 className="font-medium text-blue-800 mb-2">What you'll see here:</h4>
+                <ul className="text-sm space-y-2 text-gray-700">
+                  <li className="flex items-start">
+                    <span className="mr-2">•</span>
+                    <span>Side-by-side comparison of different shipping modes (air, sea, rail, road)</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="mr-2">•</span>
+                    <span>Transit time vs. cost analysis for each route option</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="mr-2">•</span>
+                    <span>Risk assessment and carbon footprint comparison</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="mr-2">•</span>
+                    <span>Cash flow impact analysis for different shipping strategies</span>
+                  </li>
+                </ul>
+              </div>
+              
+              <Button size="lg" onClick={() => window.location.href = '/dashboard/cost-breakdown'}>
+                Go to Cost Breakdown
               </Button>
             </div>
           </CardContent>
