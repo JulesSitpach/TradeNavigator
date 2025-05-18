@@ -488,12 +488,38 @@ const TariffAnalysisDashboard = () => {
       ) : !currentAnalysis ? (
         <Card className="w-full my-6">
           <CardContent className="p-6 flex justify-center items-center min-h-[400px]">
-            <div className="text-center">
+            <div className="text-center max-w-xl">
               <AlertTriangle className="h-12 w-12 text-amber-500 mx-auto mb-4" />
-              <h3 className="text-lg font-medium mb-2">No Analysis Data Available</h3>
-              <p className="text-gray-500 mb-4">Please complete a cost analysis first to view tariff analysis.</p>
-              <Button onClick={() => window.location.href = '/dashboard/cost-breakdown'}>
-                Go to Cost Analysis
+              <h3 className="text-xl font-semibold mb-3">Tariff Analysis Needs Input</h3>
+              <p className="text-gray-600 mb-4">
+                To view detailed tariff analysis, first complete a cost breakdown analysis with your product details 
+                including HS code, origin and destination countries.
+              </p>
+              
+              <div className="bg-blue-50 p-4 rounded-lg mb-6 text-left">
+                <h4 className="font-medium text-blue-800 mb-2">Benefits of tariff analysis:</h4>
+                <ul className="text-sm space-y-2 text-gray-700">
+                  <li className="flex items-start">
+                    <span className="mr-2">•</span>
+                    <span>Find lower tariff rates in alternative destination markets</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="mr-2">•</span>
+                    <span>Discover alternative HS codes that may qualify for lower duties</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="mr-2">•</span>
+                    <span>Identify applicable trade agreements and special programs</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="mr-2">•</span>
+                    <span>Track historical tariff trends to forecast future changes</span>
+                  </li>
+                </ul>
+              </div>
+              
+              <Button size="lg" onClick={() => window.location.href = '/dashboard/cost-breakdown'}>
+                Go to Cost Breakdown
               </Button>
             </div>
           </CardContent>
