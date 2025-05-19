@@ -3,7 +3,20 @@ import fs from "fs";
 import path from "path";
 import { createServer as createViteServer, createLogger } from "vite";
 import { type Server } from "http";
-import viteConfig from "../vite.config";
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+
+// Explicitly recreate the vite config to avoid import path issues
+const viteConfig = defineConfig({
+  plugins: [react()],
+  resolve: {
+    alias: {
+      "@": path.resolve(import.meta.dirname, "..", "client", "src"),
+      "@shared": path.resolve(import.meta.dirname, "..", "shared"),
+    },
+  },
+  root: path.resolve(import.meta.dirname, "..", "client"),
+});
 import { nanoid } from "nanoid";
 
 const viteLogger = createLogger();

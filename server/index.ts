@@ -1,84 +1,16 @@
 // server/index.ts
-import express, { type Request, Response, NextFunction } from "express";
 import { createServer } from "http";
-import session from "express-session";
-import pgSimple from "connect-pg-simple";
-import compression from "compression";
 import { pool } from "./db";
 import { setupVite, serveStatic } from "./vite";
-import { errorHandler } from "./middleware/errorHandler";
-import { requestLogger } from "./middleware/requestLogger";
-import { getStandardRateLimiter, getAuthRateLimiter } from "./middleware/redisRateLimit";
 import { logger } from "./utils/logger";
 import { config } from "./config";
-import { performanceMonitoring, setupMetricsEndpoint, updateApplicationMetrics } from "./middleware/performance";
-import { RedisSessionStore } from "./utils/redis/sessionStore";
-import { getRedisClient, closeRedisConnection } from "./utils/redis";
-import { setupCacheInvalidationEvents, closeSubscriber } from "./utils/redis/cacheEvents";
+import { setupMetricsEndpoint, updateApplicationMetrics } from "./middleware/performance";
+import { closeRedisConnection } from "./utils/redis";
+import { closeSubscriber } from "./utils/redis/cacheEvents";
+import { createExpressApp } from "./firebase";
 
-// Import routes
-import authRoutes from "./routes/auth";
-import productRoutes from "./routes/products";
-import healthRoutes from "./routes/health";
-// Import other routes as needed
-
-const app = express();
-
-// Add compression middleware
-app.use(compression());
-
-// Request logging
-app.use(requestLogger);
-
-// Performance monitoring
-app.use(performanceMonitoring());
-
-// Parse JSON and URL-encoded bodies
-app.use(express.json({ limit: '1mb' }));
-app.use(express.urlencoded({ extended: false }));
-
-// Get Redis configuration
-const useRedisCache = config.getServerConfig().USE_REDIS_CACHE;
-
-// Setup cache invalidation events if Redis is enabled
-if (useRedisCache) {
-  setupCacheInvalidationEvents();
-}
-
-// Setup session middleware
-const PgSession = pgSimple(session);
-app.use(
-  session({
-    store: useRedisCache 
-      ? new RedisSessionStore()
-      : new PgSession({
-          pool,
-          tableName: "sessions",
-        }),
-    secret: config.getServerConfig().COOKIE_SECRET || "trade-navigator-secret",
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      secure: process.env.NODE_ENV === "production",
-      httpOnly: true,
-      sameSite: 'strict',
-      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
-    },
-    name: 'tn_sid',
-  })
-);
-
-// Apply rate limiting to auth endpoints
-app.use("/api/auth", getAuthRateLimiter());
-
-// Apply standard rate limiting to all other API routes
-app.use("/api", getStandardRateLimiter());
-
-// Mount API routes
-app.use("/api/auth", authRoutes);
-app.use("/api/products", productRoutes);
-app.use("/api/health", healthRoutes);
-// Mount other routes as needed
+// Create the Express app using our shared implementation
+const app = createExpressApp();
 
 // Setup metrics endpoint for Prometheus
 setupMetricsEndpoint(app);
