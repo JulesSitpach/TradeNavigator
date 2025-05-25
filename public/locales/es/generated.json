@@ -1,0 +1,36 @@
+{
+  "POST": "Traducción POST",
+  "basicTier": "Traducción BasicTier",
+  "broker": "Traducción Broker",
+  "buttons": {
+    "startTrial": "StartTrial (ES)"
+  },
+  "common": {
+    "perMonth": "PerMonth (ES)"
+  },
+  "descriptions": {
+    "basicDescription": "BasicDescription (ES)",
+    "freeDescription": "FreeDescription (ES)"
+  },
+  "freeTier": "Traducción FreeTier",
+  "hero": {
+    "description": "Description (ES)",
+    "subtitle": "Subtitle (ES)",
+    "title": "Title (ES)",
+    "tryCalculator": "TryCalculator (ES)",
+    "viewPricing": "ViewPricing (ES)"
+  },
+  "main": {
+    "features": "Features (ES)",
+    "overview": "Overview (ES)",
+    "pricing": "Pricing (ES)"
+  },
+  "mostPopular": "Traducción MostPopular",
+  "perMonth": "Traducción PerMonth",
+  "proDescription": "Traducción ProDescription",
+  "proTier": "Traducción ProTier",
+  "standard": "Traducción Standard",
+  "subtitle": "Traducción Subtitle",
+  "title": "Traducción Title",
+  "yes": "Traducción Yes"
+}

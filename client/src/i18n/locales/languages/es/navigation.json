@@ -1,0 +1,52 @@
+{
+  "main": {
+    "overview": "Resumen",
+    "features": "Características",
+    "pricing": "Precios"
+  },
+  "mainMenu": {
+    "overview": "Resumen",
+    "tools": "Herramientas",
+    "regulations": "Regulaciones",
+    "markets": "Mercados",
+    "ai": "IA",
+    "programs": "Programas"
+  },
+  "tools": {
+    "costBreakdown": "Desglose de Costos",
+    "routeAnalysis": "Análisis de Rutas",
+    "tariffAnalysis": "Análisis de Aranceles"
+  },
+  "regulations": {
+    "complianceRequirements": "Requisitos de Cumplimiento",
+    "tradeRegulations": "Regulaciones Comerciales",
+    "legalFrameworks": "Marcos Legales",
+    "specialPrograms": "Programas Especiales"
+  },
+  "markets": {
+    "marketsAnalysis": "Análisis de Mercados",
+    "pricingData": "Datos de Precios",
+    "regionalTrade": "Comercio Regional"
+  },
+  "ai": {
+    "aiGuidance": "Guía de IA",
+    "aiPredictions": "Predicciones de IA",
+    "visualizations": "Visualizaciones"
+  },
+  "programs": {
+    "tradeZones": "Zonas Comerciales",
+    "subscribe": "Suscribirse"
+  },
+  "user": {
+    "profile": "Perfil",
+    "settings": "Configuración",
+    "logout": "Cerrar Sesión",
+    "login": "Iniciar Sesión",
+    "signUp": "Registrarse"
+  },
+  "language": {
+    "selectLanguage": "Seleccionar Idioma",
+    "english": "English",
+    "spanish": "Español"
+  }
+}

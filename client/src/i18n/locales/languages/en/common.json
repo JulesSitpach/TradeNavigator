@@ -1,0 +1,52 @@
+{
+  "buttons": {
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "close": "Close",
+    "confirm": "Confirm",
+    "retry": "Retry"
+  },
+  "status": {
+    "loading": "Loading...",
+    "success": "Success",
+    "error": "Error",
+    "warning": "Warning",
+    "info": "Information",
+    "pending": "Pending",
+    "completed": "Completed",
+    "failed": "Failed"
+  },
+  "forms": {
+    "required": "This field is required",
+    "invalid": "Invalid format",
+    "email": "Enter a valid email address",
+    "minLength": "Minimum {{count}} characters required",
+    "maxLength": "Maximum {{count}} characters allowed"
+  },
+  "currency": {
+    "usd": "USD",
+    "eur": "EUR",
+    "gbp": "GBP",
+    "cad": "CAD",
+    "jpy": "JPY"
+  },
+  "units": {
+    "kg": "kg",
+    "lbs": "lbs",
+    "tons": "tons",
+    "m3": "m³",
+    "ft3": "ft³"
+  },
+  "time": {
+    "days": "days",
+    "weeks": "weeks",
+    "months": "months",
+    "businessDays": "business days"
+  }
+}

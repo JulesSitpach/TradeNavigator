@@ -1,0 +1,13 @@
+{
+  "hero": {
+    "title": "AI-Powered Global Trade",
+    "subtitle": "Simplified", 
+    "description": "TradeNavigator uses advanced AI to analyze international shipping costs, suggest HS codes, and optimize your global commerce operations.",
+    "tryCalculator": "Try Import Calculator →",
+    "viewPricing": "View Pricing"
+  },
+  "pricing": {
+    "title": "Simple Pricing That Scales With Your Business",
+    "subtitle": "Save thousands on import costs with one affordable monthly subscription. No hidden fees, no per-shipment charges."
+  }
+}

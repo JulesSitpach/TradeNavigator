@@ -1,0 +1,33 @@
+{
+  "buttons": {
+    "signIn": "Sign In",
+    "signOut": "Sign Out",
+    "startFree": "Start Free",
+    "getStarted": "Get Started",
+    "contactSales": "Contact Sales",
+    "contactUs": "Contact Us",
+    "startTrial": "Start Free Trial",
+    "startBasic": "Start Basic",
+    "startPro": "Start Pro",
+    "calculate": "Calculate Costs",
+    "calculating": "Calculating..."
+  },
+  "units": {
+    "perMonth": "per month",
+    "usd": "USD",
+    "kg": "kg"
+  },
+  "tiers": {
+    "freeTier": "Free",
+    "basicTier": "Basic",
+    "proTier": "Pro",
+    "globalTier": "Global",
+    "mostPopular": "Most Popular"
+  },
+  "descriptions": {
+    "freeDescription": "Perfect for testing",
+    "basicDescription": "For small businesses",
+    "proDescription": "Everything you need",
+    "globalDescription": "For enterprise teams"
+  }
+}

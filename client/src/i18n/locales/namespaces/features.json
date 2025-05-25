@@ -1,0 +1,18 @@
+{
+  "hero": {
+    "title": "Everything You Need to Scale Your Import Business",
+    "subtitle": "TradeNavigator combines AI intelligence with real-time data to help SMBs navigate international trade like Fortune 500 companies.",
+    "startFreeTrial": "Start Free Trial"
+  },
+  "categories": {
+    "aiPowered": "AI-Powered Intelligence",
+    "realTimeData": "Real-Time Data & Analytics",
+    "compliance": "Compliance & Regulations",
+    "costOptimization": "Cost Optimization"
+  },
+  "services": {
+    "costAnalysis": "Cost Analysis",
+    "marketIntelligence": "Market Intelligence",
+    "complianceManagement": "Compliance Management"
+  }
+}

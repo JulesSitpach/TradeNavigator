@@ -1,0 +1,62 @@
+{
+  "overview": {
+    "title": "Plataforma Completa de Inteligencia Comercial",
+    "subtitle": "Todo lo que necesita para navegar las complejidades del comercio internacional - desde análisis de costos hasta gestión de cumplimiento.",
+    "ctaButton": "Iniciar Análisis",
+    "powerfulTools": {
+      "title": "Herramientas Comerciales Poderosas",
+      "subtitle": "Nuestra plataforma ofrece todo lo que necesita para navegar las complejidades del comercio internacional.",
+      "costAnalysis": {
+        "title": "Análisis de Costos",
+        "description": "Obtenga cálculos integrales de costos de importación con sugerencias de códigos HS impulsadas por IA y datos arancelarios en tiempo real."
+      },
+      "marketIntelligence": {
+        "title": "Inteligencia de Mercado",
+        "description": "Acceda a datos de mercado en tiempo real, optimización de acuerdos comerciales y herramientas de análisis competitivo."
+      },
+      "complianceManagement": {
+        "title": "Gestión de Cumplimiento",
+        "description": "Manténgase en cumplimiento con actualizaciones regulatorias automatizadas, requisitos de documentación y beneficios de zonas comerciales."
+      }
+    },
+    "whyChoose": {
+      "title": "Por Qué los Profesionales Comerciales Eligen TradeNavigator",
+      "subtitle": "Confiado por miles de profesionales de importación/exportación en todo el mundo"
+    }
+  },
+  "costAnalysis": {
+    "title": "Calculadora de Costos de Importación",
+    "description": "Calcule costos integrales de importación incluyendo aranceles, impuestos y envío",
+    "form": {
+      "productName": "Nombre del Producto",
+      "productNamePlaceholder": "Ingrese el nombre del producto",
+      "hsCode": "Código HS",
+      "hsCodePlaceholder": "Ingrese código HS o deje que la IA sugiera",
+      "originCountry": "País de Origen",
+      "destinationCountry": "País de Destino",
+      "weight": "Peso",
+      "weightPlaceholder": "Ingrese el peso",
+      "value": "Valor del Producto",
+      "valuePlaceholder": "Ingrese el valor del producto",
+      "calculate": "Calcular Costos"
+    },
+    "results": {
+      "title": "Desglose de Costos",
+      "totalCost": "Costo Total",
+      "productValue": "Valor del Producto",
+      "shippingCost": "Costo de Envío",
+      "duties": "Aranceles",
+      "customsFees": "Tarifas Aduaneras",
+      "insuranceCost": "Seguro",
+      "brokerFees": "Tarifas de Agente",
+      "taxSavings": "Ahorros Fiscales",
+      "timeline": "Cronograma Estimado"
+    }
+  },
+  "aiSuggestions": {
+    "title": "Sugerencias de Código HS Impulsadas por IA",
+    "description": "Obtenga recomendaciones precisas de códigos HS basadas en la descripción de su producto",
+    "confidence": "Confianza: {{percentage}}%",
+    "selectCode": "Seleccionar Este Código"
+  }
+}

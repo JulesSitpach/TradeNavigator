@@ -1,0 +1,62 @@
+{
+  "overview": {
+    "title": "Complete Trade Intelligence Platform",
+    "subtitle": "Everything you need to navigate the complexities of international trade - from cost analysis to compliance management.",
+    "ctaButton": "Start Your Analysis",
+    "powerfulTools": {
+      "title": "Powerful Trade Tools",
+      "subtitle": "Our platform offers everything you need to navigate the complexities of international trade.",
+      "costAnalysis": {
+        "title": "Cost Analysis",
+        "description": "Get comprehensive import cost calculations with AI-powered HS code suggestions and real-time tariff data."
+      },
+      "marketIntelligence": {
+        "title": "Market Intelligence",
+        "description": "Access real-time market data, trade agreement optimization, and competitive analysis tools."
+      },
+      "complianceManagement": {
+        "title": "Compliance Management",
+        "description": "Stay compliant with automated regulatory updates, documentation requirements, and trade zone benefits."
+      }
+    },
+    "whyChoose": {
+      "title": "Why Trade Professionals Choose TradeNavigator",
+      "subtitle": "Trusted by thousands of import/export professionals worldwide"
+    }
+  },
+  "costAnalysis": {
+    "title": "Import Cost Calculator",
+    "description": "Calculate comprehensive import costs including duties, taxes, and shipping",
+    "form": {
+      "productName": "Product Name",
+      "productNamePlaceholder": "Enter product name",
+      "hsCode": "HS Code",
+      "hsCodePlaceholder": "Enter HS code or let AI suggest",
+      "originCountry": "Origin Country",
+      "destinationCountry": "Destination Country",
+      "weight": "Weight",
+      "weightPlaceholder": "Enter weight",
+      "value": "Product Value",
+      "valuePlaceholder": "Enter product value",
+      "calculate": "Calculate Costs"
+    },
+    "results": {
+      "title": "Cost Breakdown",
+      "totalCost": "Total Cost",
+      "productValue": "Product Value",
+      "shippingCost": "Shipping Cost",
+      "duties": "Duties",
+      "customsFees": "Customs Fees",
+      "insuranceCost": "Insurance",
+      "brokerFees": "Broker Fees",
+      "taxSavings": "Tax Savings",
+      "timeline": "Estimated Timeline"
+    }
+  },
+  "aiSuggestions": {
+    "title": "AI-Powered HS Code Suggestions",
+    "description": "Get accurate HS code recommendations based on your product description",
+    "confidence": "Confidence: {{percentage}}%",
+    "selectCode": "Select This Code"
+  }
+}

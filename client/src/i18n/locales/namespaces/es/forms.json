@@ -1,0 +1,21 @@
+{
+  "fields": {
+    "productName": "Nombre del Producto",
+    "originCountry": "País de Origen",
+    "destinationCountry": "País de Destino",
+    "weight": "Peso ({{unit}})",
+    "value": "Valor ({{currency}})"
+  },
+  "placeholders": {
+    "enterProduct": "Ingrese nombre del producto",
+    "selectCountry": "Seleccione país",
+    "enterWeight": "Ingrese peso",
+    "enterValue": "Ingrese valor"
+  },
+  "validation": {
+    "required": "Este campo es requerido",
+    "invalidEmail": "Por favor ingrese un email válido",
+    "minLength": "Mínimo {{count}} caracteres requeridos",
+    "maxLength": "Máximo {{count}} caracteres permitidos"
+  }
+}

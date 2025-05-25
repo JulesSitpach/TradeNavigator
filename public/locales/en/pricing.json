@@ -1,0 +1,23 @@
+{
+  "title": "Choose Your Plan",
+  "subtitle": "Select the perfect plan for your international trade needs",
+  "freeTier": "Free",
+  "basicTier": "Basic",
+  "proTier": "Pro",
+  "globalTier": "Global",
+  "mostPopular": "Most Popular",
+  "perMonth": "per month",
+  "proDescription": "For growing businesses that need advanced tools",
+  "descriptions": {
+    "freeDescription": "Perfect for getting started",
+    "basicDescription": "Essential tools for small businesses", 
+    "proDescription": "Advanced features for growing companies",
+    "globalDescription": "For enterprise teams"
+  },
+  "buttons": {
+    "startFreeTrial": "Start Free Trial",
+    "startBasic": "Start Basic",
+    "startProPlan": "Start Pro Plan",
+    "contactSales": "Contact Sales"
+  }
+}

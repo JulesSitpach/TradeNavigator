@@ -1,0 +1,32 @@
+{
+  "features": {
+    "hero.title": "Default hero.title Text",
+    "hero.subtitle": "Default hero.subtitle Text",
+    "buttons.startTrial": "Default buttons.startTrial Text"
+  },
+  "landing": {
+    "hero.title": "Default hero.title Text",
+    "hero.subtitle": "Default hero.subtitle Text",
+    "hero.description": "Default hero.description Text",
+    "hero.tryCalculator": "Default hero.tryCalculator Text",
+    "hero.viewPricing": "Default hero.viewPricing Text"
+  },
+  "pricing": {
+    "title": "Default title Text",
+    "subtitle": "Default subtitle Text",
+    "pricing.freeTier": "Default pricing.freeTier Text",
+    "common.perMonth": "Default common.perMonth Text",
+    "descriptions.freeDescription": "Default descriptions.freeDescription Text",
+    "pricing.basicTier": "Default pricing.basicTier Text",
+    "descriptions.basicDescription": "Default descriptions.basicDescription Text",
+    "mostPopular": "Default mostPopular Text",
+    "proTier": "Default proTier Text",
+    "perMonth": "Default perMonth Text",
+    "proDescription": "Default proDescription Text"
+  },
+  "Navigation": {
+    "main.overview": "Default main.overview Text",
+    "main.features": "Default main.features Text",
+    "main.pricing": "Default main.pricing Text"
+  }
+}

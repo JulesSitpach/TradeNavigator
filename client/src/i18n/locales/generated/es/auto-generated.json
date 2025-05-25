@@ -1,0 +1,32 @@
+{
+  "features": {
+    "hero.title": "Texto hero.title Traducido",
+    "hero.subtitle": "Texto hero.subtitle Traducido",
+    "buttons.startTrial": "Texto buttons.startTrial Traducido"
+  },
+  "landing": {
+    "hero.title": "Texto hero.title Traducido",
+    "hero.subtitle": "Texto hero.subtitle Traducido",
+    "hero.description": "Texto hero.description Traducido",
+    "hero.tryCalculator": "Texto hero.tryCalculator Traducido",
+    "hero.viewPricing": "Texto hero.viewPricing Traducido"
+  },
+  "pricing": {
+    "title": "Texto title Traducido",
+    "subtitle": "Texto subtitle Traducido",
+    "pricing.freeTier": "Texto pricing.freeTier Traducido",
+    "common.perMonth": "Texto common.perMonth Traducido",
+    "descriptions.freeDescription": "Texto descriptions.freeDescription Traducido",
+    "pricing.basicTier": "Texto pricing.basicTier Traducido",
+    "descriptions.basicDescription": "Texto descriptions.basicDescription Traducido",
+    "mostPopular": "Texto mostPopular Traducido",
+    "proTier": "Texto proTier Traducido",
+    "perMonth": "Texto perMonth Traducido",
+    "proDescription": "Texto proDescription Traducido"
+  },
+  "Navigation": {
+    "main.overview": "Texto main.overview Traducido",
+    "main.features": "Texto main.features Traducido",
+    "main.pricing": "Texto main.pricing Traducido"
+  }
+}

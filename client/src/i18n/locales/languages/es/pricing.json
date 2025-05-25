@@ -1,0 +1,24 @@
+{
+  "main": {
+    "title": "Planes de Precios",
+    "subtitle": "Selecciona el plan perfecto para tu negocio de comercio internacional",
+    "freeTier": "Gratuito",
+    "basicTier": "Básico", 
+    "proTier": "Pro", 
+    "globalTier": "Global",
+    "mostPopular": "Más Popular",
+    "perMonth": "por mes"
+  },
+  "descriptions": {
+    "freeDescription": "Perfecto para comenzar con análisis básico",
+    "basicDescription": "Herramientas esenciales para pequeñas empresas",
+    "proDescription": "Características avanzadas para empresas en crecimiento", 
+    "globalDescription": "Solución empresarial completa"
+  },
+  "buttons": {
+    "startFreeTrial": "Iniciar Prueba Gratuita",
+    "startBasic": "Iniciar Básico",
+    "startProPlan": "Iniciar Plan Pro",
+    "contactSales": "Contactar Ventas"
+  }
+}

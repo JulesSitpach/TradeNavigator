@@ -1,0 +1,109 @@
+markdown# Master Translation System Migration Strategy
+
+## Implementation Roadmap
+
+### Unified Translation Architecture
+```typescript
+// src/translations/master.ts
+export const masterTranslations = {
+ en: {
+   pricing: {
+     title: "Choose Your TradeNavigator Plan",
+     subtitle: "Flexible solutions for businesses of all sizes",
+     tiers: {
+       free: {
+         name: "Free Plan",
+         price: "$0",
+         features: [
+           "Up to 10 cost calculations",
+           "AI-powered HS code suggestions",
+           "Basic shipping rate comparisons"
+         ]
+       }
+     }
+   },
+   navigation: {
+     overview: "Overview",
+     tools: "Tools",
+     markets: "Markets"
+   }
+ },
+ es: {
+   pricing: {
+     title: "Elige tu Plan de TradeNavigator",
+     subtitle: "Soluciones flexibles para negocios de todos los tamaños",
+     tiers: {
+       free: {
+         name: "Plan Gratuito",
+         price: "$0",
+         features: [
+           "Hasta 10 cálculos de costos",
+           "Sugerencias de códigos HS con IA",
+           "Comparaciones básicas de tarifas de envío"
+         ]
+       }
+     }
+   },
+   navigation: {
+     overview: "Resumen",
+     tools: "Herramientas",
+     markets: "Mercados"
+   }
+ }
+};
+Universal Translation Hook
+typescript// src/hooks/useTranslation.ts
+import { useCallback } from 'react';
+import { masterTranslations } from '../translations/master';
+import { useLanguage } from './useLanguage';
+
+export function useMasterTranslation() {
+  const { currentLanguage } = useLanguage();
+
+  const t = useCallback((key: string) => {
+    const keys = key.split('.');
+    let translation = masterTranslations[currentLanguage];
+    
+    for (const k of keys) {
+      translation = translation?.[k];
+      if (!translation) return key; // Fallback to key if not found
+    }
+
+    return translation;
+  }, [currentLanguage]);
+
+  return { t };
+}
+Component Integration Pattern
+typescript// Example: PricingPage
+function PricingPage() {
+  const { t } = useMasterTranslation();
+
+  return (
+    <div>
+      <h1>{t('pricing.title')}</h1>
+      <p>{t('pricing.subtitle')}</p>
+      <PricingTier 
+        name={t('pricing.tiers.free.name')}
+        price={t('pricing.tiers.free.price')}
+        features={t('pricing.tiers.free.features')}
+      />
+    </div>
+  );
+}
+Migration Strategy
+Refactoring Approach
+
+Create master translation file
+Implement universal translation hook
+Gradually update components
+Comprehensive testing
+
+Market Expansion Readiness
+
+Simplified key management
+Easy language addition
+Consistent translation approach
+Performance-optimized
+
+Focus: Intelligent, scalable internationalization

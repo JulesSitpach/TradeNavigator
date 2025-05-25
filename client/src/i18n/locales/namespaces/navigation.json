@@ -1,0 +1,11 @@
+{
+  "main": {
+    "overview": "Overview",
+    "features": "Features",
+    "pricing": "Pricing"
+  },
+  "brand": {
+    "name": "TradeNavigator",
+    "tagline": "AI-Powered Global Trade Simplified"
+  }
+}

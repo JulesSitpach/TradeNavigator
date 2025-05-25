@@ -1,0 +1,44 @@
+{
+  "title": "Choose Your Plan",
+  "subtitle": "Select the perfect plan for your international trade needs",
+  "freeTier": "Free",
+  "basicTier": "Basic", 
+  "proTier": "Pro",
+  "globalTier": "Global",
+  "mostPopular": "Most Popular",
+  "perMonth": "per month",
+  "common": {
+    "perMonth": "per month"
+  },
+  "descriptions": {
+    "freeDescription": "Perfect for getting started",
+    "basicDescription": "Essential tools for small businesses",
+    "proDescription": "Advanced features for growing companies",
+    "globalDescription": "For enterprise teams"
+  },
+  "features": {
+    "upToCalculations": "Up to {{count}} cost calculations",
+    "unlimitedCalculations": "Unlimited cost calculations",
+    "aiSuggestions": "AI-powered HS code suggestions",
+    "basicShipping": "Basic shipping rate comparisons",
+    "realtimeShipping": "Real-time shipping rates ({{count}}+ carriers)",
+    "emailSupport": "Email support",
+    "prioritySupport": "Priority email & chat support",
+    "phoneSupport": "Phone support",
+    "tradeOptimization": "Trade agreement optimization",
+    "marketIntelligence": "Market intelligence & insights",
+    "complianceUpdates": "Compliance & regulatory updates",
+    "exportReports": "Export calculation reports",
+    "apiAccess": "API access for integrations",
+    "customReporting": "Custom reporting & analytics",
+    "accountManager": "Dedicated account manager",
+    "slaGuarantee": "SLA guarantee",
+    "everythingInPro": "Everything in Pro"
+  },
+  "buttons": {
+    "startFreeTrial": "Start Free Trial",
+    "startBasic": "Start Basic",
+    "startProPlan": "Start Pro Plan",
+    "contactSales": "Contact Sales"
+  }
+}
