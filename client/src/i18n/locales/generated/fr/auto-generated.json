@@ -1,0 +1,32 @@
+{
+  "features": {
+    "hero.title": "Fonctionnalités Puissantes",
+    "hero.subtitle": "Tout ce dont vous avez besoin pour réussir dans le commerce international",
+    "buttons.startTrial": "Commencer l'Essai"
+  },
+  "landing": {
+    "hero.title": "Simplifiez Votre Commerce International",
+    "hero.subtitle": "Plateforme d'Intelligence Commerciale",
+    "hero.description": "TradeNavigator vous aide à naviguer dans les complexités du commerce international avec des outils d'analyse de coûts, des données tarifaires et des conseils de conformité en temps réel.",
+    "hero.tryCalculator": "Essayer le Calculateur",
+    "hero.viewPricing": "Voir les Tarifs"
+  },
+  "pricing": {
+    "title": "Choisissez Votre Plan",
+    "subtitle": "Sélectionnez le plan parfait pour vos besoins de commerce international",
+    "pricing.freeTier": "Gratuit",
+    "common.perMonth": "par mois",
+    "descriptions.freeDescription": "Parfait pour commencer",
+    "pricing.basicTier": "Basique",
+    "descriptions.basicDescription": "Outils essentiels pour petites entreprises",
+    "mostPopular": "Plus Populaire",
+    "proTier": "Pro",
+    "perMonth": "par mois",
+    "proDescription": "Fonctionnalités avancées pour entreprises en croissance"
+  },
+  "Navigation": {
+    "main.overview": "Aperçu",
+    "main.features": "Fonctionnalités",
+    "main.pricing": "Tarification"
+  }
+}

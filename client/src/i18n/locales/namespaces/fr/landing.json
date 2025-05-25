@@ -1,0 +1,13 @@
+{
+  "hero": {
+    "title": "Commerce Mondial avec IA",
+    "subtitle": "Simplifié",
+    "description": "TradeNavigator utilise l'IA avancée pour analyser les coûts d'expédition internationale, suggérer des codes SH et optimiser vos opérations de commerce mondial.",
+    "tryCalculator": "Essayer la Calculatrice →",
+    "viewPricing": "Voir les Tarifs"
+  },
+  "pricing": {
+    "title": "Des Tarifs Simples Qui Évoluent Avec Votre Entreprise",
+    "subtitle": "Économisez des milliers de dollars sur les coûts d'importation avec un abonnement mensuel abordable. Pas de frais cachés, pas de frais d'expédition."
+  }
+}

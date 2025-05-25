@@ -1,0 +1,33 @@
+{
+  "buttons": {
+    "signIn": "Se Connecter",
+    "signOut": "Se Déconnecter",
+    "startFree": "Commencer Gratuitement",
+    "getStarted": "Commencer",
+    "contactSales": "Contacter les Ventes",
+    "contactUs": "Contactez-nous",
+    "startTrial": "Commencer l'Essai Gratuit",
+    "startBasic": "Commencer Basique",
+    "startPro": "Commencer Pro",
+    "calculate": "Calculer les Coûts",
+    "calculating": "Calcul en cours..."
+  },
+  "units": {
+    "perMonth": "par mois",
+    "usd": "USD",
+    "kg": "kg"
+  },
+  "tiers": {
+    "freeTier": "Gratuit",
+    "basicTier": "Basique",
+    "proTier": "Pro",
+    "globalTier": "Global",
+    "mostPopular": "Plus Populaire"
+  },
+  "descriptions": {
+    "freeDescription": "Parfait pour les tests",
+    "basicDescription": "Pour les petites entreprises",
+    "proDescription": "Tout ce dont vous avez besoin",
+    "globalDescription": "Pour les équipes d'entreprise"
+  }
+}

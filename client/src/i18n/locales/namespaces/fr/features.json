@@ -1,0 +1,18 @@
+{
+  "hero": {
+    "title": "Tout Ce Dont Vous Avez Besoin Pour Développer Votre Entreprise d'Importation",
+    "subtitle": "TradeNavigator combine l'intelligence artificielle avec des données en temps réel pour aider les PME à naviguer dans le commerce international comme les entreprises du Fortune 500.",
+    "startFreeTrial": "Commencer l'Essai Gratuit"
+  },
+  "categories": {
+    "aiPowered": "Intelligence Alimentée par l'IA",
+    "realTimeData": "Données en Temps Réel et Analyses",
+    "compliance": "Conformité et Réglementations",
+    "costOptimization": "Optimisation des Coûts"
+  },
+  "services": {
+    "costAnalysis": "Analyse des Coûts",
+    "marketIntelligence": "Intelligence de Marché",
+    "complianceManagement": "Gestion de la Conformité"
+  }
+}

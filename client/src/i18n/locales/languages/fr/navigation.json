@@ -1,0 +1,53 @@
+{
+  "main": {
+    "overview": "Aperçu",
+    "features": "Fonctionnalités", 
+    "pricing": "Tarification"
+  },
+  "mainMenu": {
+    "overview": "Aperçu",
+    "tools": "Outils",
+    "regulations": "Réglementations",
+    "markets": "Marchés",
+    "ai": "IA",
+    "programs": "Programmes"
+  },
+  "tools": {
+    "costBreakdown": "Analyse des Coûts",
+    "routeAnalysis": "Analyse des Routes",
+    "tariffAnalysis": "Analyse Tarifaire"
+  },
+  "regulations": {
+    "complianceRequirements": "Exigences de Conformité",
+    "tradeRegulations": "Réglementations Commerciales",
+    "legalFrameworks": "Cadres Juridiques",
+    "specialPrograms": "Programmes Spéciaux"
+  },
+  "markets": {
+    "marketsAnalysis": "Analyse des Marchés",
+    "pricingData": "Données de Prix",
+    "regionalTrade": "Commerce Régional"
+  },
+  "ai": {
+    "aiGuidance": "Conseil IA",
+    "aiPredictions": "Prédictions IA",
+    "visualizations": "Visualisations"
+  },
+  "programs": {
+    "tradeZones": "Zones Commerciales",
+    "subscribe": "S'abonner"
+  },
+  "user": {
+    "profile": "Profil",
+    "settings": "Paramètres",
+    "logout": "Déconnexion",
+    "login": "Connexion",
+    "signUp": "S'inscrire"
+  },
+  "language": {
+    "selectLanguage": "Sélectionner la Langue",
+    "english": "English",
+    "spanish": "Español",
+    "french": "Français"
+  }
+}

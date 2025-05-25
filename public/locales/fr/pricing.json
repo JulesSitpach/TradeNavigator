@@ -1,0 +1,23 @@
+{
+  "title": "Choisissez Votre Plan",
+  "subtitle": "Sélectionnez le plan parfait pour vos besoins de commerce international",
+  "freeTier": "Gratuit",
+  "basicTier": "Basique",
+  "proTier": "Pro",
+  "globalTier": "Global",
+  "mostPopular": "Plus Populaire",
+  "perMonth": "par mois",
+  "proDescription": "Pour les entreprises en croissance qui ont besoin d'outils avancés",
+  "descriptions": {
+    "freeDescription": "Parfait pour commencer",
+    "basicDescription": "Outils essentiels pour petites entreprises", 
+    "proDescription": "Fonctionnalités avancées pour entreprises en croissance",
+    "globalDescription": "Pour les équipes d'entreprise"
+  },
+  "buttons": {
+    "startFreeTrial": "Commencer l'Essai Gratuit",
+    "startBasic": "Commencer Basique",
+    "startProPlan": "Commencer le Plan Pro",
+    "contactSales": "Contacter les Ventes"
+  }
+}

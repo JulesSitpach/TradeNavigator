@@ -1,0 +1,11 @@
+{
+  "main": {
+    "overview": "Aperçu",
+    "features": "Fonctionnalités",
+    "pricing": "Tarification"
+  },
+  "brand": {
+    "name": "TradeNavigator",
+    "tagline": "Commerce Mondial avec IA Simplifié"
+  }
+}

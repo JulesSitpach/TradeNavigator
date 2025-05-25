@@ -1,0 +1,36 @@
+{
+  "POST": "POST Traduction",
+  "basicTier": "Niveau Basique",
+  "broker": "Courtier",
+  "buttons": {
+    "startTrial": "Commencer l'Essai"
+  },
+  "common": {
+    "perMonth": "par mois"
+  },
+  "descriptions": {
+    "basicDescription": "Outils essentiels pour petites entreprises",
+    "freeDescription": "Parfait pour commencer"
+  },
+  "freeTier": "Niveau Gratuit",
+  "hero": {
+    "description": "Description (FR)",
+    "subtitle": "Sous-titre (FR)",
+    "title": "Titre (FR)",
+    "tryCalculator": "Essayer le Calculateur",
+    "viewPricing": "Voir les Tarifs"
+  },
+  "main": {
+    "features": "Fonctionnalités",
+    "overview": "Aperçu",
+    "pricing": "Tarification"
+  },
+  "mostPopular": "Plus Populaire",
+  "perMonth": "par mois",
+  "proDescription": "Fonctionnalités avancées pour entreprises en croissance",
+  "proTier": "Niveau Pro",
+  "standard": "Standard",
+  "subtitle": "Sous-titre",
+  "title": "Titre",
+  "yes": "Oui"
+}

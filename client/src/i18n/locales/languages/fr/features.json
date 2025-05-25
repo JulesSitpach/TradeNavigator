@@ -1,0 +1,62 @@
+{
+  "overview": {
+    "title": "Plateforme Complète d'Intelligence Commerciale",
+    "subtitle": "Tout ce dont vous avez besoin pour naviguer dans les complexités du commerce international - de l'analyse des coûts à la gestion de la conformité.",
+    "ctaButton": "Commencer Votre Analyse",
+    "powerfulTools": {
+      "title": "Outils Commerciaux Puissants",
+      "subtitle": "Notre plateforme offre tout ce dont vous avez besoin pour naviguer dans les complexités du commerce international.",
+      "costAnalysis": {
+        "title": "Analyse des Coûts",
+        "description": "Obtenez des calculs complets des coûts d'importation avec des suggestions de codes SH alimentées par l'IA et des données tarifaires en temps réel."
+      },
+      "marketIntelligence": {
+        "title": "Intelligence de Marché",
+        "description": "Accédez aux données de marché en temps réel, à l'optimisation des accords commerciaux et aux outils d'analyse concurrentielle."
+      },
+      "complianceManagement": {
+        "title": "Gestion de la Conformité",
+        "description": "Restez conforme avec les mises à jour réglementaires automatisées, les exigences de documentation et les avantages des zones commerciales."
+      }
+    },
+    "whyChoose": {
+      "title": "Pourquoi les Professionnels du Commerce Choisissent TradeNavigator",
+      "subtitle": "Approuvé par des milliers de professionnels de l'import/export dans le monde entier"
+    }
+  },
+  "costAnalysis": {
+    "title": "Calculateur de Coûts d'Importation",
+    "description": "Calculez les coûts d'importation complets, y compris les droits, les taxes et l'expédition",
+    "form": {
+      "productName": "Nom du Produit",
+      "productNamePlaceholder": "Entrez le nom du produit",
+      "hsCode": "Code SH",
+      "hsCodePlaceholder": "Entrez le code SH ou laissez l'IA suggérer",
+      "originCountry": "Pays d'Origine",
+      "destinationCountry": "Pays de Destination",
+      "weight": "Poids",
+      "weightPlaceholder": "Entrez le poids",
+      "value": "Valeur du Produit",
+      "valuePlaceholder": "Entrez la valeur du produit",
+      "calculate": "Calculer les Coûts"
+    },
+    "results": {
+      "title": "Ventilation des Coûts",
+      "totalCost": "Coût Total",
+      "productValue": "Valeur du Produit",
+      "shippingCost": "Coût d'Expédition",
+      "duties": "Droits de Douane",
+      "customsFees": "Frais de Douane",
+      "insuranceCost": "Assurance",
+      "brokerFees": "Frais de Courtier",
+      "taxSavings": "Économies Fiscales",
+      "timeline": "Calendrier Estimé"
+    }
+  },
+  "aiSuggestions": {
+    "title": "Suggestions de Code SH Alimentées par l'IA",
+    "description": "Obtenez des recommandations précises de codes SH basées sur la description de votre produit",
+    "confidence": "Confiance: {{percentage}}%",
+    "selectCode": "Sélectionner Ce Code"
+  }
+}

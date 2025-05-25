@@ -1,0 +1,44 @@
+{
+  "title": "Choisissez Votre Plan",
+  "subtitle": "Sélectionnez le plan parfait pour vos besoins de commerce international",
+  "freeTier": "Gratuit",
+  "basicTier": "Basique", 
+  "proTier": "Pro",
+  "globalTier": "Global",
+  "mostPopular": "Plus Populaire",
+  "perMonth": "par mois",
+  "common": {
+    "perMonth": "par mois"
+  },
+  "descriptions": {
+    "freeDescription": "Parfait pour commencer",
+    "basicDescription": "Outils essentiels pour petites entreprises",
+    "proDescription": "Fonctionnalités avancées pour entreprises en croissance",
+    "globalDescription": "Pour les équipes d'entreprise"
+  },
+  "features": {
+    "upToCalculations": "Jusqu'à {{count}} calculs de coûts",
+    "unlimitedCalculations": "Calculs de coûts illimités",
+    "aiSuggestions": "Suggestions de codes SH par IA",
+    "basicShipping": "Comparaisons de taux d'expédition de base",
+    "realtimeShipping": "Taux d'expédition en temps réel ({{count}}+ transporteurs)",
+    "emailSupport": "Support par email",
+    "prioritySupport": "Support prioritaire par email et chat",
+    "phoneSupport": "Support téléphonique",
+    "tradeOptimization": "Optimisation des accords commerciaux",
+    "marketIntelligence": "Intelligence et aperçus du marché",
+    "complianceUpdates": "Mises à jour de conformité et réglementaires",
+    "exportReports": "Rapports de calcul à l'exportation",
+    "apiAccess": "Accès API pour intégrations",
+    "customReporting": "Rapports personnalisés et analyses",
+    "accountManager": "Gestionnaire de compte dédié",
+    "slaGuarantee": "Garantie SLA",
+    "everythingInPro": "Tout ce qui est inclus dans Pro"
+  },
+  "buttons": {
+    "startFreeTrial": "Commencer l'Essai Gratuit",
+    "startBasic": "Commencer Basique",
+    "startProPlan": "Commencer le Plan Pro",
+    "contactSales": "Contacter les Ventes"
+  }
+}

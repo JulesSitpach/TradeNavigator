@@ -12,6 +12,8 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { Package, Truck, Calculator, Lightbulb } from "lucide-react";
 import type { CalculationResult } from "@/pages/home";
+import { useMasterTranslation } from "@/utils/masterTranslation";
+import { countriesByRegion } from "@/lib/countries";
 
 const formSchema = z.object({
   productCategory: z.string().min(1, "Product category is required"),
@@ -50,6 +52,7 @@ export function CostAnalysisForm({ onCalculationResult, isCalculating, setIsCalc
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [loadingAI, setLoadingAI] = useState(false);
   const { toast } = useToast();
+  const { t } = useMasterTranslation();
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -174,18 +177,19 @@ export function CostAnalysisForm({ onCalculationResult, isCalculating, setIsCalc
                           <SelectValue placeholder="Select Category" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent className="bg-white">
-                        <SelectItem value="electronics">Electronics & Technology</SelectItem>
-                        <SelectItem value="textiles">Textiles & Apparel</SelectItem>
-                        <SelectItem value="machinery">Machinery & Equipment</SelectItem>
-                        <SelectItem value="food">Food & Beverages</SelectItem>
-                        <SelectItem value="chemicals">Chemicals & Pharmaceuticals</SelectItem>
-                        <SelectItem value="automotive">Automotive Parts</SelectItem>
-                        <SelectItem value="home">Home & Garden</SelectItem>
-                        <SelectItem value="sports">Sports & Recreation</SelectItem>
-                        <SelectItem value="medical">Medical Devices</SelectItem>
-                        <SelectItem value="materials">Raw Materials</SelectItem>
-                      </SelectContent>
+                        <SelectContent className="bg-white">
+                          <SelectItem value="electronics">{t('productCategories.electronics')}</SelectItem>
+                          <SelectItem value="textiles">{t('productCategories.textiles')}</SelectItem>
+                          <SelectItem value="machinery">{t('productCategories.machinery')}</SelectItem>
+                          <SelectItem value="food">{t('productCategories.food')}</SelectItem>
+                          <SelectItem value="chemicals">{t('productCategories.chemicals')}</SelectItem>
+                          <SelectItem value="automotive">{t('productCategories.automotive')}</SelectItem>
+                          <SelectItem value="home">{t('productCategories.home')}</SelectItem>
+                          <SelectItem value="sports">{t('productCategories.sports')}</SelectItem>
+                          <SelectItem value="medical">{t('productCategories.medical')}</SelectItem>
+                          <SelectItem value="raw">{t('productCategories.raw')}</SelectItem>
+                          <SelectItem value="other">{t('productCategories.other')}</SelectItem>
+                        </SelectContent>
                     </Select>
                     <FormMessage />
                   </FormItem>
@@ -353,15 +357,66 @@ export function CostAnalysisForm({ onCalculationResult, isCalculating, setIsCalc
                           <SelectValue placeholder="Select Country" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent className="bg-white">
-                        <SelectItem value="CN">China</SelectItem>
-                        <SelectItem value="US">United States</SelectItem>
-                        <SelectItem value="DE">Germany</SelectItem>
-                        <SelectItem value="JP">Japan</SelectItem>
-                        <SelectItem value="KR">South Korea</SelectItem>
-                        <SelectItem value="TW">Taiwan</SelectItem>
-                        <SelectItem value="VN">Vietnam</SelectItem>
-                        <SelectItem value="IN">India</SelectItem>
+                      <SelectContent className="bg-white max-h-80">
+                        {/* North America */}
+                        <SelectItem value="" disabled className="font-semibold text-blue-600">
+                          {t('regions.northAmerica')}
+                        </SelectItem>
+                        {countriesByRegion.northAmerica.map(code => (
+                          <SelectItem key={code} value={code}>
+                            {t(`countries.${code}`)}
+                          </SelectItem>
+                        ))}
+                        
+                        {/* European Union */}
+                        <SelectItem value="" disabled className="font-semibold text-blue-600 mt-2">
+                          {t('regions.europeanUnion')}
+                        </SelectItem>
+                        {countriesByRegion.europeanUnion.map(code => (
+                          <SelectItem key={code} value={code}>
+                            {t(`countries.${code}`)}
+                          </SelectItem>
+                        ))}
+                        
+                        {/* Central & South America */}
+                        <SelectItem value="" disabled className="font-semibold text-blue-600 mt-2">
+                          {t('regions.centralSouthAmerica')}
+                        </SelectItem>
+                        {countriesByRegion.centralSouthAmerica.map(code => (
+                          <SelectItem key={code} value={code}>
+                            {t(`countries.${code}`)}
+                          </SelectItem>
+                        ))}
+                        
+                        {/* Asia */}
+                        <SelectItem value="" disabled className="font-semibold text-blue-600 mt-2">
+                          {t('regions.asia')}
+                        </SelectItem>
+                        {countriesByRegion.asia.map(code => (
+                          <SelectItem key={code} value={code}>
+                            {t(`countries.${code}`)}
+                          </SelectItem>
+                        ))}
+                        
+                        {/* Oceania */}
+                        <SelectItem value="" disabled className="font-semibold text-blue-600 mt-2">
+                          {t('regions.oceania')}
+                        </SelectItem>
+                        {countriesByRegion.oceania.map(code => (
+                          <SelectItem key={code} value={code}>
+                            {t(`countries.${code}`)}
+                          </SelectItem>
+                        ))}
+                        
+                        {/* Africa */}
+                        <SelectItem value="" disabled className="font-semibold text-blue-600 mt-2">
+                          {t('regions.africa')}
+                        </SelectItem>
+                        {countriesByRegion.africa.map(code => (
+                          <SelectItem key={code} value={code}>
+                            {t(`countries.${code}`)}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -381,15 +436,66 @@ export function CostAnalysisForm({ onCalculationResult, isCalculating, setIsCalc
                           <SelectValue placeholder="Select Country" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent className="bg-white">
-                        <SelectItem value="US">United States</SelectItem>
-                        <SelectItem value="CA">Canada</SelectItem>
-                        <SelectItem value="MX">Mexico</SelectItem>
-                        <SelectItem value="GB">United Kingdom</SelectItem>
-                        <SelectItem value="DE">Germany</SelectItem>
-                        <SelectItem value="FR">France</SelectItem>
-                        <SelectItem value="AU">Australia</SelectItem>
-                        <SelectItem value="JP">Japan</SelectItem>
+                      <SelectContent className="bg-white max-h-80">
+                        {/* North America */}
+                        <SelectItem value="" disabled className="font-semibold text-blue-600">
+                          {t('regions.northAmerica')}
+                        </SelectItem>
+                        {countriesByRegion.northAmerica.map(code => (
+                          <SelectItem key={code} value={code}>
+                            {t(`countries.${code}`)}
+                          </SelectItem>
+                        ))}
+                        
+                        {/* European Union */}
+                        <SelectItem value="" disabled className="font-semibold text-blue-600 mt-2">
+                          {t('regions.europeanUnion')}
+                        </SelectItem>
+                        {countriesByRegion.europeanUnion.map(code => (
+                          <SelectItem key={code} value={code}>
+                            {t(`countries.${code}`)}
+                          </SelectItem>
+                        ))}
+                        
+                        {/* Central & South America */}
+                        <SelectItem value="" disabled className="font-semibold text-blue-600 mt-2">
+                          {t('regions.centralSouthAmerica')}
+                        </SelectItem>
+                        {countriesByRegion.centralSouthAmerica.map(code => (
+                          <SelectItem key={code} value={code}>
+                            {t(`countries.${code}`)}
+                          </SelectItem>
+                        ))}
+                        
+                        {/* Asia */}
+                        <SelectItem value="" disabled className="font-semibold text-blue-600 mt-2">
+                          {t('regions.asia')}
+                        </SelectItem>
+                        {countriesByRegion.asia.map(code => (
+                          <SelectItem key={code} value={code}>
+                            {t(`countries.${code}`)}
+                          </SelectItem>
+                        ))}
+                        
+                        {/* Oceania */}
+                        <SelectItem value="" disabled className="font-semibold text-blue-600 mt-2">
+                          {t('regions.oceania')}
+                        </SelectItem>
+                        {countriesByRegion.oceania.map(code => (
+                          <SelectItem key={code} value={code}>
+                            {t(`countries.${code}`)}
+                          </SelectItem>
+                        ))}
+                        
+                        {/* Africa */}
+                        <SelectItem value="" disabled className="font-semibold text-blue-600 mt-2">
+                          {t('regions.africa')}
+                        </SelectItem>
+                        {countriesByRegion.africa.map(code => (
+                          <SelectItem key={code} value={code}>
+                            {t(`countries.${code}`)}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                     <FormMessage />

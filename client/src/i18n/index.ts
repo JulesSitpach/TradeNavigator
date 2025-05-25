@@ -15,6 +15,9 @@ i18n
       },
       es: {
         translation: masterTranslations.es
+      },
+      fr: {
+        translation: masterTranslations.fr
       }
     },
     fallbackLng: 'en',
