@@ -18,6 +18,8 @@ export default {
     'features',
     'pricing',
     'forms',
-    'landing'
+    'landing',
+    'files',
+    'documents'
   ]
 }

@@ -2,7 +2,8 @@
   "main": {
     "overview": "Aperçu",
     "features": "Fonctionnalités", 
-    "pricing": "Tarification"
+    "pricing": "Tarification",
+    "dashboard": "Tableau de Bord"
   },
   "mainMenu": {
     "overview": "Aperçu",

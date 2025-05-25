@@ -1,0 +1,19 @@
+{
+  "downloadConfirmation": "Confirmation de Téléchargement",
+  "confirmDownloadMessage": "Veuillez confirmer que vous souhaitez télécharger ce fichier",
+  "fileName": "Nom du Fichier",
+  "fileSize": "Taille du Fichier",
+  "fileType": "Type de Fichier", 
+  "securityStatus": "État de Sécurité",
+  "secure": "Sécurisé",
+  "blocked": "Bloqué",
+  "validating": "Validation en cours",
+  "fileTooLarge": "Le fichier dépasse la taille maximale autorisée (50 Mo)",
+  "fileTypeNotAllowed": "Type de fichier non autorisé pour des raisons de sécurité",
+  "downloading": "Téléchargement en cours...",
+  "downloadSuccess": "Téléchargement terminé avec succès", 
+  "downloadError": "Échec du téléchargement. Veuillez réessayer.",
+  "confirmDownload": "Confirmer le Téléchargement",
+  "highSecurity": "Haute Sécurité",
+  "standardSecurity": "Standard"
+}

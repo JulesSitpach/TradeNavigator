@@ -1,0 +1,17 @@
+{
+  "title": "Trade Documents",
+  "subtitle": "Secure access to your international trade documentation for Mexico and Canada markets",
+  "lastUpdated": "Last Updated",
+  "categories": {
+    "customs": "Customs",
+    "shipping": "Shipping", 
+    "compliance": "Compliance",
+    "certificate": "Certificate"
+  },
+  "descriptions": {
+    "customs": "Official customs documentation for cross-border trade",
+    "shipping": "Shipping manifests and logistics documentation",
+    "compliance": "Regulatory compliance documents and guidelines", 
+    "certificate": "Trade certificates and origin documentation"
+  }
+}

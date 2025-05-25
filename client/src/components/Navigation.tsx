@@ -1,7 +1,7 @@
 import { useAuth } from "@/hooks/useAuth";
 import { useMasterTranslation } from "@/utils/masterTranslation";
 import { Button } from "@/components/ui/button";
-import { Ship, ChevronDown, Globe } from "lucide-react";
+import { Ship, ChevronDown, Globe, Bell, User, Settings } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "wouter";
 
@@ -9,8 +9,11 @@ export function Navigation() {
   const { user } = useAuth();
   const { language, setLanguage, t } = useMasterTranslation();
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
-  const [, setLocation] = useLocation();
+  const [location, setLocation] = useLocation();
   const navRef = useRef<HTMLDivElement>(null);
+  
+  // Check if current page is a dashboard page
+  const isDashboardPage = location.startsWith('/dashboard');
 
   const handleDropdownToggle = (menu: string) => {
     setOpenDropdown(openDropdown === menu ? null : menu);
@@ -50,6 +53,7 @@ export function Navigation() {
             <div className="flex items-center space-x-8">
               <Link href="/overview" className="text-sm text-gray-600 hover:text-blue-600 font-medium">{t('navigation.overview')}</Link>
               <Link href="/features" className="text-sm text-gray-600 hover:text-blue-600 font-medium">{t('navigation.features')}</Link>
+              <Link href="/dashboard" className="text-sm bg-blue-600 text-white hover:bg-blue-700 px-3 py-2 rounded-md font-medium">{t('navigation.dashboard')}</Link>
               <Link href="/pricing" className="text-sm text-gray-600 hover:text-blue-600 font-medium">{t('navigation.pricing')}</Link>
               <div className="flex items-center space-x-3">
                 {/* Language Switcher Dropdown */}
@@ -99,10 +103,48 @@ export function Navigation() {
                     </div>
                   )}
                 </div>
-                <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-                  <span className="text-white text-xs font-medium">
-                    {user?.firstName?.[0] || user?.email?.[0] || 'U'}
-                  </span>
+                
+                {/* User Profile Dropdown */}
+                <div className="relative">
+                  <button
+                    onClick={() => handleDropdownToggle('profile')}
+                    className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center hover:bg-blue-700 transition-colors"
+                  >
+                    <span className="text-white text-xs font-medium">
+                      {user?.firstName?.[0] || user?.email?.[0] || 'U'}
+                    </span>
+                  </button>
+                  
+                  {openDropdown === 'profile' && (
+                    <div className="absolute top-full right-0 mt-1 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50">
+                      <div className="py-1">
+                        <Link 
+                          href="/profile"
+                          className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          onClick={() => setOpenDropdown(null)}
+                        >
+                          <User className="w-4 h-4 mr-2" />
+                          Profile
+                        </Link>
+                        <Link 
+                          href="/notification-settings"
+                          className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          onClick={() => setOpenDropdown(null)}
+                        >
+                          <Bell className="w-4 h-4 mr-2" />
+                          Notification Settings
+                        </Link>
+                        <Link 
+                          href="/account-settings"
+                          className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          onClick={() => setOpenDropdown(null)}
+                        >
+                          <Settings className="w-4 h-4 mr-2" />
+                          Account Settings
+                        </Link>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -110,21 +152,248 @@ export function Navigation() {
         </div>
       </nav>
 
-      {/* Main Navigation - Removed submenu */}
-      {/* <nav className="bg-white border-b border-purple-100" ref={navRef}>
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="flex space-x-8 h-12">
-            <Link 
-              href="/overview" 
-              className="text-sm text-gray-500 hover:text-gray-700 px-1 pt-3 pb-2"
-            >
-              Overview
-            </Link>
-            
-            
+      {/* Secondary Navigation - Only shown on dashboard pages */}
+      {isDashboardPage && (
+        <nav className="bg-white border-b border-purple-100" ref={navRef}>
+          <div className="max-w-7xl mx-auto px-6">
+            <div className="flex space-x-8 h-12">
+              {/* Tools Dropdown */}
+              <div className="relative">
+                <button
+                  onClick={() => handleDropdownToggle('tools')}
+                  className="flex items-center space-x-1 px-1 text-sm text-gray-600 hover:text-blue-600 h-full border-b-2 border-transparent hover:border-blue-500 transition-all"
+                >
+                  <span>{t('navigation.tools')}</span>
+                  <ChevronDown className="h-3 w-3 text-gray-400" />
+                </button>
+                
+                {openDropdown === 'tools' && (
+                  <div className="absolute top-full left-0 mt-1 w-56 bg-white border border-gray-200 rounded-md shadow-lg z-50">
+                    <div className="py-1">
+                      <Link 
+                        href="/dashboard/tools/cost-breakdown"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={() => setOpenDropdown(null)}
+                      >
+                        {t('tools.costBreakdown')}
+                      </Link>
+                      <Link 
+                        href="/dashboard/tools/route-analysis"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={() => setOpenDropdown(null)}
+                      >
+                        {t('tools.routeAnalysis')}
+                      </Link>
+                      <Link 
+                        href="/dashboard/tools/tariff-analysis"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={() => setOpenDropdown(null)}
+                      >
+                        {t('tools.tariffAnalysis')}
+                      </Link>
+                    </div>
+                  </div>
+                )}
+              </div>
+              
+              {/* Regulations Dropdown */}
+              <div className="relative">
+                <button
+                  onClick={() => handleDropdownToggle('regulations')}
+                  className="flex items-center space-x-1 px-1 text-sm text-gray-600 hover:text-blue-600 h-full border-b-2 border-transparent hover:border-blue-500 transition-all"
+                >
+                  <span>{t('navigation.regulations')}</span>
+                  <ChevronDown className="h-3 w-3 text-gray-400" />
+                </button>
+                
+                {openDropdown === 'regulations' && (
+                  <div className="absolute top-full left-0 mt-1 w-56 bg-white border border-gray-200 rounded-md shadow-lg z-50">
+                    <div className="py-1">
+                      <Link 
+                        href="/dashboard/regulations/compliance"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={() => setOpenDropdown(null)}
+                      >
+                        {t('regulations.complianceRequirements')}
+                      </Link>
+                      <Link 
+                        href="/dashboard/regulations/trade"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={() => setOpenDropdown(null)}
+                      >
+                        {t('regulations.tradeRegulations')}
+                      </Link>
+                      <Link 
+                        href="/dashboard/regulations/legal"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={() => setOpenDropdown(null)}
+                      >
+                        {t('regulations.legalFrameworks')}
+                      </Link>
+                      <Link 
+                        href="/dashboard/regulations/special"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={() => setOpenDropdown(null)}
+                      >
+                        {t('regulations.specialPrograms')}
+                      </Link>
+                    </div>
+                  </div>
+                )}
+              </div>
+              
+              {/* Markets Dropdown */}
+              <div className="relative">
+                <button
+                  onClick={() => handleDropdownToggle('markets')}
+                  className="flex items-center space-x-1 px-1 text-sm text-gray-600 hover:text-blue-600 h-full border-b-2 border-transparent hover:border-blue-500 transition-all"
+                >
+                  <span>{t('navigation.markets')}</span>
+                  <ChevronDown className="h-3 w-3 text-gray-400" />
+                </button>
+                
+                {openDropdown === 'markets' && (
+                  <div className="absolute top-full left-0 mt-1 w-56 bg-white border border-gray-200 rounded-md shadow-lg z-50">
+                    <div className="py-1">
+                      <Link 
+                        href="/dashboard/markets/analysis"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={() => setOpenDropdown(null)}
+                      >
+                        {t('markets.marketsAnalysis')}
+                      </Link>
+                      <Link 
+                        href="/dashboard/markets/pricing"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={() => setOpenDropdown(null)}
+                      >
+                        {t('markets.pricingData')}
+                      </Link>
+                      <Link 
+                        href="/dashboard/markets/regional"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={() => setOpenDropdown(null)}
+                      >
+                        {t('markets.regionalTrade')}
+                      </Link>
+                    </div>
+                  </div>
+                )}
+              </div>
+              
+              {/* AI Dropdown */}
+              <div className="relative">
+                <button
+                  onClick={() => handleDropdownToggle('ai')}
+                  className="flex items-center space-x-1 px-1 text-sm text-gray-600 hover:text-blue-600 h-full border-b-2 border-transparent hover:border-blue-500 transition-all"
+                >
+                  <span>{t('navigation.ai')}</span>
+                  <ChevronDown className="h-3 w-3 text-gray-400" />
+                </button>
+                
+                {openDropdown === 'ai' && (
+                  <div className="absolute top-full left-0 mt-1 w-56 bg-white border border-gray-200 rounded-md shadow-lg z-50">
+                    <div className="py-1">
+                      <Link 
+                        href="/dashboard/ai/guidance"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={() => setOpenDropdown(null)}
+                      >
+                        {t('ai.aiGuidance')}
+                      </Link>
+                      <Link 
+                        href="/dashboard/ai/predictions"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={() => setOpenDropdown(null)}
+                      >
+                        {t('ai.aiPredictions')}
+                      </Link>
+                      <Link 
+                        href="/dashboard/ai/visualizations"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={() => setOpenDropdown(null)}
+                      >
+                        {t('ai.visualizations')}
+                      </Link>
+                    </div>
+                  </div>
+                )}
+              </div>
+              
+              {/* Programs Dropdown */}
+              <div className="relative">
+                <button
+                  onClick={() => handleDropdownToggle('programs')}
+                  className="flex items-center space-x-1 px-1 text-sm text-gray-600 hover:text-blue-600 h-full border-b-2 border-transparent hover:border-blue-500 transition-all"
+                >
+                  <span>{t('navigation.programs')}</span>
+                  <ChevronDown className="h-3 w-3 text-gray-400" />
+                </button>
+                
+                {openDropdown === 'programs' && (
+                  <div className="absolute top-full left-0 mt-1 w-56 bg-white border border-gray-200 rounded-md shadow-lg z-50">
+                    <div className="py-1">
+                      <Link 
+                        href="/dashboard/programs/trade-zones"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={() => setOpenDropdown(null)}
+                      >
+                        {t('programs.tradeZones')}
+                      </Link>
+                      <Link 
+                        href="/dashboard/programs/subscribe"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={() => setOpenDropdown(null)}
+                      >
+                        {t('programs.subscribe')}
+                      </Link>
+                    </div>
+                  </div>
+                )}
+              </div>
+              
+              {/* Workspace Dropdown */}
+              <div className="relative">
+                <button
+                  onClick={() => handleDropdownToggle('workspace')}
+                  className="flex items-center space-x-1 px-1 text-sm text-gray-600 hover:text-blue-600 h-full border-b-2 border-transparent hover:border-blue-500 transition-all"
+                >
+                  <span>Workspace</span>
+                  <ChevronDown className="h-3 w-3 text-gray-400" />
+                </button>
+                
+                {openDropdown === 'workspace' && (
+                  <div className="absolute top-full left-0 mt-1 w-56 bg-white border border-gray-200 rounded-md shadow-lg z-50">
+                    <div className="py-1">
+                      <Link 
+                        href="/calculation-history"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={() => setOpenDropdown(null)}
+                      >
+                        Calculation History
+                      </Link>
+                      <Link 
+                        href="/templates"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={() => setOpenDropdown(null)}
+                      >
+                        Templates
+                      </Link>
+                      <Link 
+                        href="/documents"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={() => setOpenDropdown(null)}
+                      >
+                        Documents
+                      </Link>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
-        </div>
-      </nav> */}
+        </nav>
+      )}
     </>
   );
 }

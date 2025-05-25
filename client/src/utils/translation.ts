@@ -25,5 +25,5 @@ export const getCurrentLanguage = () => {
 };
 
 export const getAvailableLanguages = () => {
-  return ['en', 'es'];
+  return ['en', 'es', 'fr'];
 };

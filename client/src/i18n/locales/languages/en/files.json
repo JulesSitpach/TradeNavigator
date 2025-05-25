@@ -1,0 +1,19 @@
+{
+  "downloadConfirmation": "Download Confirmation",
+  "confirmDownloadMessage": "Please confirm you want to download this file",
+  "fileName": "File Name",
+  "fileSize": "File Size",
+  "fileType": "File Type", 
+  "securityStatus": "Security Status",
+  "secure": "Secure",
+  "blocked": "Blocked",
+  "validating": "Validating",
+  "fileTooLarge": "File exceeds maximum size limit (50MB)",
+  "fileTypeNotAllowed": "File type not allowed for security reasons",
+  "downloading": "Downloading...",
+  "downloadSuccess": "Download completed successfully",
+  "downloadError": "Download failed. Please try again.",
+  "confirmDownload": "Confirm Download",
+  "highSecurity": "High Security",
+  "standardSecurity": "Standard"
+}

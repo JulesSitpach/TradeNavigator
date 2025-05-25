@@ -1,0 +1,17 @@
+{
+  "title": "Documents Commerciaux", 
+  "subtitle": "Accès sécurisé à votre documentation de commerce international pour les marchés du Mexique et du Canada",
+  "lastUpdated": "Dernière Mise à Jour",
+  "categories": {
+    "customs": "Douanes",
+    "shipping": "Expédition",
+    "compliance": "Conformité", 
+    "certificate": "Certificat"
+  },
+  "descriptions": {
+    "customs": "Documentation douanière officielle pour le commerce transfrontalier",
+    "shipping": "Manifestes d'expédition et documentation logistique",
+    "compliance": "Documents de conformité réglementaire et directives",
+    "certificate": "Certificats commerciaux et documentation d'origine"
+  }
+}

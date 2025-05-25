@@ -1,0 +1,17 @@
+{
+  "title": "Documentos Comerciales", 
+  "subtitle": "Acceso seguro a tu documentación de comercio internacional para mercados de México y Canadá",
+  "lastUpdated": "Última Actualización",
+  "categories": {
+    "customs": "Aduanas",
+    "shipping": "Envío",
+    "compliance": "Cumplimiento", 
+    "certificate": "Certificado"
+  },
+  "descriptions": {
+    "customs": "Documentación oficial de aduanas para comercio transfronterizo",
+    "shipping": "Manifiestos de envío y documentación logística",
+    "compliance": "Documentos de cumplimiento regulatorio y directrices",
+    "certificate": "Certificados comerciales y documentación de origen"
+  }
+}

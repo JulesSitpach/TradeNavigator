@@ -2,7 +2,8 @@
   "main": {
     "overview": "Overview",
     "features": "Features", 
-    "pricing": "Pricing"
+    "pricing": "Pricing",
+    "dashboard": "Dashboard"
   },
   "mainMenu": {
     "overview": "Overview",
@@ -47,6 +48,7 @@
   "language": {
     "selectLanguage": "Select Language",
     "english": "English",
-    "spanish": "Español"
+    "spanish": "Español",
+    "french": "Français"
   }
 }
