@@ -50,6 +50,7 @@ export function Navigation() {
             <div className="flex items-center space-x-8">
               <Link href="/overview" className="text-sm text-gray-600 hover:text-blue-600 font-medium">{t('navigation.overview')}</Link>
               <Link href="/features" className="text-sm text-gray-600 hover:text-blue-600 font-medium">{t('navigation.features')}</Link>
+              <Link href="/cost-breakdown" className="text-sm text-white bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg font-medium transition-colors">Dashboard</Link>
               <Link href="/pricing" className="text-sm text-gray-600 hover:text-blue-600 font-medium">{t('navigation.pricing')}</Link>
               <div className="flex items-center space-x-3">
                 {/* Language Switcher Dropdown */}
