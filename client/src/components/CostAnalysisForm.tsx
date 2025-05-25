@@ -359,7 +359,7 @@ export function CostAnalysisForm({ onCalculationResult, isCalculating, setIsCalc
                       </FormControl>
                       <SelectContent className="bg-white max-h-80">
                         {/* North America */}
-                        <SelectItem value="" disabled className="font-semibold text-blue-600">
+                        <SelectItem value="north-america-header-origin" disabled className="font-semibold text-blue-600">
                           {t('regions.northAmerica')}
                         </SelectItem>
                         {countriesByRegion.northAmerica.map(code => (
@@ -369,7 +369,7 @@ export function CostAnalysisForm({ onCalculationResult, isCalculating, setIsCalc
                         ))}
                         
                         {/* European Union */}
-                        <SelectItem value="" disabled className="font-semibold text-blue-600 mt-2">
+                        <SelectItem value="europe-header-origin" disabled className="font-semibold text-blue-600 mt-2">
                           {t('regions.europeanUnion')}
                         </SelectItem>
                         {countriesByRegion.europeanUnion.map(code => (
@@ -379,7 +379,7 @@ export function CostAnalysisForm({ onCalculationResult, isCalculating, setIsCalc
                         ))}
                         
                         {/* Central & South America */}
-                        <SelectItem value="" disabled className="font-semibold text-blue-600 mt-2">
+                        <SelectItem value="central-south-america-header-origin" disabled className="font-semibold text-blue-600 mt-2">
                           {t('regions.centralSouthAmerica')}
                         </SelectItem>
                         {countriesByRegion.centralSouthAmerica.map(code => (
@@ -389,7 +389,7 @@ export function CostAnalysisForm({ onCalculationResult, isCalculating, setIsCalc
                         ))}
                         
                         {/* Asia */}
-                        <SelectItem value="" disabled className="font-semibold text-blue-600 mt-2">
+                        <SelectItem value="asia-header-origin" disabled className="font-semibold text-blue-600 mt-2">
                           {t('regions.asia')}
                         </SelectItem>
                         {countriesByRegion.asia.map(code => (
@@ -399,7 +399,7 @@ export function CostAnalysisForm({ onCalculationResult, isCalculating, setIsCalc
                         ))}
                         
                         {/* Oceania */}
-                        <SelectItem value="" disabled className="font-semibold text-blue-600 mt-2">
+                        <SelectItem value="oceania-header-origin" disabled className="font-semibold text-blue-600 mt-2">
                           {t('regions.oceania')}
                         </SelectItem>
                         {countriesByRegion.oceania.map(code => (
@@ -409,7 +409,7 @@ export function CostAnalysisForm({ onCalculationResult, isCalculating, setIsCalc
                         ))}
                         
                         {/* Africa */}
-                        <SelectItem value="" disabled className="font-semibold text-blue-600 mt-2">
+                        <SelectItem value="africa-header-origin" disabled className="font-semibold text-blue-600 mt-2">
                           {t('regions.africa')}
                         </SelectItem>
                         {countriesByRegion.africa.map(code => (
@@ -438,7 +438,7 @@ export function CostAnalysisForm({ onCalculationResult, isCalculating, setIsCalc
                       </FormControl>
                       <SelectContent className="bg-white max-h-80">
                         {/* North America */}
-                        <SelectItem value="" disabled className="font-semibold text-blue-600">
+                        <SelectItem value="north-america-header-dest" disabled className="font-semibold text-blue-600">
                           {t('regions.northAmerica')}
                         </SelectItem>
                         {countriesByRegion.northAmerica.map(code => (
@@ -448,7 +448,7 @@ export function CostAnalysisForm({ onCalculationResult, isCalculating, setIsCalc
                         ))}
                         
                         {/* European Union */}
-                        <SelectItem value="" disabled className="font-semibold text-blue-600 mt-2">
+                        <SelectItem value="europe-header-dest" disabled className="font-semibold text-blue-600 mt-2">
                           {t('regions.europeanUnion')}
                         </SelectItem>
                         {countriesByRegion.europeanUnion.map(code => (
@@ -458,7 +458,7 @@ export function CostAnalysisForm({ onCalculationResult, isCalculating, setIsCalc
                         ))}
                         
                         {/* Central & South America */}
-                        <SelectItem value="" disabled className="font-semibold text-blue-600 mt-2">
+                        <SelectItem value="central-south-america-header-dest" disabled className="font-semibold text-blue-600 mt-2">
                           {t('regions.centralSouthAmerica')}
                         </SelectItem>
                         {countriesByRegion.centralSouthAmerica.map(code => (
@@ -468,7 +468,7 @@ export function CostAnalysisForm({ onCalculationResult, isCalculating, setIsCalc
                         ))}
                         
                         {/* Asia */}
-                        <SelectItem value="" disabled className="font-semibold text-blue-600 mt-2">
+                        <SelectItem value="asia-header-dest" disabled className="font-semibold text-blue-600 mt-2">
                           {t('regions.asia')}
                         </SelectItem>
                         {countriesByRegion.asia.map(code => (
@@ -478,7 +478,7 @@ export function CostAnalysisForm({ onCalculationResult, isCalculating, setIsCalc
                         ))}
                         
                         {/* Oceania */}
-                        <SelectItem value="" disabled className="font-semibold text-blue-600 mt-2">
+                        <SelectItem value="oceania-header-dest" disabled className="font-semibold text-blue-600 mt-2">
                           {t('regions.oceania')}
                         </SelectItem>
                         {countriesByRegion.oceania.map(code => (
@@ -488,7 +488,7 @@ export function CostAnalysisForm({ onCalculationResult, isCalculating, setIsCalc
                         ))}
                         
                         {/* Africa */}
-                        <SelectItem value="" disabled className="font-semibold text-blue-600 mt-2">
+                        <SelectItem value="africa-header-dest" disabled className="font-semibold text-blue-600 mt-2">
                           {t('regions.africa')}
                         </SelectItem>
                         {countriesByRegion.africa.map(code => (
