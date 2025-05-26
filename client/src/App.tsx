@@ -9,6 +9,7 @@ import { ErrorBoundary } from "@/components/error";
 
 // Import pages
 import Home from "@/pages/home";
+import Dashboard from "@/pages/dashboard";
 import Subscribe from "@/pages/subscribe";
 import NotFound from "@/pages/not-found";
 import Overview from "@/pages/overview";
@@ -56,6 +57,7 @@ function Router() {
     <>
     <Route path="/" component={Overview} />
     <Route path="/overview" component={Overview} />
+    <Route path="/dashboard" component={Dashboard} />
     <Route path="/cost-breakdown" component={CostBreakdown} />
     <Route path="/route-analysis" component={RouteAnalysis} />
     <Route path="/tariff-analysis" component={TariffAnalysis} />

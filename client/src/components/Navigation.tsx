@@ -13,7 +13,29 @@ export function Navigation() {
   const navRef = useRef<HTMLDivElement>(null);
   
   // Check if current page is a dashboard page
-  const isDashboardPage = location.startsWith('/dashboard');
+  const dashboardPages = [
+    '/dashboard',
+    '/overview',
+    '/cost-breakdown',
+    '/route-analysis',
+    '/tariff-analysis',
+    '/regulations',
+    '/compliance-requirements',
+    '/trade-regulations',
+    '/legal-frameworks',
+    '/special-programs',
+    '/markets-analysis',
+    '/pricing-data',
+    '/regional-trade',
+    '/ai-guidance',
+    '/ai-predictions',
+    '/visualizations',
+    '/trade-zones',
+    '/templates',
+    '/calculation-history',
+    '/documents'
+  ];
+  const isDashboardPage = location.startsWith('/dashboard') || dashboardPages.some(path => location === path);
 
   const handleDropdownToggle = (menu: string) => {
     setOpenDropdown(openDropdown === menu ? null : menu);
@@ -53,11 +75,7 @@ export function Navigation() {
             <div className="flex items-center space-x-8">
               <Link href="/overview" className="text-sm text-gray-600 hover:text-blue-600 font-medium">{t('navigation.overview')}</Link>
               <Link href="/features" className="text-sm text-gray-600 hover:text-blue-600 font-medium">{t('navigation.features')}</Link>
-<<<<<<< HEAD
               <Link href="/dashboard" className="text-sm bg-blue-600 text-white hover:bg-blue-700 px-3 py-2 rounded-md font-medium">{t('navigation.dashboard')}</Link>
-=======
-              <Link href="/cost-breakdown" className="text-sm text-white bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg font-medium transition-colors">Dashboard</Link>
->>>>>>> 6a105d21a22efd0e7ccdfb285fa0d91d0642b30d
               <Link href="/pricing" className="text-sm text-gray-600 hover:text-blue-600 font-medium">{t('navigation.pricing')}</Link>
               <div className="flex items-center space-x-3">
                 {/* Language Switcher Dropdown */}
