@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
 import NotificationCenter from "@/components/NotificationCenter";
 import { ErrorBoundary } from "@/components/error";
+import { Navigation } from "@/components/Navigation";
 
 // Import pages
 import Home from "@/pages/home";
@@ -82,23 +83,7 @@ function Router() {
   );
 }
 
-// Global header component with notification center
-const Header = () => {
-  return (
-    <header className="bg-white border-b border-gray-200 py-3 px-4">
-      <div className="container mx-auto flex justify-between items-center">
-        <div className="flex items-center space-x-4">
-          <h1 className="text-xl font-bold">TradeNavigator</h1>
-          {/* Navigation would go here */}
-        </div>
-        <div className="flex items-center space-x-4">
-          <NotificationCenter />
-          {/* User profile, language selector, etc. would go here */}
-        </div>
-      </div>
-    </header>
-  );
-};
+
 
 function App() {
   return (
@@ -107,7 +92,7 @@ function App() {
         <TooltipProvider>
           <Toaster />
           <div className="min-h-screen flex flex-col">
-            <Header />
+            <Navigation />
             <main className="flex-grow container mx-auto p-4">
               <Router />
             </main>

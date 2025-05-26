@@ -231,6 +231,48 @@ export const masterTranslations = {
       subtitle: "Your international trade command center"
     },
     
+    dashboard: {
+      title: "TradeNavigator Dashboard",
+      welcome: "Welcome to your trade command center. Access all tools and features from this dashboard."
+    },
+    
+    tools: {
+      title: "Trade Tools",
+      description: "Calculate costs, analyze routes, and understand tariffs",
+      costBreakdown: "Cost Breakdown",
+      routeAnalysis: "Route Analysis",
+      tariffAnalysis: "Tariff Analysis"
+    },
+    
+    regulations: {
+      title: "Regulations",
+      description: "Stay compliant with trade regulations and legal frameworks",
+      complianceRequirements: "Compliance Requirements",
+      tradeRegulations: "Trade Regulations",
+      legalFrameworks: "Legal Frameworks"
+    },
+    
+    markets: {
+      title: "Markets",
+      description: "Analyze markets, pricing data and regional trade patterns",
+      marketsAnalysis: "Markets Analysis",
+      pricingData: "Pricing Data",
+      regionalTrade: "Regional Trade"
+    },
+    
+    ai: {
+      title: "AI Features",
+      description: "Get AI guidance, predictions and visualizations",
+      aiGuidance: "AI Guidance",
+      aiPredictions: "AI Predictions",
+      visualizations: "Visualizations"
+    },
+    
+    programs: {
+      tradeZones: "Trade Zones",
+      subscribe: "Subscribe"
+    },
+    
     documents: {
       title: "Trade Documents",
       subtitle: "Secure access to your international trade documentation for Mexico and Canada markets",
@@ -551,6 +593,48 @@ export const masterTranslations = {
       subtitle: "Tu centro de comando de comercio internacional"
     },
     
+    dashboard: {
+      title: "Panel de TradeNavigator",
+      welcome: "Bienvenido a tu centro de comando comercial. Accede a todas las herramientas y funciones desde este panel."
+    },
+    
+    tools: {
+      title: "Herramientas Comerciales",
+      description: "Calcula costos, analiza rutas y comprende tarifas",
+      costBreakdown: "Desglose de Costos",
+      routeAnalysis: "Análisis de Rutas",
+      tariffAnalysis: "Análisis de Tarifas"
+    },
+    
+    regulations: {
+      title: "Regulaciones",
+      description: "Mantente en cumplimiento con las regulaciones comerciales y marcos legales",
+      complianceRequirements: "Requisitos de Cumplimiento",
+      tradeRegulations: "Regulaciones Comerciales",
+      legalFrameworks: "Marcos Legales"
+    },
+    
+    markets: {
+      title: "Mercados",
+      description: "Analiza mercados, datos de precios y patrones de comercio regional",
+      marketsAnalysis: "Análisis de Mercados",
+      pricingData: "Datos de Precios",
+      regionalTrade: "Comercio Regional"
+    },
+    
+    ai: {
+      title: "Características de IA",
+      description: "Obtén orientación, predicciones y visualizaciones de IA",
+      aiGuidance: "Orientación IA",
+      aiPredictions: "Predicciones IA",
+      visualizations: "Visualizaciones"
+    },
+    
+    programs: {
+      tradeZones: "Zonas Comerciales",
+      subscribe: "Suscribirse"
+    },
+    
     documents: {
       title: "Documentos Comerciales", 
       subtitle: "Acceso seguro a tu documentación de comercio internacional para mercados de México y Canadá",
@@ -869,6 +953,48 @@ export const masterTranslations = {
     overview: {
       title: "Tableau de Bord TradeNavigator",
       subtitle: "Votre centre de commande pour le commerce international"
+    },
+    
+    dashboard: {
+      title: "Tableau de Bord TradeNavigator",
+      welcome: "Bienvenue dans votre centre de commande commercial. Accédez à tous les outils et fonctionnalités depuis ce tableau de bord."
+    },
+    
+    tools: {
+      title: "Outils Commerciaux",
+      description: "Calculez les coûts, analysez les itinéraires et comprenez les tarifs",
+      costBreakdown: "Ventilation des Coûts",
+      routeAnalysis: "Analyse des Itinéraires",
+      tariffAnalysis: "Analyse des Tarifs"
+    },
+    
+    regulations: {
+      title: "Règlementations",
+      description: "Restez en conformité avec les réglementations commerciales et les cadres juridiques",
+      complianceRequirements: "Exigences de Conformité",
+      tradeRegulations: "Réglementations Commerciales",
+      legalFrameworks: "Cadres Juridiques"
+    },
+    
+    markets: {
+      title: "Marchés",
+      description: "Analysez les marchés, les données de prix et les modèles commerciaux régionaux",
+      marketsAnalysis: "Analyse des Marchés",
+      pricingData: "Données de Prix",
+      regionalTrade: "Commerce Régional"
+    },
+    
+    ai: {
+      title: "Fonctionnalités IA",
+      description: "Obtenez des conseils, des prédictions et des visualisations IA",
+      aiGuidance: "Conseils IA",
+      aiPredictions: "Prédictions IA",
+      visualizations: "Visualisations"
+    },
+    
+    programs: {
+      tradeZones: "Zones Commerciales",
+      subscribe: "S'abonner"
     },
     
     documents: {

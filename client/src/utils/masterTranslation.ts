@@ -5,8 +5,10 @@ export function useMasterTranslation() {
   const { t, i18n } = useTranslation();
   
   // Universal translation function that works everywhere
-  const translate = (key: string) => {
-    return t(key);
+  const translate = (key: string, defaultValue?: string) => {
+    const translated = t(key);
+    // If translation returns the key itself (not found), use the default value
+    return translated === key && defaultValue ? defaultValue : translated;
   };
 
   const changeLanguage = (lang: string) => {
