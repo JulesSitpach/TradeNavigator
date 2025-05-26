@@ -247,7 +247,7 @@ export const masterTranslations = {
       BR: "Brazil",
       AR: "Argentina",
       CL: "Chile",
-      CO: "Colombia",
+      CO: "Colombia"
       PE: "Peru",
       EC: "Ecuador",
       VE: "Venezuela",

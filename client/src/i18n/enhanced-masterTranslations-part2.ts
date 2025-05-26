@@ -1,51 +1,64 @@
-    // Product Categories
-    productCategories: {
-      electronics: "Électronique et Technologie",
-      textiles: "Textiles et Vêtements",
-      machinery: "Machines et Équipements",
-      food: "Aliments et Boissons",
-      chemicals: "Produits Chimiques et Pharmaceutiques",
-      automotive: "Pièces Automobiles",
-      home: "Maison et Jardin",
-      sports: "Sports et Loisirs",
-      medical: "Dispositifs Médicaux",
-      raw: "Matières Premières",
-      other: "Autres Produits"
-    },
-    
-    // Country regions
-    regions: {
-      northAmerica: "Amérique du Nord",
-      europeanUnion: "Union Européenne",
-      centralSouthAmerica: "Amérique Centrale et du Sud",
-      asia: "Asie",
-      oceania: "Océanie",
-      africa: "Afrique"
-    },
-    
-    // Countries
+
+export const enhancedMasterTranslationsPart2 = {
+  fr: {
     countries: {
       US: "États-Unis",
-      CA: "Canada",
-      DE: "Allemagne",
+      CA: "Canada", 
+      MX: "Mexique",
+      GB: "Royaume-Uni",
       FR: "France",
+      DE: "Allemagne",
       IT: "Italie",
       ES: "Espagne",
       NL: "Pays-Bas",
       BE: "Belgique",
-      SE: "Suède",
-      PL: "Pologne",
+      CH: "Suisse",
       AT: "Autriche",
+      SE: "Suède",
+      NO: "Norvège",
       DK: "Danemark",
       FI: "Finlande",
+      PL: "Pologne",
+      CZ: "République tchèque",
+      HU: "Hongrie",
+      RO: "Roumanie",
+      BG: "Bulgarie",
+      HR: "Croatie",
+      SI: "Slovénie",
+      SK: "Slovaquie",
+      LT: "Lituanie",
+      LV: "Lettonie",
+      EE: "Estonie",
       IE: "Irlande",
       PT: "Portugal",
       GR: "Grèce",
-      MX: "Mexique",
+      CY: "Chypre",
+      MT: "Malte",
+      LU: "Luxembourg",
+      IS: "Islande",
+      LI: "Liechtenstein",
+      AD: "Andorre",
+      MC: "Monaco",
+      SM: "Saint-Marin",
+      VA: "Vatican",
+      RU: "Russie",
+      UA: "Ukraine",
+      BY: "Biélorussie",
+      MD: "Moldavie",
+      GE: "Géorgie",
+      AM: "Arménie",
+      AZ: "Azerbaïdjan",
+      KZ: "Kazakhstan",
+      UZ: "Ouzbékistan",
+      TM: "Turkménistan",
+      KG: "Kirghizistan",
+      TJ: "Tadjikistan",
       BR: "Brésil",
       AR: "Argentine",
       CL: "Chili",
-      CO: "Colombie",
+      UY: "Uruguay",
+      PY: "Paraguay",
+      BO: "Bolivie",
       PE: "Pérou",
       EC: "Équateur",
       VE: "Venezuela",
@@ -69,10 +82,8 @@
       MA: "Maroc",
       TW: "Taïwan"
     },
-    
-    // Overview page  
-    overview: {
-      title: "Tableau de Bord TradeNavigator",
+    dashboard: {
+      title: "Tableau de Bord",
       subtitle: "Votre centre de commande pour le commerce international",
       recentCalculations: "Calculs Récents",
       savedCalculations: "Calculs Enregistrés",
@@ -83,26 +94,24 @@
       tradeNews: "Actualités Commerciales",
       viewAll: "Voir Tout"
     },
-    
-    // Documents page - secure file management
     documents: {
-      title: "Documents Commerciaux", 
+      title: "Documents Commerciaux",
       subtitle: "Accès sécurisé à votre documentation de commerce international pour les marchés du Mexique et du Canada",
       lastUpdated: "Dernière Mise à Jour",
       categories: {
         customs: "Douanes",
         shipping: "Expédition",
-        compliance: "Conformité", 
+        compliance: "Conformité",
         certificate: "Certificat"
       },
       descriptions: {
-        customs: "Documentation douanière officielle pour le commerce transfrontalier",
+        customs: "Documents douaniers et formulaires de déclaration",
         shipping: "Manifestes d'expédition et documentation logistique",
         compliance: "Documents de conformité réglementaire et directives",
         certificate: "Certificats commerciaux et documentation d'origine"
       },
       actions: {
-        upload: "Téléverser un Document",
+        upload: "Téléverser",
         download: "Télécharger",
         share: "Partager",
         delete: "Supprimer",
@@ -117,7 +126,7 @@
         starred: "Favoris",
         archived: "Archivés"
       },
-      emptyState: {
+      empty: {
         title: "Aucun Document Trouvé",
         description: "Téléversez votre premier document pour commencer"
       }
