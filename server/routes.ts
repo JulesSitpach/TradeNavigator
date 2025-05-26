@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
+import { checkEnvironment } from "./environment";
 import { insertCostCalculationSchema, insertHsCodeSuggestionSchema } from "@shared/schema";
 import { z } from "zod";
 import Stripe from "stripe";
@@ -32,6 +33,11 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
   await setupAuth(app);
+
+  // Environment check route for debugging
+  app.get('/api/environment-check', async (req, res) => {
+    await checkEnvironment(req, res);
+  });
 
   // Auth routes
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {

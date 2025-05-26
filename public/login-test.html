@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TradeNavigator Login Test</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      text-align: center;
+      line-height: 1.6;
+    }
+    .login-button {
+      background-color: #0055ff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      margin: 5px;
+    }
+    .login-button:hover {
+      background-color: #0044cc;
+    }
+    .status {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 4px;
+    }
+    .status-authenticated {
+      background-color: #d4edda;
+      color: #155724;
+    }
+    .status-unauthenticated {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+    .env-status {
+      margin-top: 20px;
+      text-align: left;
+      background-color: #f8f9fa;
+      padding: 15px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 14px;
+    }
+    .env-variable {
+      margin: 5px 0;
+    }
+    .env-variable .name {
+      font-weight: bold;
+      color: #0066cc;
+    }
+    .env-variable .value {
+      color: #28a745;
+    }
+    .env-variable .missing {
+      color: #dc3545;
+    }
+    h1 {
+      color: #343a40;
+    }
+    .nav-links {
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid #e9ecef;
+    }
+    .nav-links a {
+      color: #0055ff;
+      text-decoration: none;
+      margin: 0 10px;
+    }
+    .nav-links a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <h1>TradeNavigator Authentication Test</h1>
+  <p>This page helps verify that your Replit authentication is configured correctly</p>
+  
+  <div id="login-status" class="status">Checking authentication status...</div>
+  
+  <div style="margin-top: 20px;">
+    <button id="login-button" class="login-button">Login with Replit</button>
+    <button id="logout-button" class="login-button" style="background-color: #6c757d; display: none;">Logout</button>
+  </div>
+
+  <div id="env-status" class="env-status">
+    <h3>Environment Status</h3>
+    <p>Checking environment variables...</p>
+  </div>
+
+  <div class="nav-links">
+    <a href="/">Go to Application</a>
+    <a href="/api/auth/user" target="_blank">View Auth API Response</a>
+  </div>
+
+  <script>
+    // Function to check environment status
+    async function checkEnvironment() {
+      const envStatus = document.getElementById('env-status');
+      
+      try {
+        const response = await fetch('/api/environment-check');
+        if (response.ok) {
+          const envData = await response.json();
+          
+          let envHtml = '<h3>Environment Status</h3>';
+          
+          // Check key environment variables
+          const variables = [
+            { name: 'REPLIT_DOMAINS', required: true },
+            { name: 'SESSION_SECRET', required: true },
+            { name: 'DATABASE_URL', required: true },
+            { name: 'REPL_ID', required: true },
+            { name: 'NODE_ENV', required: false }
+          ];
+          
+          variables.forEach(variable => {
+            const value = envData[variable.name];
+            envHtml += `<div class="env-variable">
+              <span class="name">${variable.name}:</span> 
+              <span class="${value ? 'value' : 'missing'}">${value ? (variable.name === 'SESSION_SECRET' ? '✓ Set (hidden for security)' : value) : '✗ Missing'}</span>
+              ${variable.required && !value ? ' <strong>(Required)</strong>' : ''}
+            </div>`;
+          });
+          
+          // Database connection status
+          envHtml += `<div class="env-variable">
+            <span class="name">Database Connection:</span> 
+            <span class="${envData.databaseConnected ? 'value' : 'missing'}">${envData.databaseConnected ? '✓ Connected' : '✗ Failed'}</span>
+          </div>`;
+          
+          // Sessions table status
+          envHtml += `<div class="env-variable">
+            <span class="name">Sessions Table:</span> 
+            <span class="${envData.sessionsTableExists ? 'value' : 'missing'}">${envData.sessionsTableExists ? '✓ Exists' : '✗ Missing'}</span>
+          </div>`;
+          
+          envStatus.innerHTML = envHtml;
+        } else {
+          envStatus.innerHTML = '<h3>Environment Status</h3><p>Could not check environment status. The environment check endpoint is not available.</p>';
+        }
+      } catch (error) {
+        envStatus.innerHTML = `<h3>Environment Status</h3><p>Error checking environment: ${error.message}</p>`;
+      }
+    }
+    
+    document.addEventListener('DOMContentLoaded', async () => {
+      const loginStatus = document.getElementById('login-status');
+      const loginButton = document.getElementById('login-button');
+      const logoutButton = document.getElementById('logout-button');
+      
+      // Check auth status
+      try {
+        const response = await fetch('/api/auth/user', {
+          credentials: 'include'
+        });
+        
+        if (response.ok) {
+          const user = await response.json();
+          loginStatus.innerHTML = `<strong>Authenticated!</strong><br>
+            User: ${user.email || 'Unknown'}<br>
+            Name: ${user.firstName || ''} ${user.lastName || ''}<br>
+            User ID: ${user.id || 'Unknown'}`;
+          loginStatus.className = 'status status-authenticated';
+          loginButton.style.display = 'none';
+          logoutButton.style.display = 'inline-block';
+        } else {
+          const errorText = await response.text();
+          loginStatus.innerHTML = `<strong>Not authenticated</strong><br>
+            Status: ${response.status} ${response.statusText}<br>
+            Response: ${errorText || 'No response body'}`;
+          loginStatus.className = 'status status-unauthenticated';
+          loginButton.style.display = 'inline-block';
+          logoutButton.style.display = 'none';
+        }
+      } catch (error) {
+        loginStatus.innerHTML = `<strong>Error checking authentication</strong><br>${error.message}`;
+        loginStatus.className = 'status status-unauthenticated';
+      }
+      
+      // Check environment
+      await checkEnvironment();
+      
+      // Login button
+      loginButton.addEventListener('click', () => {
+        window.location.href = '/api/login';
+      });
+      
+      // Logout button
+      logoutButton.addEventListener('click', () => {
+        window.location.href = '/api/logout';
+      });
+    });
+  </script>
+</body>
+</html>

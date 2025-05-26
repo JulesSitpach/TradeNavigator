@@ -13,29 +13,8 @@ export function Navigation() {
   const navRef = useRef<HTMLDivElement>(null);
   
   // Check if current page is a dashboard page
-  const dashboardPages = [
-    '/dashboard',
-    '/overview',
-    '/cost-breakdown',
-    '/route-analysis',
-    '/tariff-analysis',
-    '/regulations',
-    '/compliance-requirements',
-    '/trade-regulations',
-    '/legal-frameworks',
-    '/special-programs',
-    '/markets-analysis',
-    '/pricing-data',
-    '/regional-trade',
-    '/ai-guidance',
-    '/ai-predictions',
-    '/visualizations',
-    '/trade-zones',
-    '/templates',
-    '/calculation-history',
-    '/documents'
-  ];
-  const isDashboardPage = location.startsWith('/dashboard') || dashboardPages.some(path => location === path);
+  // Only show secondary nav on the main dashboard page
+  const isDashboardPage = location === '/dashboard';
 
   const handleDropdownToggle = (menu: string) => {
     setOpenDropdown(openDropdown === menu ? null : menu);

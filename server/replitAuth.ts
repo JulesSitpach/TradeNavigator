@@ -1,5 +1,7 @@
 import * as client from "openid-client";
 import { Strategy, type VerifyFunction } from "openid-client/passport";
+import fs from 'fs';
+import path from 'path';
 
 import passport from "passport";
 import session from "express-session";
@@ -8,8 +10,49 @@ import memoize from "memoizee";
 import connectPg from "connect-pg-simple";
 import { storage } from "./storage";
 
+// Check for required environment variables and set defaults for development
 if (!process.env.REPLIT_DOMAINS) {
-  throw new Error("Environment variable REPLIT_DOMAINS not provided");
+  // For development, try to detect Replit domain from environment
+  if (process.env.REPL_SLUG && process.env.REPL_OWNER) {
+    process.env.REPLIT_DOMAINS = `${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.repl.co`;
+    console.log(`Detected REPLIT_DOMAINS: ${process.env.REPLIT_DOMAINS}`);
+  } else {
+    // Fallback for local development
+    process.env.REPLIT_DOMAINS = 'localhost:5000';
+    console.log(`Using fallback REPLIT_DOMAINS: ${process.env.REPLIT_DOMAINS}`);
+  }
+}
+
+if (!process.env.SESSION_SECRET) {
+  // In development, use a static secret
+  if (process.env.NODE_ENV === 'development') {
+    process.env.SESSION_SECRET = 'devSessionSecret123';
+    console.log('Using development SESSION_SECRET');
+  } else {
+    throw new Error('Environment variable SESSION_SECRET not provided');
+  }
+}
+
+// If .env file exists, try to load it
+try {
+  const envPath = path.join(process.cwd(), '.env');
+  if (fs.existsSync(envPath)) {
+    console.log('Loading environment variables from .env file');
+    const envContent = fs.readFileSync(envPath, 'utf8');
+    envContent.split('\n').forEach(line => {
+      const match = line.match(/^([^#][^=]+)=(.*)$/);
+      if (match && match.length === 3) {
+        const key = match[1].trim();
+        const value = match[2].trim();
+        if (!process.env[key]) {
+          process.env[key] = value;
+          console.log(`Loaded ${key} from .env file`);
+        }
+      }
+    });
+  }
+} catch (error) {
+  console.warn('Error loading .env file:', error.message);
 }
 
 const getOidcConfig = memoize(
@@ -24,13 +67,41 @@ const getOidcConfig = memoize(
 
 export function getSession() {
   const sessionTtl = 7 * 24 * 60 * 60 * 1000; // 1 week
-  const pgStore = connectPg(session);
-  const sessionStore = new pgStore({
-    conString: process.env.DATABASE_URL,
-    createTableIfMissing: false,
-    ttl: sessionTtl,
-    tableName: "sessions",
-  });
+  
+  // Check if we have a DATABASE_URL for PostgreSQL session storage
+  if (process.env.DATABASE_URL) {
+    console.log('Using PostgreSQL session storage');
+    const pgStore = connectPg(session);
+    try {
+      const sessionStore = new pgStore({
+        conString: process.env.DATABASE_URL,
+        createTableIfMissing: true, // Auto-create the sessions table if needed
+        ttl: sessionTtl,
+        tableName: "sessions",
+      });
+      return session({
+        secret: process.env.SESSION_SECRET!,
+        store: sessionStore,
+        resave: false,
+        saveUninitialized: false,
+        cookie: {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          maxAge: sessionTtl,
+        },
+      });
+    } catch (error) {
+      console.error('Error setting up PostgreSQL session store:', error);
+      console.warn('Falling back to memory session store');
+      // Fall back to memory store
+    }
+  }
+  
+  // Fallback to memory store for development or if PostgreSQL fails
+  console.log('Using memory session storage');
+  const MemoryStore = session.MemoryStore;
+  const sessionStore = new MemoryStore();
+  
   return session({
     secret: process.env.SESSION_SECRET!,
     store: sessionStore,
@@ -38,7 +109,7 @@ export function getSession() {
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
-      secure: true,
+      secure: process.env.NODE_ENV === 'production',
       maxAge: sessionTtl,
     },
   });
@@ -66,11 +137,36 @@ async function upsertUser(
   });
 }
 
+// Utility function to create a mock user for development
+function createMockUser() {
+  return {
+    claims: {
+      sub: 'mock-user-1234',
+      email: 'dev@example.com',
+      first_name: 'Development',
+      last_name: 'User',
+      profile_image_url: 'https://avatars.githubusercontent.com/u/0',
+      exp: Math.floor(Date.now() / 1000) + 3600 // Expires in 1 hour
+    },
+    access_token: 'mock-access-token',
+    refresh_token: 'mock-refresh-token',
+    expires_at: Math.floor(Date.now() / 1000) + 3600
+  };
+}
+
 export async function setupAuth(app: Express) {
   app.set("trust proxy", 1);
-  app.use(getSession());
-  app.use(passport.initialize());
-  app.use(passport.session());
+  
+  // Setup session middleware
+  try {
+    app.use(getSession());
+    app.use(passport.initialize());
+    app.use(passport.session());
+    console.log('Authentication middleware initialized successfully');
+  } catch (error) {
+    console.error('Failed to initialize authentication middleware:', error);
+    throw error;
+  }
 
   const config = await getOidcConfig();
 
@@ -130,12 +226,20 @@ export async function setupAuth(app: Express) {
 export const isAuthenticated: RequestHandler = async (req, res, next) => {
   const user = req.user as any;
 
-  if (!req.isAuthenticated() || !user.expires_at) {
+  // In development mode, allow bypassing authentication if there's a DEV_BYPASS_AUTH env var
+  if (process.env.NODE_ENV === 'development' && process.env.DEV_BYPASS_AUTH === 'true') {
+    console.log('⚠️ Warning: Bypassing authentication in development mode!');
+    return next();
+  }
+
+  if (!req.isAuthenticated() || !user?.expires_at) {
+    console.log('Unauthorized access attempt:', req.path);
     return res.status(401).json({ message: "Unauthorized" });
   }
 
   const now = Math.floor(Date.now() / 1000);
   if (now <= user.expires_at) {
+    console.log('User authenticated successfully:', user.claims?.sub);
     return next();
   }
 
@@ -145,11 +249,14 @@ export const isAuthenticated: RequestHandler = async (req, res, next) => {
   }
 
   try {
+    console.log('Attempting to refresh token for user:', user.claims?.sub);
     const config = await getOidcConfig();
     const tokenResponse = await client.refreshTokenGrant(config, refreshToken);
     updateUserSession(user, tokenResponse);
+    console.log('Token refreshed successfully');
     return next();
   } catch (error) {
+    console.error('Token refresh failed:', error);
     return res.redirect("/api/login");
   }
 };
