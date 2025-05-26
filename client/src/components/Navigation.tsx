@@ -193,21 +193,21 @@ export function Navigation() {
                   <div className="absolute top-full left-0 mt-1 w-56 bg-white border border-gray-200 rounded-md shadow-lg z-50">
                     <div className="py-1">
                       <Link 
-                        href="/dashboard/tools/cost-breakdown"
+                        href="/cost-breakdown"
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         onClick={() => setOpenDropdown(null)}
                       >
                         {t('tools.costBreakdown')}
                       </Link>
                       <Link 
-                        href="/dashboard/tools/route-analysis"
+                        href="/route-analysis"
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         onClick={() => setOpenDropdown(null)}
                       >
                         {t('tools.routeAnalysis')}
                       </Link>
                       <Link 
-                        href="/dashboard/tools/tariff-analysis"
+                        href="/tariff-analysis"
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         onClick={() => setOpenDropdown(null)}
                       >
@@ -232,28 +232,28 @@ export function Navigation() {
                   <div className="absolute top-full left-0 mt-1 w-56 bg-white border border-gray-200 rounded-md shadow-lg z-50">
                     <div className="py-1">
                       <Link 
-                        href="/dashboard/regulations/compliance"
+                        href="/compliance-requirements"
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         onClick={() => setOpenDropdown(null)}
                       >
                         {t('regulations.complianceRequirements')}
                       </Link>
                       <Link 
-                        href="/dashboard/regulations/trade"
+                        href="/trade-regulations"
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         onClick={() => setOpenDropdown(null)}
                       >
                         {t('regulations.tradeRegulations')}
                       </Link>
                       <Link 
-                        href="/dashboard/regulations/legal"
+                        href="/legal-frameworks"
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         onClick={() => setOpenDropdown(null)}
                       >
                         {t('regulations.legalFrameworks')}
                       </Link>
                       <Link 
-                        href="/dashboard/regulations/special"
+                        href="/special-programs"
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         onClick={() => setOpenDropdown(null)}
                       >
@@ -278,21 +278,21 @@ export function Navigation() {
                   <div className="absolute top-full left-0 mt-1 w-56 bg-white border border-gray-200 rounded-md shadow-lg z-50">
                     <div className="py-1">
                       <Link 
-                        href="/dashboard/markets/analysis"
+                        href="/markets-analysis"
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         onClick={() => setOpenDropdown(null)}
                       >
                         {t('markets.marketsAnalysis')}
                       </Link>
                       <Link 
-                        href="/dashboard/markets/pricing"
+                        href="/pricing-data"
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         onClick={() => setOpenDropdown(null)}
                       >
                         {t('markets.pricingData')}
                       </Link>
                       <Link 
-                        href="/dashboard/markets/regional"
+                        href="/regional-trade"
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         onClick={() => setOpenDropdown(null)}
                       >
@@ -317,21 +317,21 @@ export function Navigation() {
                   <div className="absolute top-full left-0 mt-1 w-56 bg-white border border-gray-200 rounded-md shadow-lg z-50">
                     <div className="py-1">
                       <Link 
-                        href="/dashboard/ai/guidance"
+                        href="/ai-guidance"
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         onClick={() => setOpenDropdown(null)}
                       >
                         {t('ai.aiGuidance')}
                       </Link>
                       <Link 
-                        href="/dashboard/ai/predictions"
+                        href="/ai-predictions"
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         onClick={() => setOpenDropdown(null)}
                       >
                         {t('ai.aiPredictions')}
                       </Link>
                       <Link 
-                        href="/dashboard/ai/visualizations"
+                        href="/visualizations"
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         onClick={() => setOpenDropdown(null)}
                       >
@@ -356,14 +356,14 @@ export function Navigation() {
                   <div className="absolute top-full left-0 mt-1 w-56 bg-white border border-gray-200 rounded-md shadow-lg z-50">
                     <div className="py-1">
                       <Link 
-                        href="/dashboard/programs/trade-zones"
+                        href="/trade-zones"
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         onClick={() => setOpenDropdown(null)}
                       >
                         {t('programs.tradeZones')}
                       </Link>
                       <Link 
-                        href="/dashboard/programs/subscribe"
+                        href="/subscribe"
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         onClick={() => setOpenDropdown(null)}
                       >
