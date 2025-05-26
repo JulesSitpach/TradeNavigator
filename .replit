@@ -22,7 +22,7 @@ externalPort = 3000
 NODE_ENV = "development"
 
 [workflows]
-runButton = "Development Server"
+runButton = "Setup Replit Auth"
 
 [[workflows.workflow]]
 name = "Development Server"
@@ -62,3 +62,21 @@ mode = "sequential"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "npm run db:push"
+
+[[workflows.workflow]]
+name = "Development with Auth Bypass"
+author = 42586537
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "bash start-dev-no-auth.sh"
+
+[[workflows.workflow]]
+name = "Setup Replit Auth"
+author = 42586537
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "bash setup-replit-auth.sh"
