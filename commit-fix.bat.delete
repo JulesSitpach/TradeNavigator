@@ -1,0 +1,30 @@
+@echo off
+REM TradeNavigator Git Commit Script for Windows
+REM Usage: commit-fix.bat "Your commit message"
+
+REM Check if commit message is provided
+if "%~1"=="" (
+    echo Error: Please provide a commit message
+    echo Usage: commit-fix.bat "Your commit message"
+    exit /b 1
+)
+
+echo Starting commit process...
+
+REM Add all changes
+echo Adding all changes...
+git add .
+
+REM Show status
+echo Current git status:
+git status --short
+
+REM Commit with message
+echo Committing with message: %~1
+git commit -m "%~1"
+
+REM Push to GitHub
+echo Pushing to GitHub...
+git push origin main
+
+echo Successfully committed and pushed to GitHub!

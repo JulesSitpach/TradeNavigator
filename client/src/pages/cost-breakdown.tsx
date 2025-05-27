@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { CostAnalysisForm } from "@/components/CostAnalysisForm";
 import { ResultsSidebar } from "@/components/ResultsSidebar";
+import { useMasterTranslation } from "@/utils/masterTranslation";
 
 export interface CalculationResult {
   id?: number;
@@ -16,6 +17,7 @@ export interface CalculationResult {
 }
 
 export default function CostBreakdown() {
+  const { t } = useMasterTranslation();
   const [calculationResult, setCalculationResult] = useState<CalculationResult | null>(null);
   const [isCalculating, setIsCalculating] = useState(false);
 
@@ -24,9 +26,9 @@ export default function CostBreakdown() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Page Header */}
         <div className="mb-8">
-          <h2 className="text-3xl font-bold text-gray-900">Cost Breakdown Analysis</h2>
+          <h2 className="text-3xl font-bold text-gray-900">{t('tools.costBreakdown', 'Cost Breakdown Analysis')}</h2>
           <p className="mt-2 text-gray-600">
-            Get comprehensive cost calculations for your international trade shipments
+            {t('tools.costBreakdownDescription', 'Get comprehensive cost calculations for your international trade shipments')}
           </p>
         </div>
 
@@ -55,9 +57,9 @@ export default function CostBreakdown() {
             <div className="flex items-center">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mr-4"></div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">Calculating Costs</h3>
+                <h3 className="text-lg font-semibold text-gray-900">{t('common.calculating', 'Calculating Costs')}</h3>
                 <p className="text-sm text-gray-600">
-                  Getting the best rates and analyzing trade agreements...
+                  {t('common.calculatingMessage', 'Getting the best rates and analyzing trade agreements...')}
                 </p>
               </div>
             </div>

@@ -2,19 +2,21 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { TrendingUp, Globe, BarChart3, Target, DollarSign, MapPin } from "lucide-react";
+import { useMasterTranslation } from "@/utils/masterTranslation";
 
 export default function MarketsAnalysis() {
+  const { t } = useMasterTranslation();
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Markets Analysis</h1>
-          <p className="text-gray-600 mt-1">AI-powered insights into global trade markets and opportunities</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t('markets.marketsAnalysis')}</h1>
+          <p className="text-gray-600 mt-1">{t('markets.description')}</p>
         </div>
         <Button className="bg-primary hover:bg-primary/90">
           <Target className="h-4 w-4 mr-2" />
-          Generate Market Report
+          {t('markets.generateReport', 'Generate Market Report')}
         </Button>
       </div>
 
@@ -24,12 +26,12 @@ export default function MarketsAnalysis() {
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-blue-800">
               <TrendingUp className="h-5 w-5" />
-              Growing Markets
+              {t('markets.growingMarkets')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-blue-700 mb-1">7</div>
-            <p className="text-sm text-blue-600">High-growth opportunities identified</p>
+            <p className="text-sm text-blue-600">{t('markets.highGrowthOpportunities')}</p>
           </CardContent>
         </Card>
 
@@ -37,12 +39,12 @@ export default function MarketsAnalysis() {
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-green-800">
               <Globe className="h-5 w-5" />
-              Active Markets
+              {t('markets.activeMarkets')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-green-700 mb-1">24</div>
-            <p className="text-sm text-green-600">Countries with active trade</p>
+            <p className="text-sm text-green-600">{t('markets.countriesWithActiveTrade')}</p>
           </CardContent>
         </Card>
 
@@ -50,12 +52,12 @@ export default function MarketsAnalysis() {
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-purple-800">
               <BarChart3 className="h-5 w-5" />
-              Market Value
+              {t('markets.marketValue')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-purple-700 mb-1">$2.4M</div>
-            <p className="text-sm text-purple-600">Total addressable market</p>
+            <p className="text-sm text-purple-600">{t('markets.totalAddressableMarket')}</p>
           </CardContent>
         </Card>
       </div>
@@ -65,16 +67,16 @@ export default function MarketsAnalysis() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Target className="h-5 w-5" />
-            Market Opportunities
+            {t('markets.marketOpportunities')}
           </CardTitle>
-          <CardDescription>AI-identified growth opportunities based on trade data</CardDescription>
+          <CardDescription>{t('markets.marketOpportunitiesDesc')}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             <div className="flex items-start justify-between p-4 border rounded-lg bg-green-50 border-green-200">
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-2">
-                  <Badge className="bg-green-600">High Potential</Badge>
+                  <Badge className="bg-green-600">{t('markets.highPotential')}</Badge>
                   <span className="text-sm text-gray-500">Electronics • Southeast Asia</span>
                 </div>
                 <h4 className="font-medium text-gray-900 mb-1">
@@ -84,19 +86,19 @@ export default function MarketsAnalysis() {
                   Growing demand for consumer electronics with 35% YoY import growth. New FTA benefits reduce tariffs by 8%.
                 </p>
                 <div className="flex items-center gap-4 text-sm">
-                  <span className="text-green-600 font-medium">Market Size: $450M</span>
-                  <span className="text-green-600 font-medium">Growth Rate: +35%</span>
+                  <span className="text-green-600 font-medium">{t('markets.marketSize')}: $450M</span>
+                  <span className="text-green-600 font-medium">{t('markets.growthRate')}: +35%</span>
                 </div>
               </div>
               <Button variant="outline" size="sm">
-                Explore Market
+                {t('markets.exploreMarket')}
               </Button>
             </div>
 
             <div className="flex items-start justify-between p-4 border rounded-lg bg-blue-50 border-blue-200">
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-2">
-                  <Badge variant="secondary" className="bg-blue-600 text-white">Medium Potential</Badge>
+                  <Badge variant="secondary" className="bg-blue-600 text-white">{t('markets.mediumPotential')}</Badge>
                   <span className="text-sm text-gray-500">Textiles • Latin America</span>
                 </div>
                 <h4 className="font-medium text-gray-900 mb-1">
@@ -106,19 +108,19 @@ export default function MarketsAnalysis() {
                   USMCA benefits for textile imports. Strong manufacturing base with competitive labor costs.
                 </p>
                 <div className="flex items-center gap-4 text-sm">
-                  <span className="text-blue-600 font-medium">Market Size: $280M</span>
-                  <span className="text-blue-600 font-medium">Growth Rate: +18%</span>
+                  <span className="text-blue-600 font-medium">{t('markets.marketSize')}: $280M</span>
+                  <span className="text-blue-600 font-medium">{t('markets.growthRate')}: +18%</span>
                 </div>
               </div>
               <Button variant="outline" size="sm">
-                Explore Market
+                {t('markets.exploreMarket')}
               </Button>
             </div>
 
             <div className="flex items-start justify-between p-4 border rounded-lg">
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-2">
-                  <Badge variant="outline">Emerging</Badge>
+                  <Badge variant="outline">{t('markets.emerging')}</Badge>
                   <span className="text-sm text-gray-500">Industrial Equipment • Africa</span>
                 </div>
                 <h4 className="font-medium text-gray-900 mb-1">
@@ -128,12 +130,12 @@ export default function MarketsAnalysis() {
                   Infrastructure development driving demand for industrial machinery and equipment.
                 </p>
                 <div className="flex items-center gap-4 text-sm">
-                  <span className="text-gray-600 font-medium">Market Size: $120M</span>
-                  <span className="text-gray-600 font-medium">Growth Rate: +22%</span>
+                  <span className="text-gray-600 font-medium">{t('markets.marketSize')}: $120M</span>
+                  <span className="text-gray-600 font-medium">{t('markets.growthRate')}: +22%</span>
                 </div>
               </div>
               <Button variant="outline" size="sm">
-                Explore Market
+                {t('markets.exploreMarket')}
               </Button>
             </div>
           </div>
@@ -144,15 +146,15 @@ export default function MarketsAnalysis() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Regional Trade Volume</CardTitle>
-            <CardDescription>Your trade activity by region</CardDescription>
+            <CardTitle>{t('markets.regionalTradeVolume')}</CardTitle>
+            <CardDescription>{t('markets.yourTradeActivity')}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-4 h-4 bg-blue-500 rounded"></div>
-                  <span className="text-sm font-medium">North America</span>
+                  <span className="text-sm font-medium">{t('regions.northAmerica')}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-gray-600">$847K</span>
@@ -163,7 +165,7 @@ export default function MarketsAnalysis() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-4 h-4 bg-green-500 rounded"></div>
-                  <span className="text-sm font-medium">Asia Pacific</span>
+                  <span className="text-sm font-medium">{t('regions.asiaPacific')}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-gray-600">$623K</span>
@@ -174,7 +176,7 @@ export default function MarketsAnalysis() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-4 h-4 bg-orange-500 rounded"></div>
-                  <span className="text-sm font-medium">Europe</span>
+                  <span className="text-sm font-medium">{t('regions.europe')}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-gray-600">$445K</span>
@@ -185,7 +187,7 @@ export default function MarketsAnalysis() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-4 h-4 bg-purple-500 rounded"></div>
-                  <span className="text-sm font-medium">Latin America</span>
+                  <span className="text-sm font-medium">{t('regions.latinAmerica')}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-gray-600">$102K</span>
@@ -198,8 +200,8 @@ export default function MarketsAnalysis() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Market Trends</CardTitle>
-            <CardDescription>Key insights from market analysis</CardDescription>
+            <CardTitle>{t('markets.marketTrends')}</CardTitle>
+            <CardDescription>{t('markets.keyInsights')}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">

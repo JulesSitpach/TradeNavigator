@@ -161,7 +161,7 @@ export function CostAnalysisForm({ onCalculationResult, isCalculating, setIsCalc
           <CardContent className="p-6">
             <div className="flex items-center mb-4">
               <Package className="text-primary mr-3" />
-              <h3 className="text-lg font-semibold text-gray-900">Product Information</h3>
+              <h3 className="text-lg font-semibold text-gray-900">{t('form.productInfo', 'Product Information')}</h3>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -170,11 +170,11 @@ export function CostAnalysisForm({ onCalculationResult, isCalculating, setIsCalc
                 name="productCategory"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Product Category</FormLabel>
+                    <FormLabel>{t('form.productCategory', 'Product Category')}</FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger className="bg-white">
-                          <SelectValue placeholder="Select Category" />
+                          <SelectValue placeholder={t('form.selectCategory', 'Select Category')} />
                         </SelectTrigger>
                       </FormControl>
                         <SelectContent className="bg-white">
@@ -201,7 +201,7 @@ export function CostAnalysisForm({ onCalculationResult, isCalculating, setIsCalc
                 name="productName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Product Name</FormLabel>
+                    <FormLabel>{t('form.productName', 'Product Name')}</FormLabel>
                     <FormControl>
                       <Input placeholder="e.g., Wireless Bluetooth Headphones" {...field} />
                     </FormControl>
@@ -216,7 +216,7 @@ export function CostAnalysisForm({ onCalculationResult, isCalculating, setIsCalc
               name="productDescription"
               render={({ field }) => (
                 <FormItem className="mt-4">
-                  <FormLabel>Product Description</FormLabel>
+                  <FormLabel>{t('form.productDescription', 'Product Description')}</FormLabel>
                   <FormControl>
                     <Textarea 
                       rows={3}
@@ -235,7 +235,7 @@ export function CostAnalysisForm({ onCalculationResult, isCalculating, setIsCalc
                 name="hsCode"
                 render={({ field }) => (
                   <FormItem className="flex-1">
-                    <FormLabel>HS Code</FormLabel>
+                    <FormLabel>{t('form.hsCode', 'HS Code')}</FormLabel>
                     <FormControl>
                       <Input placeholder="e.g., 8518.30.20" {...field} />
                     </FormControl>
@@ -251,7 +251,7 @@ export function CostAnalysisForm({ onCalculationResult, isCalculating, setIsCalc
                 className="bg-accent hover:bg-green-600 text-white"
               >
                 <Lightbulb className="mr-2 h-4 w-4" />
-                {loadingAI ? "Getting AI Suggestions..." : "Get AI HS Code Suggestions"}
+                {loadingAI ? t('form.aiHsCode.loading', 'Getting AI Suggestions...') : t('form.aiHsCode.button', 'Get AI HS Code Suggestions')}
               </Button>
             </div>
 
@@ -262,7 +262,7 @@ export function CostAnalysisForm({ onCalculationResult, isCalculating, setIsCalc
                   <Lightbulb className="text-blue-500 mt-1 mr-3" />
                   <div className="flex-1">
                     <h4 className="text-sm font-medium text-blue-900 mb-2">
-                      AI-Powered HS Code Suggestions
+                      {t('form.aiHsCode.title', 'AI-Powered HS Code Suggestions')}
                     </h4>
                     <div className="space-y-2">
                       {hsCodeSuggestions.map((suggestion, index) => (
@@ -280,7 +280,7 @@ export function CostAnalysisForm({ onCalculationResult, isCalculating, setIsCalc
                             </p>
                           </div>
                           <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                            {suggestion.confidence}% match
+                            {suggestion.confidence}% {t('form.aiHsCode.match', 'match')}
                           </span>
                         </div>
                       ))}
@@ -297,7 +297,7 @@ export function CostAnalysisForm({ onCalculationResult, isCalculating, setIsCalc
           <CardContent className="p-6">
             <div className="flex items-center mb-4">
               <Package className="text-primary mr-3" />
-              <h3 className="text-lg font-semibold text-gray-900">Shipment Details</h3>
+              <h3 className="text-lg font-semibold text-gray-900">{t('form.shipmentDetails', 'Shipment Details')}</h3>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -306,7 +306,7 @@ export function CostAnalysisForm({ onCalculationResult, isCalculating, setIsCalc
                 name="quantity"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Quantity</FormLabel>
+                    <FormLabel>{t('form.quantity', 'Quantity')}</FormLabel>
                     <FormControl>
                       <Input type="number" placeholder="100" {...field} />
                     </FormControl>
@@ -320,7 +320,7 @@ export function CostAnalysisForm({ onCalculationResult, isCalculating, setIsCalc
                 name="unitValue"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Unit Value (USD)</FormLabel>
+                    <FormLabel>{t('form.unitValue', 'Unit Value (USD)')}</FormLabel>
                     <FormControl>
                       <Input type="number" step="0.01" placeholder="25.00" {...field} />
                     </FormControl>
@@ -334,7 +334,7 @@ export function CostAnalysisForm({ onCalculationResult, isCalculating, setIsCalc
                 name="weight"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Weight (kg)</FormLabel>
+                    <FormLabel>{t('form.weight', 'Weight (kg)')}</FormLabel>
                     <FormControl>
                       <Input type="number" step="0.1" placeholder="2.5" {...field} />
                     </FormControl>
@@ -350,11 +350,11 @@ export function CostAnalysisForm({ onCalculationResult, isCalculating, setIsCalc
                 name="originCountry"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Origin Country</FormLabel>
+                    <FormLabel>{t('form.originCountry', 'Origin Country')}</FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger className="bg-white">
-                          <SelectValue placeholder="Select Country" />
+                          <SelectValue placeholder={t('form.selectCountry', 'Select Country')} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent className="bg-white max-h-80">
@@ -429,7 +429,7 @@ export function CostAnalysisForm({ onCalculationResult, isCalculating, setIsCalc
                 name="destinationCountry"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Destination Country</FormLabel>
+                    <FormLabel>{t('form.destinationCountry', 'Destination Country')}</FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger className="bg-white">
@@ -511,7 +511,7 @@ export function CostAnalysisForm({ onCalculationResult, isCalculating, setIsCalc
           <CardContent className="p-6">
             <div className="flex items-center mb-4">
               <Truck className="text-primary mr-3" />
-              <h3 className="text-lg font-semibold text-gray-900">Shipping & Trade Terms</h3>
+              <h3 className="text-lg font-semibold text-gray-900">{t('form.shippingTerms', 'Shipping & Trade Terms')}</h3>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -520,21 +520,21 @@ export function CostAnalysisForm({ onCalculationResult, isCalculating, setIsCalc
                 name="shippingMethod"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Shipping Method</FormLabel>
+                    <FormLabel>{t('form.shippingMethod', 'Shipping Method')}</FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger className="bg-white">
-                          <SelectValue placeholder="Select Method" />
+                          <SelectValue placeholder={t('form.selectMethod', 'Select Method')} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent className="bg-white">
-                        <SelectItem value="ocean-standard">🚢 Ocean Freight (Standard)</SelectItem>
-                        <SelectItem value="ocean-express">🚢 Ocean Freight (Express)</SelectItem>
-                        <SelectItem value="air-standard">✈️ Air Freight (Standard)</SelectItem>
-                        <SelectItem value="air-express">✈️ Air Freight (Express)</SelectItem>
-                        <SelectItem value="courier">📦 Courier (DHL/FedEx/UPS)</SelectItem>
-                        <SelectItem value="road">🚛 Road Transport</SelectItem>
-                        <SelectItem value="rail">🚂 Rail Transport</SelectItem>
+                        <SelectItem value="ocean-standard">{t('shipping.methods.oceanStandard', '🚢 Ocean Freight (Standard)')}</SelectItem>
+                        <SelectItem value="ocean-express">{t('shipping.methods.oceanExpress', '🚢 Ocean Freight (Express)')}</SelectItem>
+                        <SelectItem value="air-standard">{t('shipping.methods.airStandard', '✈️ Air Freight (Standard)')}</SelectItem>
+                        <SelectItem value="air-express">{t('shipping.methods.airExpress', '✈️ Air Freight (Express)')}</SelectItem>
+                        <SelectItem value="courier">{t('shipping.methods.courier', '📦 Courier (DHL/FedEx/UPS)')}</SelectItem>
+                        <SelectItem value="road">{t('shipping.methods.road', '🚛 Road Transport')}</SelectItem>
+                        <SelectItem value="rail">{t('shipping.methods.rail', '🚂 Rail Transport')}</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -547,11 +547,11 @@ export function CostAnalysisForm({ onCalculationResult, isCalculating, setIsCalc
                 name="incoterms"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Incoterms</FormLabel>
+                    <FormLabel>{t('form.incoterms', 'Incoterms')}</FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger className="bg-white">
-                          <SelectValue placeholder="Select Terms" />
+                          <SelectValue placeholder={t('form.selectTerms', 'Select Terms')} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent className="bg-white">

@@ -23,7 +23,18 @@ export const masterTranslations = {
       download: "Download",
       cancel: "Cancel",
       save: "Save",
-      submit: "Submit"
+      submit: "Submit",
+      calculating: "Calculating Costs",
+      calculatingMessage: "Getting the best rates and analyzing trade agreements...",
+      loading: "Loading...",
+      error: "Error",
+      success: "Success",
+      close: "Close",
+      back: "Back",
+      next: "Next",
+      finish: "Finish",
+      yes: "Yes",
+      no: "No"
     },
     
     files: {
@@ -177,7 +188,10 @@ export const masterTranslations = {
       centralSouthAmerica: "Central & South America",
       asia: "Asia",
       oceania: "Oceania",
-      africa: "Africa"
+      africa: "Africa",
+      europe: "Europe",
+      latinAmerica: "Latin America",
+      asiaPacific: "Asia Pacific"
     },
     
     countries: {
@@ -240,8 +254,11 @@ export const masterTranslations = {
       title: "Trade Tools",
       description: "Calculate costs, analyze routes, and understand tariffs",
       costBreakdown: "Cost Breakdown",
+      costBreakdownDescription: "Get comprehensive cost calculations for your international trade shipments",
       routeAnalysis: "Route Analysis",
-      tariffAnalysis: "Tariff Analysis"
+      routeAnalysisDescription: "Optimize shipping routes and transportation modes",
+      tariffAnalysis: "Tariff Analysis",
+      tariffAnalysisDescription: "Detailed HS code classification and duty calculations"
     },
     
     regulations: {
@@ -254,10 +271,29 @@ export const masterTranslations = {
     
     markets: {
       title: "Markets",
-      description: "Analyze markets, pricing data and regional trade patterns",
+      description: "AI-powered insights into global trade markets and opportunities",
       marketsAnalysis: "Markets Analysis",
       pricingData: "Pricing Data",
-      regionalTrade: "Regional Trade"
+      regionalTrade: "Regional Trade",
+      generateReport: "Generate Market Report",
+      growingMarkets: "Growing Markets",
+      highGrowthOpportunities: "High-growth opportunities identified",
+      activeMarkets: "Active Markets",
+      countriesWithActiveTrade: "Countries with active trade",
+      marketValue: "Market Value",
+      totalAddressableMarket: "Total addressable market",
+      marketOpportunities: "Market Opportunities",
+      marketOpportunitiesDesc: "AI-identified growth opportunities based on trade data",
+      highPotential: "High Potential",
+      mediumPotential: "Medium Potential",
+      emerging: "Emerging",
+      marketSize: "Market Size",
+      growthRate: "Growth Rate",
+      exploreMarket: "Explore Market",
+      regionalTradeVolume: "Regional Trade Volume",
+      yourTradeActivity: "Your trade activity by region",
+      marketTrends: "Market Trends",
+      keyInsights: "Key insights from market analysis"
     },
     
     ai: {
@@ -385,7 +421,18 @@ export const masterTranslations = {
       download: "Descargar",
       cancel: "Cancelar",
       save: "Guardar",
-      submit: "Enviar"
+      submit: "Enviar",
+      calculating: "Calculando Costos",
+      calculatingMessage: "Obteniendo las mejores tarifas y analizando acuerdos comerciales...",
+      loading: "Cargando...",
+      error: "Error",
+      success: "Éxito",
+      close: "Cerrar",
+      back: "Atrás",
+      next: "Siguiente",
+      finish: "Finalizar",
+      yes: "Sí",
+      no: "No"
     },
     
     files: {
@@ -539,7 +586,10 @@ export const masterTranslations = {
       centralSouthAmerica: "América Central y del Sur",
       asia: "Asia",
       oceania: "Oceanía",
-      africa: "África"
+      africa: "África",
+      europe: "Europa",
+      latinAmerica: "América Latina",
+      asiaPacific: "Asia Pacífico"
     },
     
     countries: {
@@ -602,8 +652,11 @@ export const masterTranslations = {
       title: "Herramientas Comerciales",
       description: "Calcula costos, analiza rutas y comprende tarifas",
       costBreakdown: "Desglose de Costos",
+      costBreakdownDescription: "Obtén cálculos integrales de costos para tus envíos de comercio internacional",
       routeAnalysis: "Análisis de Rutas",
-      tariffAnalysis: "Análisis de Tarifas"
+      routeAnalysisDescription: "Optimiza rutas de envío y modos de transporte",
+      tariffAnalysis: "Análisis de Tarifas",
+      tariffAnalysisDescription: "Clasificación detallada de códigos HS y cálculos de aranceles"
     },
     
     regulations: {
@@ -616,10 +669,29 @@ export const masterTranslations = {
     
     markets: {
       title: "Mercados",
-      description: "Analiza mercados, datos de precios y patrones de comercio regional",
+      description: "Información impulsada por IA sobre mercados comerciales globales y oportunidades",
       marketsAnalysis: "Análisis de Mercados",
       pricingData: "Datos de Precios",
-      regionalTrade: "Comercio Regional"
+      regionalTrade: "Comercio Regional",
+      generateReport: "Generar Informe de Mercado",
+      growingMarkets: "Mercados en Crecimiento",
+      highGrowthOpportunities: "Oportunidades de alto crecimiento identificadas",
+      activeMarkets: "Mercados Activos",
+      countriesWithActiveTrade: "Países con comercio activo",
+      marketValue: "Valor del Mercado",
+      totalAddressableMarket: "Mercado total direccionable",
+      marketOpportunities: "Oportunidades de Mercado",
+      marketOpportunitiesDesc: "Oportunidades de crecimiento identificadas por IA basadas en datos comerciales",
+      highPotential: "Alto Potencial",
+      mediumPotential: "Potencial Medio",
+      emerging: "Emergente",
+      marketSize: "Tamaño del Mercado",
+      growthRate: "Tasa de Crecimiento",
+      exploreMarket: "Explorar Mercado",
+      regionalTradeVolume: "Volumen de Comercio Regional",
+      yourTradeActivity: "Tu actividad comercial por región",
+      marketTrends: "Tendencias del Mercado",
+      keyInsights: "Información clave del análisis de mercado"
     },
     
     ai: {
@@ -747,7 +819,18 @@ export const masterTranslations = {
       download: "Télécharger",
       cancel: "Annuler",
       save: "Enregistrer",
-      submit: "Soumettre"
+      submit: "Soumettre",
+      calculating: "Calcul des Coûts",
+      calculatingMessage: "Obtention des meilleurs tarifs et analyse des accords commerciaux...",
+      loading: "Chargement...",
+      error: "Erreur",
+      success: "Succès",
+      close: "Fermer",
+      back: "Retour",
+      next: "Suivant",
+      finish: "Terminer",
+      yes: "Oui",
+      no: "Non"
     },
     
     files: {
@@ -901,7 +984,10 @@ export const masterTranslations = {
       centralSouthAmerica: "Amérique Centrale et du Sud",
       asia: "Asie",
       oceania: "Océanie",
-      africa: "Afrique"
+      africa: "Afrique",
+      europe: "Europe",
+      latinAmerica: "Amérique Latine",
+      asiaPacific: "Asie-Pacifique"
     },
     
     countries: {
@@ -964,8 +1050,11 @@ export const masterTranslations = {
       title: "Outils Commerciaux",
       description: "Calculez les coûts, analysez les itinéraires et comprenez les tarifs",
       costBreakdown: "Ventilation des Coûts",
+      costBreakdownDescription: "Obtenez des calculs de coûts complets pour vos expéditions commerciales internationales",
       routeAnalysis: "Analyse des Itinéraires",
-      tariffAnalysis: "Analyse des Tarifs"
+      routeAnalysisDescription: "Optimisez les itinéraires d'expédition et les modes de transport",
+      tariffAnalysis: "Analyse des Tarifs",
+      tariffAnalysisDescription: "Classification détaillée des codes SH et calculs des droits de douane"
     },
     
     regulations: {
@@ -978,10 +1067,29 @@ export const masterTranslations = {
     
     markets: {
       title: "Marchés",
-      description: "Analysez les marchés, les données de prix et les modèles commerciaux régionaux",
+      description: "Aperçus alimentés par l'IA sur les marchés commerciaux mondiaux et les opportunités",
       marketsAnalysis: "Analyse des Marchés",
       pricingData: "Données de Prix",
-      regionalTrade: "Commerce Régional"
+      regionalTrade: "Commerce Régional",
+      generateReport: "Générer un Rapport de Marché",
+      growingMarkets: "Marchés en Croissance",
+      highGrowthOpportunities: "Opportunités de forte croissance identifiées",
+      activeMarkets: "Marchés Actifs",
+      countriesWithActiveTrade: "Pays avec commerce actif",
+      marketValue: "Valeur du Marché",
+      totalAddressableMarket: "Marché total adressable",
+      marketOpportunities: "Opportunités de Marché",
+      marketOpportunitiesDesc: "Opportunités de croissance identifiées par l'IA basées sur les données commerciales",
+      highPotential: "Potentiel Élevé",
+      mediumPotential: "Potentiel Moyen",
+      emerging: "Émergent",
+      marketSize: "Taille du Marché",
+      growthRate: "Taux de Croissance",
+      exploreMarket: "Explorer le Marché",
+      regionalTradeVolume: "Volume Commercial Régional",
+      yourTradeActivity: "Votre activité commerciale par région",
+      marketTrends: "Tendances du Marché",
+      keyInsights: "Informations clés de l'analyse du marché"
     },
     
     ai: {
