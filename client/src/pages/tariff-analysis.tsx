@@ -4,8 +4,10 @@ import { Badge } from "@/components/ui/badge";
 import { Search, FileText, Calculator, TrendingDown, Info } from "lucide-react";
 import TariffAnalysisForm from "@/components/TariffAnalysisForm";
 import { useState } from "react";
+import { useMasterTranslation } from "@/utils/masterTranslation";
 
 export default function TariffAnalysis() {
+  const { t } = useMasterTranslation();
   const [showExistingAnalysis, setShowExistingAnalysis] = useState(false);
   
   return (

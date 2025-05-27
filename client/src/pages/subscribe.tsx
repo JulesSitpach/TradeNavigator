@@ -7,6 +7,7 @@ import { Navigation } from "@/components/Navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Check, Zap, Globe, Truck, BarChart3 } from "lucide-react";
+import { useMasterTranslation } from "@/utils/masterTranslation";
 
 // Make sure to call `loadStripe` outside of a component's render to avoid
 // recreating the `Stripe` object on every render.
@@ -59,6 +60,7 @@ const SubscribeForm = () => {
 };
 
 export default function Subscribe() {
+  const { t } = useMasterTranslation();
   const [clientSecret, setClientSecret] = useState("");
   const [loading, setLoading] = useState(true);
 

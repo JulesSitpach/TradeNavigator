@@ -1,8 +1,10 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calculator, TrendingUp, Globe, Shield, Zap, Users } from "lucide-react";
+import { useMasterTranslation } from "@/utils/masterTranslation";
 
 export default function Overview() {
+  const { t } = useMasterTranslation();
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}

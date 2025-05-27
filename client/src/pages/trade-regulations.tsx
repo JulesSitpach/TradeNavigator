@@ -3,8 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Navigation } from "@/components/Navigation";
 import { FileText, Globe, AlertCircle, TrendingUp, Users, Gavel } from "lucide-react";
+import { useMasterTranslation } from "@/utils/masterTranslation";
 
 export default function TradeRegulations() {
+  const { t } = useMasterTranslation();
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation />

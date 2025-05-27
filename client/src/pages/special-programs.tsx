@@ -3,8 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Navigation } from "@/components/Navigation";
 import { Award, Percent, Globe, Calendar } from "lucide-react";
+import { useMasterTranslation } from "@/utils/masterTranslation";
 
 export default function SpecialPrograms() {
+  const { t } = useMasterTranslation();
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation />

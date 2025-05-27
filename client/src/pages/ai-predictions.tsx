@@ -3,8 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Navigation } from "@/components/Navigation";
 import { TrendingUp, Zap, BarChart3, Calendar } from "lucide-react";
+import { useMasterTranslation } from "@/utils/masterTranslation";
 
 export default function AiPredictions() {
+  const { t } = useMasterTranslation();
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation />

@@ -3,8 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useLanguage } from "@/hooks/useLanguage";
 import { Check, ArrowRight, Zap, Shield, Globe, Calculator, Brain, TrendingUp } from "lucide-react";
+import { useMasterTranslation } from "@/utils/masterTranslation";
 
 export default function Features() {
+  const { t } = useMasterTranslation();
   const { t } = useLanguage();
   return (
     <div className="min-h-screen bg-gray-50">
