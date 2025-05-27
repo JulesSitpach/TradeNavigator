@@ -1,10 +1,9 @@
-
 #!/bin/bash
 
-# Load environment variables from .env file
-if [ -f .env ]; then
-    export $(cat .env | grep -v '^#' | xargs)
-fi
+# Load environment variables
+set -a
+source .env
+set +a
 
 # Execute the original command
-exec "$@"
+exec $@
