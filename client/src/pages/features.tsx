@@ -7,7 +7,7 @@ import { useMasterTranslation } from "@/utils/masterTranslation";
 
 export default function Features() {
   const { t } = useMasterTranslation();
-  const { t } = useLanguage();
+  const { t: languageT } = useLanguage();
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
