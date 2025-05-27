@@ -9,14 +9,11 @@ if [ -f .env ]; then
         # Skip comments and empty lines
         if [[ ! "$line" =~ ^[[:space:]]*# ]] && [[ -n "$line" ]]; then
             # Handle quoted values properly
-            if [[ "$line" =~ ^([^=]+)=(.*)$ ]]; then
-                key="${BASH_REMATCH[1]}"
-                value="${BASH_REMATCH[2]}"
+            if echo "$line" | grep -q "="; then
+                key=$(echo "$line" | cut -d'=' -f1)
+                value=$(echo "$line" | cut -d'=' -f2-)
                 # Remove quotes if present
-                value="${value#\"}"
-                value="${value%\"}"
-                value="${value#\'}"
-                value="${value%\'}"
+                value=$(echo "$value" | sed 's/^["'\'']//' | sed 's/["'\'']$//')
                 export "$key=$value"
             fi
         fi
