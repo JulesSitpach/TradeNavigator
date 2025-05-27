@@ -33,26 +33,13 @@ if (!process.env.SESSION_SECRET) {
   }
 }
 
-// If .env file exists, try to load it
-try {
-  const envPath = path.join(process.cwd(), '.env');
-  if (fs.existsSync(envPath)) {
-    console.log('Loading environment variables from .env file');
-    const envContent = fs.readFileSync(envPath, 'utf8');
-    envContent.split('\n').forEach(line => {
-      const match = line.match(/^([^#][^=]+)=(.*)$/);
-      if (match && match.length === 3) {
-        const key = match[1].trim();
-        const value = match[2].trim();
-        if (!process.env[key]) {
-          process.env[key] = value;
-          console.log(`Loaded ${key} from .env file`);
-        }
-      }
-    });
-  }
-} catch (error) {
-  console.warn('Error loading .env file:', error.message);
+// Environment variables are now loaded by start-with-auth.sh
+// Just verify we have the required ones
+const requiredEnvVars = ['REPLIT_DOMAINS', 'DATABASE_URL', 'REPL_ID'];
+const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
+
+if (missingVars.length > 0) {
+  console.warn('Missing environment variables:', missingVars);
 }
 
 const getOidcConfig = memoize(

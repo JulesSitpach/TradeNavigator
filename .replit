@@ -22,7 +22,7 @@ externalPort = 3000
 NODE_ENV = "development"
 
 [workflows]
-runButton = "Setup Replit Auth"
+runButton = "Development Server"
 
 [[workflows.workflow]]
 name = "Development Server"
