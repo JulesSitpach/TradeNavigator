@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Navigation } from "@/components/Navigation";
 import { CostAnalysisForm } from "@/components/CostAnalysisForm";
 import { ResultsSidebar } from "@/components/ResultsSidebar";
 
@@ -22,8 +21,6 @@ export default function CostBreakdown() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navigation />
-      
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Page Header */}
         <div className="mb-8">
